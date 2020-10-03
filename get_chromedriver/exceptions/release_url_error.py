@@ -1,0 +1,2 @@
+class ReleaseUrlError(Exception):
+    pass

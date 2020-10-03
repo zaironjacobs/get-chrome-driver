@@ -1,0 +1,2 @@
+class UnknownRelease(Exception):
+    pass
