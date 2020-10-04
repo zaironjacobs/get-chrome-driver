@@ -77,13 +77,13 @@ $ get-chromedriver --beta-url linux
 $ get-chromedriver --stable-url linux
 ```
 
-Download the beta and stable chromedriver release for a specific platform:
+Download the beta and stable release for a specific platform:
 ```console
 $ get-chromedriver --download-beta win
 $ get-chromedriver --download-stable win
 ```
 
-Download a specific chromedriver release for a specific platform and extract the zip file:
+Download a specific release for a specific platform and extract the zip file:
 ```console
 $ get-chromedriver --download-release mac 84.0.4147.30 --extract
 ```

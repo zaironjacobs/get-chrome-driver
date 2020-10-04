@@ -9,7 +9,7 @@ from requests.exceptions import ConnectionError
 from urllib.parse import urlparse
 
 
-def download(url, output_path):
+def download(url, output_path=None, file_name=None):
     """
     Download a file from url
     If output_path is None, the file will be downloaded directly in the current directory
@@ -28,20 +28,21 @@ def download(url, output_path):
             if res.status_code != 200:
                 raise HTTPError('Invalid URL')
 
-            file_name = __get_file_name_from_url(url)
+            if file_name is None:
+                file_name = get_file_name_from_url(url)
 
-            if output_path:
-                __create_dir(output_path)
-                output_path_with_file_name = output_path + '/' + file_name
+            if output_path is None:
+                output_path = file_name
             else:
-                output_path_with_file_name = file_name
+                __create_dir(output_path)
+                output_path = output_path + '/' + file_name
 
-            with open(output_path_with_file_name, 'wb') as file:
+            with open(output_path, 'wb') as file:
                 for chunk in res.iter_content(chunk_size=1048576):
                     if chunk:
                         file.write(chunk)
 
-            return output_path_with_file_name, file_name
+            return output_path, file_name
         except EnvironmentError as err:
             raise err
         finally:
@@ -66,7 +67,7 @@ def __retry_session(retries, backoff_factor, status_forcelist, method_whitelist)
     return session
 
 
-def __get_file_name_from_url(url):
+def get_file_name_from_url(url):
     """ Get file name from url """
 
     path = urlparse(url).path

@@ -45,8 +45,8 @@ class App:
         msg_release_url_error = c_fore.RED + 'error: could not find release url' + c_style.RESET_ALL
 
         parser = argparse.ArgumentParser(add_help=False)
-        for i, arg in enumerate(arguments.args):
-            parser.add_argument(arguments.args[i][0], nargs='*')
+        for i, arg in enumerate(arguments.args_options):
+            parser.add_argument(arguments.args_options[i][0], nargs='*')
         args, unknown = parser.parse_known_args()
 
         if unknown:

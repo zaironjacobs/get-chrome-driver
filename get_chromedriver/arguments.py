@@ -9,8 +9,7 @@ message_help_required_platform = descriptor.format('', 'required: add one of the
 message_help_required_release = descriptor.format('', 'required: add a release version')
 message_help_optional_extract = descriptor.format('', 'optional: use --extract to extract the zip file')
 
-args = [
-    ['--help', 'show help'],
+args_options = [
     ['--beta-version', 'print the beta release version'],
     ['--stable-version', 'print the stable release version'],
     ['--latest-urls', 'print the beta and stable release urls for all platforms'],
@@ -32,15 +31,16 @@ args = [
      + message_help_required_release + '\n'
      + message_help_optional_extract],
     ['--extract', 'option to extract the zip file'],
-    ['--version', 'program version']
+    ['--version', 'program version'],
+    ['--help', 'show help']
 ]
 
 
 def print_help():
     print('usage: ' + __console_name__ + ' [options]')
     print('')
-    print('options:')
-    for i, argument in enumerate(args):
+    print('options: ')
+    for i, argument in enumerate(args_options):
         print(descriptor.format(argument[0], argument[1]))
     print('')
     print('Find the downloaded drivers at: ')

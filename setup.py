@@ -9,7 +9,8 @@ with open('README.md', 'r') as fh:
 requires = [
     'bs4>=0.0.1',
     'requests>=2.24.0',
-    'colorama>=0.4.3'
+    'colorama>=0.4.3',
+    'pytest>=6.1.0'
 ]
 
 setup(
@@ -19,8 +20,8 @@ setup(
     author_email='zaironjacobs@gmail.com',
     description='A tool to download ChromeDriver.',
     long_description=long_description,
-    url='https://github.com/zaijacobs/get-chromedriver',
-    download_url='https://github.com/zaijacobs/get-chromedriver/archive/v' + __version__ + '.tar.gz',
+    url='https://github.com/zaironjacobs/get-chromedriver',
+    download_url='https://github.com/zaironjacobs/get-chromedriver/archive/v' + __version__ + '.tar.gz',
     keywords=['chrome', 'chromedriver', 'download', 'web', 'driver', 'tool', 'get'],
     packages=find_packages(),
     entry_points={

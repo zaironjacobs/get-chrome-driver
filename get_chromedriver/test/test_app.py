@@ -1,9 +1,9 @@
 import pytest
 import os
 import shutil
-from os import path
 import subprocess
 import re
+from os import path
 
 from get_chromedriver import constants
 from get_chromedriver.version import __version__
@@ -25,7 +25,7 @@ stable_release_mac_url = 'https://chromedriver.storage.googleapis.com/85.0.4183.
 
 available_platforms = Platforms()
 
-# Set the current test directory
+# Change to the current test directory
 os.chdir(os.path.dirname(__file__))
 
 
@@ -56,9 +56,9 @@ class TestApp:
     ############################
     def test_latest_release_urls(self):
         # Update on new beta and stable release
-        # Always keep a new line at the end of the text file
         with open('for_test_latest_release_urls', 'r') as file:
             latest_release_urls = file.read()
+        latest_release_urls = latest_release_urls + '\n'
 
         out = subprocess.run(args=[__console_name__, '--latest-urls'],
                              universal_newlines=True,

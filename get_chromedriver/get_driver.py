@@ -1,6 +1,7 @@
 import requests
-from bs4 import BeautifulSoup
 import zipfile
+from bs4 import BeautifulSoup
+
 from get_chromedriver import constants
 from get_chromedriver.platforms import Platforms
 from get_chromedriver import retriever
