@@ -2,11 +2,9 @@ import os
 import requests
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-from requests.exceptions import HTTPError
-from requests.exceptions import Timeout
-from requests.exceptions import RequestException
-from requests.exceptions import ConnectionError
 from urllib.parse import urlparse
+from requests.exceptions import RequestException
+from requests.exceptions import HTTPError
 
 
 def download(url, output_path=None, file_name=None):
@@ -15,38 +13,34 @@ def download(url, output_path=None, file_name=None):
     If output_path is None, the file will be downloaded directly in the current directory
     """
 
+    session = __retry_session(retries=3,
+                              backoff_factor=0.1,
+                              status_forcelist=[429, 500, 502, 503, 504],
+                              method_whitelist=['GET'])
     try:
-        session = __retry_session(retries=3,
-                                  backoff_factor=0.1,
-                                  status_forcelist=[429, 500, 502, 503, 504],
-                                  method_whitelist=['GET'])
-    except (HTTPError, ConnectionError, Timeout, RequestException) as err:
-        raise err
+        res = session.get(url=url)
+    except RequestException as err:
+        raise RequestException(err)
     else:
-        try:
-            res = session.get(url=url)
-            if res.status_code != 200:
-                raise HTTPError('Invalid URL')
+        if res.status_code != 200:
+            raise HTTPError('Invalid URL')
 
-            if file_name is None:
-                file_name = get_file_name_from_url(url)
+        if file_name is None:
+            file_name = get_file_name_from_url(url)
 
-            if output_path is None:
-                output_path = file_name
-            else:
-                __create_dir(output_path)
-                output_path = output_path + '/' + file_name
+        if output_path is None:
+            output_path = file_name
+        else:
+            __create_dir(output_path)
+            output_path = output_path + '/' + file_name
 
-            with open(output_path, 'wb') as file:
-                for chunk in res.iter_content(chunk_size=1048576):
-                    if chunk:
-                        file.write(chunk)
-
-            return output_path, file_name
-        except EnvironmentError as err:
-            raise err
-        finally:
-            session.close()
+        with open(output_path, 'wb') as file:
+            for chunk in res.iter_content(chunk_size=1048576):
+                if chunk:
+                    file.write(chunk)
+        return output_path, file_name
+    finally:
+        session.close()
 
 
 def __retry_session(retries, backoff_factor, status_forcelist, method_whitelist):
@@ -80,4 +74,5 @@ def __create_dir(directory):
     try:
         os.makedirs(directory, exist_ok=True)
     except OSError as err:
-        raise err
+        raise OSError(err)
+

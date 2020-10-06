@@ -2,12 +2,16 @@ import requests
 import zipfile
 from bs4 import BeautifulSoup
 
+from requests.exceptions import RequestException
+from requests.exceptions import HTTPError
+
 from get_chromedriver import constants
 from get_chromedriver.platforms import Platforms
 from get_chromedriver import retriever
-from get_chromedriver.exceptions.unknown_platform import UnknownPlatform
-from get_chromedriver.exceptions.release_url_error import ReleaseUrlError
-from get_chromedriver.exceptions.unknown_release import UnknownRelease
+from get_chromedriver.exceptions import GetChromeDriverError
+from get_chromedriver.exceptions import UnknownPlatformError
+from get_chromedriver.exceptions import ReleaseUrlError
+from get_chromedriver.exceptions import UnknownReleaseError
 
 
 class GetChromeDriver:
@@ -84,7 +88,11 @@ class GetChromeDriver:
             else:
                 output_path_no_file_name = output_path
 
-            output_path_with_file_name, file_name = retriever.download(url=url, output_path=output_path_no_file_name)
+            try:
+                output_path_with_file_name, file_name = retriever.download(url=url,
+                                                                           output_path=output_path_no_file_name)
+            except (OSError, HTTPError, RequestException) as err:
+                raise GetChromeDriverError(err)
 
             if extract:
                 with zipfile.ZipFile(output_path_with_file_name, 'r') as zip_ref:
@@ -101,7 +109,7 @@ class GetChromeDriver:
         """ Check if url is valid """
 
         if requests.head(url).status_code != 200:
-            raise ReleaseUrlError('Invalid url (Possible cause: non-existent release version)')
+            raise ReleaseUrlError('Error: Invalid url (Possible cause: non-existent release version)')
 
     def __check_release(self, release):
         """ Check if release format is valid """
@@ -110,11 +118,12 @@ class GetChromeDriver:
 
         for number in split_release:
             if not number.isnumeric():
-                raise UnknownRelease('Invalid release format')
+                raise UnknownReleaseError('Error: Invalid release format')
 
     def __check_platform(self, platform):
         """ Check if platform is valid """
 
         if platform not in self.__available_platforms.list:
-            raise UnknownPlatform('Choose a platform from: ' + str(self.__available_platforms.list))
+            raise UnknownPlatformError('Error: Platform not recognized, choose a platform from: '
+                                       + str(self.__available_platforms.list))
         return platform

@@ -1,10 +1,10 @@
 from setuptools import setup
 from setuptools import find_packages
-from get_chromedriver.version import __version__
-from get_chromedriver.console_name import __console_name__
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
+
+version = '1.1.2'
 
 requires = [
     'bs4>=0.0.1',
@@ -14,18 +14,18 @@ requires = [
 ]
 
 setup(
-    name=__console_name__,
-    version=__version__,
+    name='get-chromedriver',
+    version=version,
     author='Zairon Jacobs',
     author_email='zaironjacobs@gmail.com',
     description='A tool to download ChromeDriver.',
     long_description=long_description,
     url='https://github.com/zaironjacobs/get-chromedriver',
-    download_url='https://github.com/zaironjacobs/get-chromedriver/archive/v' + __version__ + '.tar.gz',
+    download_url='https://github.com/zaironjacobs/get-chromedriver/archive/v' + version + '.tar.gz',
     keywords=['chrome', 'chromedriver', 'download', 'web', 'driver', 'tool', 'get'],
     packages=find_packages(),
     entry_points={
-        'console_scripts': [__console_name__ + '=get_chromedriver.app:main'],
+        'console_scripts': ['get-chromedriver' + '=get_chromedriver.app:main'],
     },
     install_requires=requires,
     license='MIT',

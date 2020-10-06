@@ -4,12 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pytest = "*"
 
 [packages]
 bs4 = "*"
 requests = "*"
 colorama = "*"
-pytest = "*"
 
 [requires]
 python_version = "3.8"

@@ -4,11 +4,12 @@ from signal import signal, SIGINT
 
 import colorama
 
-from get_chromedriver.version import __version__
+from get_chromedriver import __version__
 from get_chromedriver import arguments
 from get_chromedriver.get_driver import GetChromeDriver
 from get_chromedriver.platforms import Platforms
 from get_chromedriver.phase import Phase
+from get_chromedriver.exceptions import GetChromeDriverError
 
 platforms = Platforms()
 phases = Phase()
@@ -29,238 +30,279 @@ def main():
 class App:
 
     def __init__(self):
-        c_fore = colorama.Fore
-        c_style = colorama.Style
+        self.__c_fore = colorama.Fore
+        self.__c_style = colorama.Style
         colorama.init()
 
-        msg_download_finished = 'download finished'
-        msg_required_choose_platform = (c_fore.RED + 'required: choose one of the following platforms: '
-                                        + str(platforms.list) + c_style.RESET_ALL)
-        msg_required_add_release = c_fore.RED + 'required: add a release version' + c_style.RESET_ALL
-        msg_optional_add_extract = 'optional: add --extract to extract the zip file'
-        msg_error_unrecognized_argument = (
-                c_fore.RED + 'error: unrecognized argument(s) detected' + c_style.RESET_ALL
+        self.__msg_download_finished = 'download finished'
+        self.__msg_required_choose_platform = (self.__c_fore.RED + 'required: choose one of the following platforms: '
+                                               + str(platforms.list) + self.__c_style.RESET_ALL)
+        self.__msg_required_add_release = (self.__c_fore.RED + 'required: add a release version'
+                                           + self.__c_style.RESET_ALL)
+        self.__msg_optional_add_extract = 'optional: add --extract to extract the zip file'
+        self.__msg_error_unrecognized_argument = (
+                self.__c_fore.RED + 'error: unrecognized argument(s) detected' + self.__c_style.RESET_ALL
                 + '\n' + 'tip: use --help to see all available arguments')
-        msg_download_error = c_fore.RED + 'error: an error occurred at downloading' + c_style.RESET_ALL
-        msg_release_url_error = c_fore.RED + 'error: could not find release url' + c_style.RESET_ALL
+        self.__msg_download_error = (self.__c_fore.RED + 'error: an error occurred at downloading'
+                                     + self.__c_style.RESET_ALL)
+        self.__msg_release_url_error = (self.__c_fore.RED + 'error: could not find release url'
+                                        + self.__c_style.RESET_ALL)
 
-        parser = argparse.ArgumentParser(add_help=False)
+        self.__parser = argparse.ArgumentParser(add_help=False)
         for i, arg in enumerate(arguments.args_options):
-            parser.add_argument(arguments.args_options[i][0], nargs='*')
-        args, unknown = parser.parse_known_args()
+            self.__parser.add_argument(arguments.args_options[i][0], nargs='*')
+        self.__args, self.__unknown = self.__parser.parse_known_args()
 
-        if unknown:
-            print(msg_error_unrecognized_argument)
+        if self.__unknown:
+            print(self.__msg_error_unrecognized_argument)
             sys.exit(0)
 
         if len(sys.argv) == 1:
             arguments.print_help()
             sys.exit(0)
 
-        args_help = args.help
-        if isinstance(args_help, list):
+        ########
+        # HELP #
+        ########
+        self.__args_help = self.__args.help
+        if self.__arg_passed(self.__args_help):
             arguments.print_help()
             sys.exit(0)
 
-        args_beta_version = args.beta_version
-        if isinstance(args_beta_version, list):
+        ################
+        # BETA VERSION #
+        ################
+        self.__args_beta_version = self.__args.beta_version
+        if self.__arg_passed(self.__args_beta_version):
             self.print_phase_version(phases.beta)
             sys.exit(0)
 
-        args_stable_version = args.stable_version
-        if isinstance(args_stable_version, list):
+        ##################
+        # STABLE VERSION #
+        ##################
+        self.__args_stable_version = self.__args.stable_version
+        if self.__arg_passed(self.__args_stable_version):
             self.print_phase_version(phases.stable)
             sys.exit(0)
 
-        args_latest_urls = args.latest_urls
-        if isinstance(args_latest_urls, list):
+        ###############
+        # LATEST URLS #
+        ###############
+        self.__args_latest_urls = self.__args.latest_urls
+        if self.__arg_passed(self.__args_latest_urls):
             self.print_url_phases_release()
             sys.exit(0)
 
-        args_release_url = args.release_url
-        if isinstance(args_release_url, list):
-            custom_required_message = (msg_required_choose_platform
-                                       + '\n' + msg_required_add_release)
-            if not args_release_url:
+        ###############
+        # RELEASE URL #
+        ###############
+        self.__args_release_url = self.__args.release_url
+        if self.__arg_passed(self.__args_release_url):
+            custom_required_message = (self.__msg_required_choose_platform
+                                       + '\n' + self.__msg_required_add_release)
+            if not self.__args_release_url:
                 print(custom_required_message)
                 sys.exit(0)
-            if len(args_release_url) != 2:
+            if len(self.__args_release_url) != 2:
                 print(custom_required_message)
                 sys.exit(0)
 
-            platform = args_release_url[0]
-            release = args_release_url[1]
+            platform = self.__args_release_url[0]
+            release = self.__args_release_url[1]
             if platforms.win == platform:
                 # noinspection PyBroadException
                 try:
                     self.print_release_url(platforms.win, release)
                 except Exception:
-                    print(msg_release_url_error)
+                    print(self.__msg_release_url_error)
             elif platforms.linux == platform:
                 # noinspection PyBroadException
                 try:
                     self.print_release_url(platforms.linux, release)
                 except Exception:
-                    print(msg_release_url_error)
+                    print(self.__msg_release_url_error)
             elif platforms.mac == platform:
                 # noinspection PyBroadException
                 try:
                     self.print_release_url(platforms.mac, release)
                 except Exception:
-                    print(msg_release_url_error)
+                    print(self.__msg_release_url_error)
             else:
                 print(custom_required_message)
             sys.exit(0)
 
-        args_beta_url = args.beta_url
-        if isinstance(args_beta_url, list):
-            if not args_beta_url:
-                print(msg_required_choose_platform)
+        ############
+        # BETA URL #
+        ############
+        self.__args_beta_url = self.__args.beta_url
+        if self.__arg_passed(self.__args_beta_url):
+            if not self.__args_beta_url:
+                print(self.__msg_required_choose_platform)
                 sys.exit(0)
-            if len(args_beta_url) != 1:
-                print(msg_required_choose_platform)
+            if len(self.__args_beta_url) != 1:
+                print(self.__msg_required_choose_platform)
                 sys.exit(0)
 
-            platform = args_beta_url[0]
+            platform = self.__args_beta_url[0]
             if platforms.win == platform:
                 # noinspection PyBroadException
                 try:
                     self.print_phase_url(platforms.win, phases.beta)
                 except Exception:
-                    print(msg_release_url_error)
+                    print(self.__msg_release_url_error)
             elif platforms.linux == platform:
                 # noinspection PyBroadException
                 try:
                     self.print_phase_url(platforms.linux, phases.beta)
                 except Exception:
-                    print(msg_release_url_error)
+                    print(self.__msg_release_url_error)
             elif platforms.mac == platform:
                 # noinspection PyBroadException
                 try:
                     self.print_phase_url(platforms.mac, phases.beta)
                 except Exception:
-                    print(msg_release_url_error)
+                    print(self.__msg_release_url_error)
             else:
-                print(msg_required_choose_platform)
+                print(self.__msg_required_choose_platform)
             sys.exit(0)
 
-        args_stable_url = args.stable_url
-        if isinstance(args_stable_url, list):
-            if not args_stable_url:
-                print(msg_required_choose_platform)
+        ##############
+        # STABLE URL #
+        ##############
+        self.__args_stable_url = self.__args.stable_url
+        if self.__arg_passed(self.__args_stable_url):
+            if not self.__args_stable_url:
+                print(self.__msg_required_choose_platform)
                 sys.exit(0)
-            if len(args_stable_url) != 1:
-                print(msg_required_choose_platform)
+            if len(self.__args_stable_url) != 1:
+                print(self.__msg_required_choose_platform)
                 sys.exit(0)
 
-            platform = args_stable_url[0]
-            if platforms.win == platform:
+            self.__platform = self.__args_stable_url[0]
+            if platforms.win == self.__platform:
                 # noinspection PyBroadException
                 try:
                     self.print_phase_url(platforms.win, phases.stable)
                 except Exception:
-                    print(msg_release_url_error)
-            elif platforms.linux == platform:
+                    print(self.__msg_release_url_error)
+            elif platforms.linux == self.__platform:
                 # noinspection PyBroadException
                 try:
                     self.print_phase_url(platforms.linux, phases.stable)
                 except Exception:
-                    print(msg_release_url_error)
-            elif platforms.mac == platform:
+                    print(self.__msg_release_url_error)
+            elif platforms.mac == self.__platform:
                 # noinspection PyBroadException
                 try:
                     self.print_phase_url(platforms.mac, phases.stable)
                 except Exception:
-                    print(msg_release_url_error)
+                    print(self.__msg_release_url_error)
             else:
-                print(msg_required_choose_platform)
+                print(self.__msg_required_choose_platform)
             sys.exit(0)
 
-        args_download_beta = args.download_beta
-        if isinstance(args_download_beta, list):
-            if not args_download_beta:
-                print(msg_required_choose_platform)
-                print(msg_optional_add_extract)
+        #################
+        # DOWNLOAD BETA #
+        #################
+        self.__args_download_beta = self.__args.download_beta
+        if self.__arg_passed(self.__args_download_beta):
+            if not self.__args_download_beta:
+                print(self.__msg_required_choose_platform)
+                print(self.__msg_optional_add_extract)
                 sys.exit(0)
             extract = False
-            args_extract = args.extract
-            if isinstance(args_extract, list):
+            self.__args_extract = self.__args.extract
+            if self.__arg_passed(self.__args_extract):
                 extract = True
-            platform = args_download_beta[0]
+            platform = self.__args_download_beta[0]
             if platform in platforms.list:
                 # noinspection PyBroadException
                 try:
                     self.download_latest_phase_release(platform, phases.beta, extract)
-                    print(msg_download_finished)
-                except Exception:
-                    print(msg_download_error)
+                    print(self.__msg_download_finished)
+                except GetChromeDriverError:
+                    print(self.__msg_download_error)
             else:
-                print(msg_required_choose_platform)
-                print(msg_optional_add_extract)
+                print(self.__msg_required_choose_platform)
+                print(self.__msg_optional_add_extract)
             sys.exit(0)
 
-        args_download_stable = args.download_stable
-        if isinstance(args_download_stable, list):
-            if not args_download_stable:
-                print(msg_required_choose_platform)
-                print(msg_optional_add_extract)
+        ###################
+        # DOWNLOAD STABLE #
+        ###################
+        self.__args_download_stable = self.__args.download_stable
+        if self.__arg_passed(self.__args_download_stable):
+            if not self.__args_download_stable:
+                print(self.__msg_required_choose_platform)
+                print(self.__msg_optional_add_extract)
                 sys.exit(0)
             extract = False
-            args_extract = args.extract
-            if isinstance(args_extract, list):
+            self.__args_extract = self.__args.extract
+            if self.__arg_passed(self.__args_extract):
                 extract = True
-            platform = args_download_stable[0]
+            platform = self.__args_download_stable[0]
             if platform in platforms.list:
                 # noinspection PyBroadException
                 try:
                     self.download_latest_phase_release(platform, phases.stable, extract)
-                    print(msg_download_finished)
-                except Exception:
-                    print(msg_download_error)
+                    print(self.__msg_download_finished)
+                except GetChromeDriverError:
+                    print(self.__msg_download_error)
             else:
-                print(msg_required_choose_platform)
-                print(msg_optional_add_extract)
+                print(self.__msg_required_choose_platform)
+                print(self.__msg_optional_add_extract)
             sys.exit(0)
 
-        args_download_release = args.download_release
-        if isinstance(args_download_release, list):
-            custom_required_message = (msg_required_choose_platform
-                                       + '\n' + msg_required_add_release)
-            if not args_download_release:
+        ####################
+        # DOWNLOAD RELEASE #
+        ####################
+        self.__args_download_release = self.__args.download_release
+        if self.__arg_passed(self.__args_download_release):
+            custom_required_message = (self.__msg_required_choose_platform
+                                       + '\n' + self.__msg_required_add_release)
+            if not self.__args_download_release:
                 print(custom_required_message)
-                print(msg_optional_add_extract)
+                print(self.__msg_optional_add_extract)
                 sys.exit(0)
-            if len(args_download_release) != 2:
+            if len(self.__args_download_release) != 2:
                 print(custom_required_message)
-                print(msg_optional_add_extract)
+                print(self.__msg_optional_add_extract)
                 sys.exit(0)
             extract = False
-            args_extract = args.extract
-            if isinstance(args_extract, list):
+            self.__args_extract = self.__args.extract
+            if self.__arg_passed(self.__args_extract):
                 extract = True
-            if len(args_download_release) != 2:
+            if len(self.__args_download_release) != 2:
                 print(custom_required_message)
-                print(msg_optional_add_extract)
+                print(self.__msg_optional_add_extract)
                 sys.exit(0)
             else:
-                platform = args_download_release[0]
+                platform = self.__args_download_release[0]
                 if platform in platforms.list:
-                    release = args_download_release[1]
+                    release = self.__args_download_release[1]
                     # noinspection PyBroadException
                     try:
                         self.download_release(platform, release, extract)
-                        print(msg_download_finished)
-                    except Exception:
-                        print(msg_download_error)
+                        print(self.__msg_download_finished)
+                    except GetChromeDriverError:
+                        print(self.__msg_download_error)
                 else:
                     print(custom_required_message)
-                    print(msg_optional_add_extract)
+                    print(self.__msg_optional_add_extract)
             sys.exit(0)
 
-        args_version = args.version
-        if isinstance(args_version, list):
+        ###########
+        # VERSION #
+        ###########
+        self.__args_version = self.__args.version
+        if self.__arg_passed(self.__args_version):
             print('v' + __version__)
             sys.exit(0)
+
+    def __arg_passed(self, arg):
+        if isinstance(arg, list):
+            return True
+        return False
 
     def print_url_phases_release(self):
         latest_beta = 'Latest beta release for '

@@ -1,5 +1,4 @@
 from get_chromedriver.platforms import Platforms
-from get_chromedriver.console_name import __console_name__
 
 platforms = Platforms()
 
@@ -37,7 +36,7 @@ args_options = [
 
 
 def print_help():
-    print('usage: ' + __console_name__ + ' [options]')
+    print('usage: ' + 'get-chromedriver' + ' [options]')
     print('')
     print('options: ')
     for i, argument in enumerate(args_options):
