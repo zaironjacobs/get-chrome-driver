@@ -4,13 +4,12 @@ from setuptools import find_packages
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
-version = '1.1.2'
+version = '1.1.3'
 
 requires = [
     'bs4>=0.0.1',
     'requests>=2.24.0',
-    'colorama>=0.4.3',
-    'pytest>=6.1.0'
+    'colorama>=0.4.3'
 ]
 
 setup(
