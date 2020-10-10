@@ -4,7 +4,7 @@ from setuptools import find_packages
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
-version = '1.1.3'
+version = '1.1.4'
 
 requires = [
     'bs4>=0.0.1',
