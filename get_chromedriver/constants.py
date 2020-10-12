@@ -10,8 +10,7 @@ FILE_NAME_CHROMEDRIVER_MAC_ZIP = 'chromedriver_mac64.zip'
 
 DIR_DOWNLOADS = 'get-chromedriver_downloads'
 
-BETA_RELEASE_CSS_SELECTOR = ('.sites-layout-tile > div:nth-child(1) > div:nth-child(5) '
-                             '> ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+UL_RELEASES = '#sites-canvas-main-content > table > tbody > tr > td > div > div:nth-child(5) > ul'
 
-STABLE_RELEASE_CSS_SELECTOR = ('.sites-layout-tile > div:nth-child(1) > div:nth-child(5) '
-                               '> ul:nth-child(1) > li:nth-child(2) > a:nth-child(3)')
+LATEST_STABLE_RELEASE_STR = 'Latest stable release'
+LATEST_BETA_RELEASE_STR = 'Latest beta release'

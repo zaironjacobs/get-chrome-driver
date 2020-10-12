@@ -25,20 +25,32 @@ class GetChromeDriver:
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
-        a_tag = soup.select_one(constants.STABLE_RELEASE_CSS_SELECTOR)
-        release = a_tag.text.split()[-1]
-        self.__check_release(release)
-        return release
+        ul = soup.select_one(constants.UL_RELEASES)
+        for li in ul:
+            text = li.text.replace(u'\u00A0', ' ')
+            if text[:len(constants.LATEST_STABLE_RELEASE_STR)].lower() == constants.LATEST_STABLE_RELEASE_STR.lower():
+                try:
+                    release = li.a['href'].split('path=')[-1:][0][:-1]
+                except TypeError:
+                    break
+                self.__check_release(release)
+                return release
 
     def latest_beta_release_version(self):
         """ Return the latest beta release version """
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
-        a_tag = soup.select_one(constants.BETA_RELEASE_CSS_SELECTOR)
-        release = a_tag.text.split()[-1]
-        self.__check_release(release)
-        return release
+        ul = soup.select_one(constants.UL_RELEASES)
+        for li in ul:
+            text = li.text.replace(u'\u00A0', ' ')
+            if text[:len(constants.LATEST_BETA_RELEASE_STR)].lower() == constants.LATEST_BETA_RELEASE_STR.lower():
+                try:
+                    release = li.a['href'].split('path=')[-1:][0][:-1]
+                except TypeError:
+                    break
+                self.__check_release(release)
+                return release
 
     def latest_stable_release_url(self):
         """ Return the latest stable release url """

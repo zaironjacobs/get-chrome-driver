@@ -5,8 +5,9 @@ Get ChromeDriver
 [![PyPI - Status](https://img.shields.io/pypi/status/get-chromedriver)](https://pypi.python.org/pypi/get-chromedriver)
 [![PyPI - License](https://img.shields.io/pypi/l/get-chromedriver)](https://pypi.python.org/pypi/get-chromedriver)
 
-A tool to download ChromeDriver. You can choose to download the latest beta release, the latest stable release 
-or a specific release. You can use this tool as a package import or as a command-line application.
+A tool to download ChromeDriver. You can choose to download the latest beta release (if one is currently available), 
+the latest stable release or a specific release. 
+You can use this tool as a package import or as a command-line application.
 
 ## Install
 To install:
@@ -33,53 +34,41 @@ get_driver = GetChromeDriver(platform='win')
 # Print the latest stable release version
 print(get_driver.latest_stable_release_version())
 
-# Print the latest beta release version
-print(get_driver.latest_beta_release_version())
-
 # Print the latest stable release download link
 print(get_driver.latest_stable_release_url())
-
-# Print the latest beta release download link 
-print(get_driver.latest_beta_release_url())
 
 # Print the download link of a specific release
 print(get_driver.release_url('84.0.4147.30'))
 
 # Download the latest stable driver release
-# Optional: use extract=True to extract the zip file
-get_driver.download_latest_stable_release(extract=True)
-
-# Download the latest beta driver release
 # Optional: use output_path='' to specify where to download the driver
 # Optional: use extract=True to extract the zip file
-get_driver.download_latest_beta_release(output_path='webdriver')
+get_driver.download_latest_stable_release(output_path='webdriver', extract=True)
 
+# Download the latest stable driver release
 # Optional: use output_path='' to specify where to download the driver
 # Optional: use extract=True to extract the zip file
 get_driver.download_release('84.0.4147.30', extract=True)
 ```
 
 #### Command-line
-Print the beta and stable release urls of all available platforms:
+Print the stable release url of all platforms:
 ```console
 $ get-chromedriver --latest-urls
 ```
 
-Print the beta and stable release version:
+Print the stable release version:
 ```console
-$ get-chromedriver --beta-version
 $ get-chromedriver --stable-version
 ```
 
-Print the beta and stable release urls for a specific platform:
+Print the stable release url of a specific platform:
 ```console
-$ get-chromedriver --beta-url linux
 $ get-chromedriver --stable-url linux
 ```
 
-Download the beta and stable release for a specific platform:
+Download the stable release of a specific platform:
 ```console
-$ get-chromedriver --download-beta win
 $ get-chromedriver --download-stable win
 ```
 
@@ -92,10 +81,11 @@ $ get-chromedriver --download-release mac 84.0.4147.30 --extract
 
 *`<current directory>/<get-chromedriver_downloads>/<release version>/<platform>/<chromedriver.zip>`*
 
+*Note: Beta release related options and functions will only work if one is currently available.*
+
 ### Options
 
 ```
-
 --help                      Show help.
 
 --beta-version              Print the beta release version.

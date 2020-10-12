@@ -90,7 +90,7 @@ class App:
         ###############
         self.__args_latest_urls = self.__args.latest_urls
         if self.__arg_passed(self.__args_latest_urls):
-            self.print_url_phases_release()
+            self.print_latest_urls()
             sys.exit(0)
 
         ###############
@@ -304,27 +304,8 @@ class App:
             return True
         return False
 
-    def print_url_phases_release(self):
-        latest_beta = 'Latest beta release for '
+    def print_latest_urls(self):
         latest_stable = 'Latest stable release for '
-
-        get_driver = GetChromeDriver(self.__platforms.win)
-        print(latest_beta + 'Windows:')
-        print(get_driver.latest_beta_release_url())
-
-        print('')
-
-        get_driver = GetChromeDriver(self.__platforms.linux)
-        print(latest_beta + 'Linux:')
-        print(get_driver.latest_beta_release_url())
-
-        print('')
-
-        get_driver = GetChromeDriver(self.__platforms.mac)
-        print(latest_beta + 'Mac:')
-        print(get_driver.latest_beta_release_url())
-
-        print('')
 
         get_driver = GetChromeDriver(self.__platforms.win)
         print(latest_stable + 'Windows:')
@@ -345,10 +326,18 @@ class App:
     def print_phase_version(self, phase):
         if phase == self.__phases.beta:
             get_driver = GetChromeDriver(self.__platforms.win)
-            print(get_driver.latest_beta_release_version())
+            beta = get_driver.latest_beta_release_version()
+            if beta is None:
+                print(self.__c_fore.RED + 'error: could not find a beta release version' + self.__c_style.RESET_ALL)
+            else:
+                print(beta)
         elif phase == self.__phases.stable:
             get_driver = GetChromeDriver(self.__platforms.win)
-            print(get_driver.latest_stable_release_version())
+            stable = get_driver.latest_stable_release_version()
+            if stable is None:
+                print(self.__c_fore.RED + 'error: could not find a stable release version' + self.__c_style.RESET_ALL)
+            else:
+                print(stable)
 
     def print_phase_url(self, platform, phase):
         get_driver = GetChromeDriver(platform)
