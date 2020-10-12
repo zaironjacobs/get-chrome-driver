@@ -6,10 +6,9 @@ import re
 from os import path
 
 from get_chromedriver import constants
-from get_chromedriver import __version__
+from app_info import __app_name__
+from app_info import __app_version__
 from get_chromedriver.platforms import Platforms
-
-name = 'get-chromedriver'
 
 beta_release = '86.0.4240.22'
 stable_release = '85.0.4183.87'
@@ -36,7 +35,7 @@ class TestApp:
     # BETA VERSION #
     ################
     def test_latest_beta_release_version(self):
-        out = subprocess.run(args=[name, '--beta-version'],
+        out = subprocess.run(args=[__app_name__, '--beta-version'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -46,7 +45,7 @@ class TestApp:
     # STABLE VERSION #
     ##################
     def test_latest_stable_release_version(self):
-        out = subprocess.run(args=[name, '--stable-version'],
+        out = subprocess.run(args=[__app_name__, '--stable-version'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -61,7 +60,7 @@ class TestApp:
             latest_release_urls = file.read()
         latest_release_urls = latest_release_urls + '\n'
 
-        out = subprocess.run(args=[name, '--latest-urls'],
+        out = subprocess.run(args=[__app_name__, '--latest-urls'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout
@@ -74,7 +73,7 @@ class TestApp:
     ######################
     def test_random_win_release_url(self):
         url = random_release_win_url
-        out = subprocess.run(args=[name, '--release-url', 'win', random_release],
+        out = subprocess.run(args=[__app_name__, '--release-url', 'win', random_release],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -82,7 +81,7 @@ class TestApp:
 
     def test_random_linux_release_url(self):
         url = random_release_linux_url
-        out = subprocess.run(args=[name, '--release-url', 'linux', random_release],
+        out = subprocess.run(args=[__app_name__, '--release-url', 'linux', random_release],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -90,7 +89,7 @@ class TestApp:
 
     def test_random_mac_release_url(self):
         url = random_release_mac_url
-        out = subprocess.run(args=[name, '--release-url', 'mac', random_release],
+        out = subprocess.run(args=[__app_name__, '--release-url', 'mac', random_release],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -101,7 +100,7 @@ class TestApp:
     ####################
     def test_beta_win_release_url(self):
         url = beta_release_win_url
-        out = subprocess.run(args=[name, '--beta-url', 'win'],
+        out = subprocess.run(args=[__app_name__, '--beta-url', 'win'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -109,7 +108,7 @@ class TestApp:
 
     def test_beta_linux_release_url(self):
         url = beta_release_linux_url
-        out = subprocess.run(args=[name, '--beta-url', 'linux'],
+        out = subprocess.run(args=[__app_name__, '--beta-url', 'linux'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -117,7 +116,7 @@ class TestApp:
 
     def test_beta_mac_release_url(self):
         url = beta_release_mac_url
-        out = subprocess.run(args=[name, '--beta-url', 'mac'],
+        out = subprocess.run(args=[__app_name__, '--beta-url', 'mac'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -128,7 +127,7 @@ class TestApp:
     ######################
     def test_stable_win_release_url(self):
         url = stable_release_win_url
-        out = subprocess.run(args=[name, '--stable-url', 'win'],
+        out = subprocess.run(args=[__app_name__, '--stable-url', 'win'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -136,7 +135,7 @@ class TestApp:
 
     def test_stable_linux_release_url(self):
         url = stable_release_linux_url
-        out = subprocess.run(args=[name, '--stable-url', 'linux'],
+        out = subprocess.run(args=[__app_name__, '--stable-url', 'linux'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -144,7 +143,7 @@ class TestApp:
 
     def test_stable_mac_release_url(self):
         url = stable_release_mac_url
-        out = subprocess.run(args=[name, '--stable-url', 'mac'],
+        out = subprocess.run(args=[__app_name__, '--stable-url', 'mac'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -155,7 +154,7 @@ class TestApp:
     ######################################
     def test_download_latest_win_beta_release_no_extract(self):
         release = beta_release
-        subprocess.run(args=[name, '--download-beta', 'win'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-beta', 'win'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
         result = path.exists(file_path)
@@ -163,7 +162,7 @@ class TestApp:
 
     def test_download_latest_linux_beta_release_no_extract(self):
         release = beta_release
-        subprocess.run(args=[name, '--download-beta', 'linux'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-beta', 'linux'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
         result = path.exists(file_path)
@@ -171,7 +170,7 @@ class TestApp:
 
     def test_download_latest_mac_beta_release_no_extract(self):
         release = beta_release
-        subprocess.run(args=[name, '--download-beta', 'mac'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-beta', 'mac'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
         result = path.exists(file_path)
@@ -182,7 +181,7 @@ class TestApp:
     #####################################
     def test_download_latest_win_beta_release_extract(self):
         release = beta_release
-        subprocess.run(args=[name, '--download-beta', 'win', '--extract'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-beta', 'win', '--extract'], stdout=subprocess.PIPE)
         file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
                                + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
         result = path.exists(file_path_extracted)
@@ -190,7 +189,7 @@ class TestApp:
 
     def test_download_latest_linux_beta_release_extract(self):
         release = beta_release
-        subprocess.run(args=[name, '--download-beta', 'linux', '--extract'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-beta', 'linux', '--extract'], stdout=subprocess.PIPE)
         file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
                                + available_platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
         result = path.exists(file_path_extracted)
@@ -198,7 +197,7 @@ class TestApp:
 
     def test_download_latest_mac_beta_release_extract(self):
         release = beta_release
-        subprocess.run(args=[name, '--download-beta', 'mac', '--extract'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-beta', 'mac', '--extract'], stdout=subprocess.PIPE)
         file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
                                + available_platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
         result = path.exists(file_path_extracted)
@@ -209,7 +208,7 @@ class TestApp:
     ########################################
     def test_download_latest_win_stable_release_no_extract(self):
         release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'win'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-stable', 'win'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
         result = path.exists(file_path)
@@ -217,7 +216,7 @@ class TestApp:
 
     def test_download_latest_linux_stable_release_no_extract(self):
         release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'linux'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-stable', 'linux'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
         result = path.exists(file_path)
@@ -225,7 +224,7 @@ class TestApp:
 
     def test_download_latest_mac_stable_release_no_extract(self):
         release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'mac'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-stable', 'mac'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
         result = path.exists(file_path)
@@ -236,7 +235,7 @@ class TestApp:
     #######################################
     def test_download_latest_win_stable_release_extract(self):
         release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'win', '--extract'], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-stable', 'win', '--extract'], stdout=subprocess.PIPE)
         file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
                                + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
         result = path.exists(file_path_extracted)
@@ -247,7 +246,7 @@ class TestApp:
     ########################################
     def test_download_win_release_no_extract(self):
         release = random_release
-        subprocess.run(args=[name, '--download-release', 'win', release], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-release', 'win', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
         result = path.exists(file_path)
@@ -255,7 +254,7 @@ class TestApp:
 
     def test_download_linux_release_no_extract(self):
         release = random_release
-        subprocess.run(args=[name, '--download-release', 'linux', release], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-release', 'linux', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
         result = path.exists(file_path)
@@ -263,7 +262,7 @@ class TestApp:
 
     def test_download_mac_release_no_extract(self):
         release = random_release
-        subprocess.run(args=[name, '--download-release', 'mac', release], stdout=subprocess.PIPE)
+        subprocess.run(args=[__app_name__, '--download-release', 'mac', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
                      + available_platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
         result = path.exists(file_path)
@@ -274,7 +273,7 @@ class TestApp:
     #######################################
     def test_download_win_release_extract(self):
         release = random_release
-        subprocess.run(args=[name, '--download-release', 'win', release, '--extract'],
+        subprocess.run(args=[__app_name__, '--download-release', 'win', release, '--extract'],
                        stdout=subprocess.PIPE)
         file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
                              + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
@@ -283,7 +282,7 @@ class TestApp:
 
     def test_download_linux_release_extract(self):
         release = random_release
-        subprocess.run(args=[name, '--download-release', 'linux', release, '--extract'],
+        subprocess.run(args=[__app_name__, '--download-release', 'linux', release, '--extract'],
                        stdout=subprocess.PIPE)
         file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
                              + available_platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
@@ -292,7 +291,7 @@ class TestApp:
 
     def test_download_mac_release_extract(self):
         release = random_release
-        subprocess.run(args=[name, '--download-release', 'mac', release, '--extract'],
+        subprocess.run(args=[__app_name__, '--download-release', 'mac', release, '--extract'],
                        stdout=subprocess.PIPE)
         file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
                              + available_platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
@@ -303,11 +302,11 @@ class TestApp:
     # VERSION #
     ###########
     def test_version(self):
-        out = subprocess.run(args=[name, '--version'],
+        out = subprocess.run(args=[__app_name__, '--version'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
-        assert 'v' + __version__ == str(actual)
+        assert 'v' + __app_version__ == str(actual)
 
     ###########
     # CLEANUP #

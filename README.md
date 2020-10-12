@@ -30,23 +30,23 @@ from get_chromedriver import GetChromeDriver
 # Platforms to choose from: 'win', 'linux' or 'mac'
 get_driver = GetChromeDriver(platform='win')
 
-# Print the version of the latest stable release
+# Print the latest stable release version
 print(get_driver.latest_stable_release_version())
 
-# Print the version of the latest beta release
+# Print the latest beta release version
 print(get_driver.latest_beta_release_version())
 
-# Print the url of the latest stable release
+# Print the latest stable release download link
 print(get_driver.latest_stable_release_url())
 
-# Print the url of the latest beta release
+# Print the latest beta release download link 
 print(get_driver.latest_beta_release_url())
 
-# Print the url of a specific release
+# Print the download link of a specific release
 print(get_driver.release_url('84.0.4147.30'))
 
 # Download the latest stable driver release
-# Optional: "extract" (boolean) can be passed as an argument to extract the zip file
+# Optional: use extract=True to extract the zip file
 get_driver.download_latest_stable_release(extract=True)
 
 # Download the latest beta driver release
@@ -88,7 +88,7 @@ Download a specific release for a specific platform and extract the zip file:
 $ get-chromedriver --download-release mac 84.0.4147.30 --extract
 ```
 
-#### Downloaded drivers can be found at:
+#### Downloaded drivers will be downloaded by default at:
 
 *`<current directory>/<get-chromedriver_downloads>/<release version>/<platform>/<chromedriver.zip>`*
 

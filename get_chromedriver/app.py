@@ -4,15 +4,12 @@ from signal import signal, SIGINT
 
 import colorama
 
-from get_chromedriver import __version__
+from app_info import __app_version__
 from get_chromedriver import arguments
 from get_chromedriver.get_driver import GetChromeDriver
 from get_chromedriver.platforms import Platforms
 from get_chromedriver.phase import Phase
 from get_chromedriver.exceptions import GetChromeDriverError
-
-platforms = Platforms()
-phases = Phase()
 
 
 def main():
@@ -34,9 +31,12 @@ class App:
         self.__c_style = colorama.Style
         colorama.init()
 
+        self.__platforms = Platforms()
+        self.__phases = Phase()
+
         self.__msg_download_finished = 'download finished'
         self.__msg_required_choose_platform = (self.__c_fore.RED + 'required: choose one of the following platforms: '
-                                               + str(platforms.list) + self.__c_style.RESET_ALL)
+                                               + str(self.__platforms.list) + self.__c_style.RESET_ALL)
         self.__msg_required_add_release = (self.__c_fore.RED + 'required: add a release version'
                                            + self.__c_style.RESET_ALL)
         self.__msg_optional_add_extract = 'optional: add --extract to extract the zip file'
@@ -74,7 +74,7 @@ class App:
         ################
         self.__args_beta_version = self.__args.beta_version
         if self.__arg_passed(self.__args_beta_version):
-            self.print_phase_version(phases.beta)
+            self.print_phase_version(self.__phases.beta)
             sys.exit(0)
 
         ##################
@@ -82,7 +82,7 @@ class App:
         ##################
         self.__args_stable_version = self.__args.stable_version
         if self.__arg_passed(self.__args_stable_version):
-            self.print_phase_version(phases.stable)
+            self.print_phase_version(self.__phases.stable)
             sys.exit(0)
 
         ###############
@@ -109,22 +109,22 @@ class App:
 
             platform = self.__args_release_url[0]
             release = self.__args_release_url[1]
-            if platforms.win == platform:
+            if self.__platforms.win == platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_release_url(platforms.win, release)
+                    self.print_release_url(self.__platforms.win, release)
                 except Exception:
                     print(self.__msg_release_url_error)
-            elif platforms.linux == platform:
+            elif self.__platforms.linux == platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_release_url(platforms.linux, release)
+                    self.print_release_url(self.__platforms.linux, release)
                 except Exception:
                     print(self.__msg_release_url_error)
-            elif platforms.mac == platform:
+            elif self.__platforms.mac == platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_release_url(platforms.mac, release)
+                    self.print_release_url(self.__platforms.mac, release)
                 except Exception:
                     print(self.__msg_release_url_error)
             else:
@@ -144,22 +144,22 @@ class App:
                 sys.exit(0)
 
             platform = self.__args_beta_url[0]
-            if platforms.win == platform:
+            if self.__platforms.win == platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_phase_url(platforms.win, phases.beta)
+                    self.print_phase_url(self.__platforms.win, self.__phases.beta)
                 except Exception:
                     print(self.__msg_release_url_error)
-            elif platforms.linux == platform:
+            elif self.__platforms.linux == platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_phase_url(platforms.linux, phases.beta)
+                    self.print_phase_url(self.__platforms.linux, self.__phases.beta)
                 except Exception:
                     print(self.__msg_release_url_error)
-            elif platforms.mac == platform:
+            elif self.__platforms.mac == platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_phase_url(platforms.mac, phases.beta)
+                    self.print_phase_url(self.__platforms.mac, self.__phases.beta)
                 except Exception:
                     print(self.__msg_release_url_error)
             else:
@@ -179,22 +179,22 @@ class App:
                 sys.exit(0)
 
             self.__platform = self.__args_stable_url[0]
-            if platforms.win == self.__platform:
+            if self.__platforms.win == self.__platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_phase_url(platforms.win, phases.stable)
+                    self.print_phase_url(self.__platforms.win, self.__phases.stable)
                 except Exception:
                     print(self.__msg_release_url_error)
-            elif platforms.linux == self.__platform:
+            elif self.__platforms.linux == self.__platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_phase_url(platforms.linux, phases.stable)
+                    self.print_phase_url(self.__platforms.linux, self.__phases.stable)
                 except Exception:
                     print(self.__msg_release_url_error)
-            elif platforms.mac == self.__platform:
+            elif self.__platforms.mac == self.__platform:
                 # noinspection PyBroadException
                 try:
-                    self.print_phase_url(platforms.mac, phases.stable)
+                    self.print_phase_url(self.__platforms.mac, self.__phases.stable)
                 except Exception:
                     print(self.__msg_release_url_error)
             else:
@@ -215,10 +215,10 @@ class App:
             if self.__arg_passed(self.__args_extract):
                 extract = True
             platform = self.__args_download_beta[0]
-            if platform in platforms.list:
+            if platform in self.__platforms.list:
                 # noinspection PyBroadException
                 try:
-                    self.download_latest_phase_release(platform, phases.beta, extract)
+                    self.download_latest_phase_release(platform, self.__phases.beta, extract)
                     print(self.__msg_download_finished)
                 except GetChromeDriverError:
                     print(self.__msg_download_error)
@@ -241,10 +241,10 @@ class App:
             if self.__arg_passed(self.__args_extract):
                 extract = True
             platform = self.__args_download_stable[0]
-            if platform in platforms.list:
+            if platform in self.__platforms.list:
                 # noinspection PyBroadException
                 try:
-                    self.download_latest_phase_release(platform, phases.stable, extract)
+                    self.download_latest_phase_release(platform, self.__phases.stable, extract)
                     print(self.__msg_download_finished)
                 except GetChromeDriverError:
                     print(self.__msg_download_error)
@@ -278,7 +278,7 @@ class App:
                 sys.exit(0)
             else:
                 platform = self.__args_download_release[0]
-                if platform in platforms.list:
+                if platform in self.__platforms.list:
                     release = self.__args_download_release[1]
                     # noinspection PyBroadException
                     try:
@@ -296,7 +296,7 @@ class App:
         ###########
         self.__args_version = self.__args.version
         if self.__arg_passed(self.__args_version):
-            print('v' + __version__)
+            print('v' + __app_version__)
             sys.exit(0)
 
     def __arg_passed(self, arg):
@@ -308,53 +308,53 @@ class App:
         latest_beta = 'Latest beta release for '
         latest_stable = 'Latest stable release for '
 
-        get_driver = GetChromeDriver(platforms.win)
+        get_driver = GetChromeDriver(self.__platforms.win)
         print(latest_beta + 'Windows:')
         print(get_driver.latest_beta_release_url())
 
         print('')
 
-        get_driver = GetChromeDriver(platforms.linux)
+        get_driver = GetChromeDriver(self.__platforms.linux)
         print(latest_beta + 'Linux:')
         print(get_driver.latest_beta_release_url())
 
         print('')
 
-        get_driver = GetChromeDriver(platforms.mac)
+        get_driver = GetChromeDriver(self.__platforms.mac)
         print(latest_beta + 'Mac:')
         print(get_driver.latest_beta_release_url())
 
         print('')
 
-        get_driver = GetChromeDriver(platforms.win)
+        get_driver = GetChromeDriver(self.__platforms.win)
         print(latest_stable + 'Windows:')
         print(get_driver.latest_stable_release_url())
 
         print('')
 
-        get_driver = GetChromeDriver(platforms.linux)
+        get_driver = GetChromeDriver(self.__platforms.linux)
         print(latest_stable + 'Linux:')
         print(get_driver.latest_stable_release_url())
 
         print('')
 
-        get_driver = GetChromeDriver(platforms.mac)
+        get_driver = GetChromeDriver(self.__platforms.mac)
         print(latest_stable + 'Mac:')
         print(get_driver.latest_stable_release_url())
 
     def print_phase_version(self, phase):
-        if phase == phases.beta:
-            get_driver = GetChromeDriver(platforms.win)
+        if phase == self.__phases.beta:
+            get_driver = GetChromeDriver(self.__platforms.win)
             print(get_driver.latest_beta_release_version())
-        elif phase == phases.stable:
-            get_driver = GetChromeDriver(platforms.win)
+        elif phase == self.__phases.stable:
+            get_driver = GetChromeDriver(self.__platforms.win)
             print(get_driver.latest_stable_release_version())
 
     def print_phase_url(self, platform, phase):
         get_driver = GetChromeDriver(platform)
-        if phase == phases.beta:
+        if phase == self.__phases.beta:
             print(get_driver.latest_beta_release_url())
-        elif phase == phases.stable:
+        elif phase == self.__phases.stable:
             print(get_driver.latest_stable_release_url())
 
     def print_release_url(self, platform, release):
@@ -362,10 +362,10 @@ class App:
         print(get_driver.release_url(release))
 
     def download_latest_phase_release(self, platform, phase, extract):
-        if phase == phases.beta:
+        if phase == self.__phases.beta:
             get_driver = GetChromeDriver(platform)
             get_driver.download_latest_beta_release(extract=extract)
-        elif phase == phases.stable:
+        elif phase == self.__phases.stable:
             get_driver = GetChromeDriver(platform)
             get_driver.download_latest_stable_release(extract=extract)
 

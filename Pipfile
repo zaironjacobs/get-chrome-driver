@@ -10,6 +10,7 @@ pytest = "*"
 bs4 = "*"
 requests = "*"
 colorama = "*"
+urllib3 = "*"
 
 [requires]
 python_version = "3.8"
