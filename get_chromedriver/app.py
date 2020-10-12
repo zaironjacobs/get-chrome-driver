@@ -218,8 +218,13 @@ class App:
             if platform in self.__platforms.list:
                 # noinspection PyBroadException
                 try:
-                    self.download_latest_phase_release(platform, self.__phases.beta, extract)
-                    print(self.__msg_download_finished)
+                    if not self.download_latest_phase_release(platform, self.__phases.beta, extract):
+                        print(self.__msg_download_error)
+                        print(self.__c_fore.RED
+                              + 'there might be no beta release at the moment'
+                              + self.__c_style.RESET_ALL)
+                    else:
+                        print(self.__msg_download_finished)
                 except GetChromeDriverError:
                     print(self.__msg_download_error)
             else:
@@ -244,8 +249,10 @@ class App:
             if platform in self.__platforms.list:
                 # noinspection PyBroadException
                 try:
-                    self.download_latest_phase_release(platform, self.__phases.stable, extract)
-                    print(self.__msg_download_finished)
+                    if not self.download_latest_phase_release(platform, self.__phases.stable, extract):
+                        print(self.__msg_download_error)
+                    else:
+                        print(self.__msg_download_finished)
                 except GetChromeDriverError:
                     print(self.__msg_download_error)
             else:
@@ -353,10 +360,14 @@ class App:
     def download_latest_phase_release(self, platform, phase, extract):
         if phase == self.__phases.beta:
             get_driver = GetChromeDriver(platform)
-            get_driver.download_latest_beta_release(extract=extract)
+            if get_driver.download_latest_beta_release(extract=extract):
+                return True
         elif phase == self.__phases.stable:
             get_driver = GetChromeDriver(platform)
-            get_driver.download_latest_stable_release(extract=extract)
+            if get_driver.download_latest_stable_release(extract=extract):
+                return True
+
+        return False
 
     def download_release(self, platform, release, extract):
         get_driver = GetChromeDriver(platform)

@@ -32,7 +32,7 @@ class GetChromeDriver:
                 try:
                     release = li.a['href'].split('path=')[-1:][0][:-1]
                 except TypeError:
-                    break
+                    return
                 self.__check_release(release)
                 return release
 
@@ -48,7 +48,7 @@ class GetChromeDriver:
                 try:
                     release = li.a['href'].split('path=')[-1:][0][:-1]
                 except TypeError:
-                    break
+                    return
                 self.__check_release(release)
                 return release
 
@@ -81,12 +81,22 @@ class GetChromeDriver:
     def download_latest_stable_release(self, output_path=None, extract=False):
         """ Download the latest stable chromedriver release """
 
-        self.download_release(self.latest_stable_release_version(), output_path, extract)
+        release = self.latest_stable_release_version()
+        if release is None:
+            return False
+
+        self.download_release(release, output_path, extract)
+        return True
 
     def download_latest_beta_release(self, output_path=None, extract=False):
         """ Download the latest stable chromedriver release """
 
-        self.download_release(self.latest_beta_release_version(), output_path, extract)
+        release = self.latest_beta_release_version()
+        if release is None:
+            return False
+
+        self.download_release(release, output_path, extract)
+        return True
 
     def download_release(self, release, output_path=None, extract=False):
         """ Download a chromedriver release """
