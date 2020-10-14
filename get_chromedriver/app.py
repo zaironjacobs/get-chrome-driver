@@ -4,7 +4,7 @@ from signal import signal, SIGINT
 
 import colorama
 
-from app_info import __app_version__
+from get_chromedriver import __version__
 from get_chromedriver import arguments
 from get_chromedriver.get_driver import GetChromeDriver
 from get_chromedriver.platforms import Platforms
@@ -303,7 +303,7 @@ class App:
         ###########
         self.__args_version = self.__args.version
         if self.__arg_passed(self.__args_version):
-            print('v' + __app_version__)
+            print('v' + __version__)
             sys.exit(0)
 
     def __arg_passed(self, arg):
