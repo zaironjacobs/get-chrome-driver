@@ -1,4 +1,4 @@
-from get_chromedriver.platforms import Platforms
+from .platforms import Platforms
 
 platforms = Platforms()
 

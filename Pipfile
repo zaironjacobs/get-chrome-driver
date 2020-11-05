@@ -11,6 +11,7 @@ bs4 = "*"
 requests = "*"
 colorama = "*"
 urllib3 = "*"
+python-decouple = "*"
 
 [requires]
 python_version = "3.8"

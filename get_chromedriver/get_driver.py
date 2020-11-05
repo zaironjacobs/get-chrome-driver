@@ -5,13 +5,13 @@ from bs4 import BeautifulSoup
 from requests.exceptions import RequestException
 from requests.exceptions import HTTPError
 
-from get_chromedriver import constants
-from get_chromedriver.platforms import Platforms
-from get_chromedriver import retriever
-from get_chromedriver.exceptions import GetChromeDriverError
-from get_chromedriver.exceptions import UnknownPlatformError
-from get_chromedriver.exceptions import ReleaseUrlError
-from get_chromedriver.exceptions import UnknownReleaseError
+from . import constants
+from .platforms import Platforms
+from . import retriever
+from .exceptions import GetChromeDriverError
+from .exceptions import UnknownPlatformError
+from .exceptions import ReleaseUrlError
+from .exceptions import UnknownReleaseError
 
 
 class GetChromeDriver:
@@ -25,7 +25,7 @@ class GetChromeDriver:
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.UL_RELEASES)
+        ul = soup.select_one(constants.UL_RELEASES_SELECTOR)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
             if text[:len(constants.LATEST_STABLE_RELEASE_STR)].lower() == constants.LATEST_STABLE_RELEASE_STR.lower():
@@ -41,7 +41,7 @@ class GetChromeDriver:
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.UL_RELEASES)
+        ul = soup.select_one(constants.UL_RELEASES_SELECTOR)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
             if text[:len(constants.LATEST_BETA_RELEASE_STR)].lower() == constants.LATEST_BETA_RELEASE_STR.lower():

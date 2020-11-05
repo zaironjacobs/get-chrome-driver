@@ -3,25 +3,27 @@ import os
 import shutil
 import subprocess
 from os import path
-import re
 
 from bs4 import BeautifulSoup
 import requests
+from decouple import config
 
-from get_chromedriver import constants
-from get_chromedriver import __version__
-from get_chromedriver.platforms import Platforms
+from .. import constants
+from .. import __version__
+from ..platforms import Platforms
 
 name = 'get-chromedriver'
 
-stable_release = '86.0.4240.22'
-random_release = '80.0.3987.106'
-random_release_win_url = 'https://chromedriver.storage.googleapis.com/80.0.3987.106/chromedriver_win32.zip'
-random_release_linux_url = 'https://chromedriver.storage.googleapis.com/80.0.3987.106/chromedriver_linux64.zip'
-random_release_mac_url = 'https://chromedriver.storage.googleapis.com/80.0.3987.106/chromedriver_mac64.zip'
-stable_release_win_url = 'https://chromedriver.storage.googleapis.com/86.0.4240.22/chromedriver_win32.zip'
-stable_release_linux_url = 'https://chromedriver.storage.googleapis.com/86.0.4240.22/chromedriver_linux64.zip'
-stable_release_mac_url = 'https://chromedriver.storage.googleapis.com/86.0.4240.22/chromedriver_mac64.zip'
+stable_release = config('STABLE_RELEASE')
+random_release = config('RANDOM_RELEASE')
+
+stable_release_win_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_win32.zip'
+stable_release_linux_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_linux64.zip'
+stable_release_mac_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_mac64.zip'
+
+random_release_win_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_win32.zip'
+random_release_linux_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_linux64.zip'
+random_release_mac_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_mac64.zip'
 
 available_platforms = Platforms()
 
@@ -39,7 +41,7 @@ class TestApp:
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.UL_RELEASES)
+        ul = soup.select_one(constants.UL_RELEASES_SELECTOR)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
             if text[:len(constants.LATEST_STABLE_RELEASE_STR)].lower() == constants.LATEST_STABLE_RELEASE_STR.lower():
@@ -56,7 +58,7 @@ class TestApp:
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.UL_RELEASES)
+        ul = soup.select_one(constants.UL_RELEASES_SELECTOR)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
             if text[:len(constants.LATEST_BETA_RELEASE_STR)].lower() == constants.LATEST_BETA_RELEASE_STR.lower():
@@ -74,23 +76,6 @@ class TestApp:
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
         assert stable_release == str(actual)
-
-    ############################
-    # LATEST RELEASE URLS #
-    ############################
-    def test_latest_release_urls(self):
-        # Update on new beta and stable release
-        with open('latest_stable_urls', 'r') as file:
-            latest_release_urls = file.read()
-        latest_release_urls = latest_release_urls + '\n'
-
-        out = subprocess.run(args=[name, '--latest-urls'],
-                             universal_newlines=True,
-                             stdout=subprocess.PIPE)
-        actual = out.stdout
-        ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
-        actual = ansi_escape.sub('', actual)
-        assert latest_release_urls == str(actual)
 
     ######################
     # RANDOM RELEASE URL #
