@@ -14,4 +14,4 @@ urllib3 = "*"
 python-decouple = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3"
