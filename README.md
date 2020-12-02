@@ -45,7 +45,7 @@ print(get_driver.release_url('84.0.4147.30'))
 # Optional: use extract=True to extract the zip file
 get_driver.download_latest_stable_release(output_path='webdriver', extract=True)
 
-# Download the latest stable driver release
+# Download a specific driver release
 # Optional: use output_path='' to specify where to download the driver
 # Optional: use extract=True to extract the zip file
 get_driver.download_release('84.0.4147.30', extract=True)
