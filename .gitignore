@@ -148,6 +148,6 @@ dmypy.json
 cython_debug/
 
 # Downloads
-get-chromedriver_downloads/
+chrome_driver_downloads/
 
 

@@ -12,7 +12,7 @@ from .. import constants
 from .. import __version__
 from ..platforms import Platforms
 
-name = 'get-chromedriver'
+name = 'get-chrome-driver'
 
 platforms = Platforms()
 
