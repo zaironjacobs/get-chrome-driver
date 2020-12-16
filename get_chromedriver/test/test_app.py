@@ -70,7 +70,7 @@ class TestApp:
     ##################
     # STABLE VERSION #
     ##################
-    def test_latest_stable_release_version(self):
+    def test_stable_release_version(self):
         out = subprocess.run(args=[name, '--stable-version'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
@@ -134,7 +134,7 @@ class TestApp:
     ########################################
     # DOWNLOAD STABLE RELEASE - NO EXTRACT #
     ########################################
-    def test_download_latest_win_stable_release_no_extract(self):
+    def test_download_stable_win_release_no_extract(self):
         release = stable_release
         subprocess.run(args=[name, '--download-stable', 'win'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
@@ -142,7 +142,7 @@ class TestApp:
         result = path.exists(file_path)
         assert result
 
-    def test_download_latest_linux_stable_release_no_extract(self):
+    def test_download_stable_linux_release_no_extract(self):
         release = stable_release
         subprocess.run(args=[name, '--download-stable', 'linux'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
@@ -150,7 +150,7 @@ class TestApp:
         result = path.exists(file_path)
         assert result
 
-    def test_download_latest_mac_stable_release_no_extract(self):
+    def test_download_stable_mac_release_no_extract(self):
         release = stable_release
         subprocess.run(args=[name, '--download-stable', 'mac'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
@@ -161,9 +161,25 @@ class TestApp:
     #######################################
     # DOWNLOAD STABLE RELEASE - EXTRACTED #
     #######################################
-    def test_download_latest_win_stable_release_extract(self):
+    def test_download_stable_win_release_extract(self):
         release = stable_release
         subprocess.run(args=[name, '--download-stable', 'win', '--extract'], stdout=subprocess.PIPE)
+        file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
+                               + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
+        result = path.exists(file_path_extracted)
+        assert result
+
+    def test_download_stable_linux_release_extract(self):
+        release = stable_release
+        subprocess.run(args=[name, '--download-stable', 'linux', '--extract'], stdout=subprocess.PIPE)
+        file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
+                               + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
+        result = path.exists(file_path_extracted)
+        assert result
+
+    def test_download_stable_mac_release_extract(self):
+        release = stable_release
+        subprocess.run(args=[name, '--download-stable', 'mac', '--extract'], stdout=subprocess.PIPE)
         file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
                                + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
         result = path.exists(file_path_extracted)
@@ -172,7 +188,7 @@ class TestApp:
     ########################################
     # DOWNLOAD RANDOM RELEASE - NO EXTRACT #
     ########################################
-    def test_download_win_release_no_extract(self):
+    def test_download_random_win_release_no_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', 'win', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
@@ -180,7 +196,7 @@ class TestApp:
         result = path.exists(file_path)
         assert result
 
-    def test_download_linux_release_no_extract(self):
+    def test_download_random_linux_release_no_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', 'linux', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
@@ -188,7 +204,7 @@ class TestApp:
         result = path.exists(file_path)
         assert result
 
-    def test_download_mac_release_no_extract(self):
+    def test_download_random_mac_release_no_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', 'mac', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
@@ -199,7 +215,7 @@ class TestApp:
     #######################################
     # DOWNLOAD RANDOM RELEASE - EXTRACTED #
     #######################################
-    def test_download_win_release_extract(self):
+    def test_download_random_win_release_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', 'win', release, '--extract'],
                        stdout=subprocess.PIPE)
@@ -208,7 +224,7 @@ class TestApp:
         result = path.exists(file_path_extract)
         assert result
 
-    def test_download_linux_release_extract(self):
+    def test_download_random_linux_release_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', 'linux', release, '--extract'],
                        stdout=subprocess.PIPE)
@@ -217,7 +233,7 @@ class TestApp:
         result = path.exists(file_path_extract)
         assert result
 
-    def test_download_mac_release_extract(self):
+    def test_download_random_mac_release_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', 'mac', release, '--extract'],
                        stdout=subprocess.PIPE)
