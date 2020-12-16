@@ -8,6 +8,7 @@ from requests.exceptions import HTTPError
 from . import constants
 from .platforms import Platforms
 from . import retriever
+from .phase import Phase
 from .exceptions import GetChromeDriverError
 from .exceptions import UnknownPlatformError
 from .exceptions import ReleaseUrlError
@@ -19,32 +20,33 @@ class GetChromeDriver:
     def __init__(self, platform):
         self.__available_platforms = Platforms()
         self.__current_set_platform = self.__check_platform(platform)
+        self.__phases = Phase()
 
     def latest_stable_release_version(self):
         """ Return the latest stable release version """
 
-        result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
-        soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.UL_RELEASES_SELECTOR)
-        for li in ul:
-            text = li.text.replace(u'\u00A0', ' ')
-            if text[:len(constants.LATEST_STABLE_RELEASE_STR)].lower() == constants.LATEST_STABLE_RELEASE_STR.lower():
-                try:
-                    release = li.a['href'].split('path=')[-1:][0][:-1]
-                except TypeError:
-                    return
-                self.__check_release(release)
-                return release
+        return self.__latest_release_version('stable')
 
     def latest_beta_release_version(self):
         """ Return the latest beta release version """
 
+        return self.__latest_release_version('beta')
+
+    def __latest_release_version(self, phase):
+        """ Return the latest stable or latest beta release version """
+
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
         ul = soup.select_one(constants.UL_RELEASES_SELECTOR)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
-            if text[:len(constants.LATEST_BETA_RELEASE_STR)].lower() == constants.LATEST_BETA_RELEASE_STR.lower():
+
+            if self.__phases.stable == phase:
+                release_str = constants.LATEST_STABLE_RELEASE_STR
+            else:
+                release_str = constants.LATEST_BETA_RELEASE_STR
+
+            if text[:len(release_str)].lower() == release_str.lower():
                 try:
                     release = li.a['href'].split('path=')[-1:][0][:-1]
                 except TypeError:
@@ -55,12 +57,12 @@ class GetChromeDriver:
     def latest_stable_release_url(self):
         """ Return the latest stable release url """
 
-        return self.release_url(self.latest_stable_release_version())
+        return self.release_url(self.__latest_release_version(self.__phases.stable))
 
     def latest_beta_release_url(self):
         """ Return the latest beta release url """
 
-        return self.release_url(self.latest_beta_release_version())
+        return self.release_url(self.__latest_release_version(self.__phases.beta))
 
     def release_url(self, release):
         """ Return the release download url """
@@ -81,7 +83,7 @@ class GetChromeDriver:
     def download_latest_stable_release(self, output_path=None, extract=False):
         """ Download the latest stable chromedriver release """
 
-        release = self.latest_stable_release_version()
+        release = self.__latest_release_version(self.__phases.stable)
         if release is None:
             return False
 
@@ -91,7 +93,7 @@ class GetChromeDriver:
     def download_latest_beta_release(self, output_path=None, extract=False):
         """ Download the latest stable chromedriver release """
 
-        release = self.latest_beta_release_version()
+        release = self.__latest_release_version(self.__phases.beta)
         if release is None:
             return False
 

@@ -14,6 +14,8 @@ from ..platforms import Platforms
 
 name = 'get-chromedriver'
 
+platforms = Platforms()
+
 stable_release = config('STABLE_RELEASE')
 random_release = config('RANDOM_RELEASE')
 
@@ -25,17 +27,15 @@ random_release_win_url = 'https://chromedriver.storage.googleapis.com/' + random
 random_release_linux_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_linux64.zip'
 random_release_mac_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_mac64.zip'
 
-available_platforms = Platforms()
-
 # Change to the current test directory
 os.chdir(os.path.dirname(__file__))
 
 
 class TestApp:
 
-    #################################
-    # LI TEXT LATEST STABLE RELEASE #
-    #################################
+    ###################################
+    # LI TEXT "LATEST STABLE RELEASE" #
+    ###################################
     def test_text_match_latest_stable(self):
         match_found = False
 
@@ -50,9 +50,9 @@ class TestApp:
 
         assert match_found is True
 
-    ###############################
-    # LI TEXT LATEST BETA RELEASE #
-    ###############################
+    #################################
+    # LI TEXT "LATEST BETA RELEASE" #
+    #################################
     def test_text_match_latest_beta(self):
         match_found = False
 
@@ -138,7 +138,7 @@ class TestApp:
         release = stable_release
         subprocess.run(args=[name, '--download-stable', 'win'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
+                     + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
         result = path.exists(file_path)
         assert result
 
@@ -146,7 +146,7 @@ class TestApp:
         release = stable_release
         subprocess.run(args=[name, '--download-stable', 'linux'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + available_platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
+                     + platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
         result = path.exists(file_path)
         assert result
 
@@ -154,7 +154,7 @@ class TestApp:
         release = stable_release
         subprocess.run(args=[name, '--download-stable', 'mac'], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + available_platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
+                     + platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
         result = path.exists(file_path)
         assert result
 
@@ -165,7 +165,7 @@ class TestApp:
         release = stable_release
         subprocess.run(args=[name, '--download-stable', 'win', '--extract'], stdout=subprocess.PIPE)
         file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                               + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
+                               + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
         result = path.exists(file_path_extracted)
         assert result
 
@@ -176,7 +176,7 @@ class TestApp:
         release = random_release
         subprocess.run(args=[name, '--download-release', 'win', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
+                     + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
         result = path.exists(file_path)
         assert result
 
@@ -184,7 +184,7 @@ class TestApp:
         release = random_release
         subprocess.run(args=[name, '--download-release', 'linux', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + available_platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
+                     + platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
         result = path.exists(file_path)
         assert result
 
@@ -192,7 +192,7 @@ class TestApp:
         release = random_release
         subprocess.run(args=[name, '--download-release', 'mac', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + available_platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
+                     + platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
         result = path.exists(file_path)
         assert result
 
@@ -204,7 +204,7 @@ class TestApp:
         subprocess.run(args=[name, '--download-release', 'win', release, '--extract'],
                        stdout=subprocess.PIPE)
         file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                             + available_platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
+                             + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
         result = path.exists(file_path_extract)
         assert result
 
@@ -213,7 +213,7 @@ class TestApp:
         subprocess.run(args=[name, '--download-release', 'linux', release, '--extract'],
                        stdout=subprocess.PIPE)
         file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                             + available_platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
+                             + platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
         result = path.exists(file_path_extract)
         assert result
 
@@ -222,7 +222,7 @@ class TestApp:
         subprocess.run(args=[name, '--download-release', 'mac', release, '--extract'],
                        stdout=subprocess.PIPE)
         file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                             + available_platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
+                             + platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
         result = path.exists(file_path_extract)
         assert result
 

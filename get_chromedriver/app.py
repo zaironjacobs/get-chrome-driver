@@ -375,4 +375,3 @@ class App:
     def download_release(self, platform, release, extract):
         get_driver = GetChromeDriver(platform)
         get_driver.download_release(release, extract=extract)
-
