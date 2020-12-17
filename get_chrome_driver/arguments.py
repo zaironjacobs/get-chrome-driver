@@ -36,7 +36,7 @@ args_options = [
 
 
 def print_help():
-    print('usage: ' + 'get-chromedriver' + ' [options]')
+    print('usage: ' + 'get-chrome-driver' + ' [options]')
     print('')
     print('options: ')
     for i, argument in enumerate(args_options):
