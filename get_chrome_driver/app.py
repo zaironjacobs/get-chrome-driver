@@ -9,8 +9,8 @@ from . import arguments
 from .get_driver import GetChromeDriver
 from .platforms import Platforms
 from .phase import Phase
-from .exceptions import ReleaseVersionError
 from .exceptions import ReleaseUrlError
+from .exceptions import UnknownReleaseError
 from .exceptions import DownloadError
 
 
@@ -321,7 +321,7 @@ class App:
         print(latest_stable_release_for_str + 'Windows:')
         try:
             print(get_driver.stable_release_url())
-        except ReleaseUrlError:
+        except (ReleaseUrlError, UnknownReleaseError):
             print('not found')
         print('')
 
@@ -329,7 +329,7 @@ class App:
         print(latest_stable_release_for_str + 'Linux:')
         try:
             print(get_driver.stable_release_url())
-        except ReleaseUrlError:
+        except (ReleaseUrlError, UnknownReleaseError):
             print('not found')
         print('')
 
@@ -337,7 +337,7 @@ class App:
         print(latest_stable_release_for_str + 'Mac:')
         try:
             print(get_driver.stable_release_url())
-        except ReleaseUrlError:
+        except (ReleaseUrlError, UnknownReleaseError):
             print('not found')
 
     def print_phase_version(self, phase):
@@ -345,14 +345,14 @@ class App:
             get_driver = GetChromeDriver(self.__platforms.win)
             try:
                 print(get_driver.beta_release_version())
-            except ReleaseVersionError:
+            except UnknownReleaseError:
                 print(self.__c_fore.RED + 'error: could not find a beta release version' + self.__c_style.RESET_ALL)
 
         elif phase == self.__phases.stable:
             get_driver = GetChromeDriver(self.__platforms.win)
             try:
                 print(get_driver.stable_release_version())
-            except ReleaseVersionError:
+            except UnknownReleaseError:
                 print(self.__c_fore.RED + 'error: could not find a stable release version' + self.__c_style.RESET_ALL)
 
         else:
@@ -363,19 +363,19 @@ class App:
         if phase == self.__phases.beta:
             try:
                 print(get_driver.beta_release_url())
-            except ReleaseUrlError:
+            except (ReleaseUrlError, UnknownReleaseError):
                 print('release not found')
         elif phase == self.__phases.stable:
             try:
                 print(get_driver.stable_release_url())
-            except ReleaseUrlError:
+            except (ReleaseUrlError, UnknownReleaseError):
                 print('release not found')
 
     def print_release_url(self, platform, release):
         get_driver = GetChromeDriver(platform)
         try:
             print(get_driver.release_url(release))
-        except ReleaseUrlError:
+        except (ReleaseUrlError, UnknownReleaseError):
             print('release not found')
 
     def download_phase_release(self, platform, phase, extract):

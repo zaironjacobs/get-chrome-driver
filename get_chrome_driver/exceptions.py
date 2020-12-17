@@ -2,10 +2,6 @@ class GetChromeDriverError(Exception):
     pass
 
 
-class ReleaseVersionError(GetChromeDriverError):
-    pass
-
-
 class ReleaseUrlError(GetChromeDriverError):
     pass
 

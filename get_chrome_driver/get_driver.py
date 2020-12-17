@@ -9,10 +9,8 @@ from . import constants
 from .platforms import Platforms
 from . import retriever
 from .phase import Phase
-from .exceptions import GetChromeDriverError
 from .exceptions import UnknownPlatformError
 from .exceptions import ReleaseUrlError
-from .exceptions import ReleaseVersionError
 from .exceptions import UnknownReleaseError
 from .exceptions import DownloadError
 
@@ -51,7 +49,7 @@ class GetChromeDriver:
                 try:
                     release = li.a['href'].split('path=')[-1:][0][:-1]
                 except TypeError:
-                    raise ReleaseVersionError('error: could not find release version')
+                    raise UnknownReleaseError('error: could not find release version')
                 else:
                     self.__check_release(release)
                     return release
