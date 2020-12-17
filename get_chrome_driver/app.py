@@ -88,12 +88,12 @@ class App:
             self.print_phase_version(self.__phases.stable)
             sys.exit(0)
 
-        ###############
-        # LATEST URLS #
-        ###############
+        ########
+        # URLS #
+        ########
         self.__arg_latest_urls = self.__args.latest_urls
         if self.__arg_passed(self.__arg_latest_urls):
-            self.print_latest_urls()
+            self.print_urls()
             sys.exit(0)
 
         ###############
@@ -217,22 +217,20 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
+
             platform = self.__arg_download_beta[0]
             if platform in self.__platforms.list:
                 # noinspection PyBroadException
                 try:
-                    if not self.download_latest_phase_release(platform, self.__phases.beta, extract):
-                        print(self.__msg_download_error)
-                        print(self.__c_fore.RED
-                              + 'there might be no beta release at the moment'
-                              + self.__c_style.RESET_ALL)
-                    else:
-                        print(self.__msg_download_finished)
+                    self.download_phase_release(platform, self.__phases.beta, extract)
+                    print(self.__msg_download_finished)
                 except GetChromeDriverError:
                     print(self.__msg_download_error)
+                    print(self.__c_fore.RED + 'there is no beta release at the moment' + self.__c_style.RESET_ALL)
             else:
                 print(self.__msg_required_choose_platform)
                 print(self.__msg_optional_add_extract)
+
             sys.exit(0)
 
         ###################
@@ -248,19 +246,19 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
+
             platform = self.__arg_download_stable[0]
             if platform in self.__platforms.list:
                 # noinspection PyBroadException
                 try:
-                    if not self.download_latest_phase_release(platform, self.__phases.stable, extract):
-                        print(self.__msg_download_error)
-                    else:
-                        print(self.__msg_download_finished)
+                    self.download_phase_release(platform, self.__phases.stable, extract)
+                    print(self.__msg_download_finished)
                 except GetChromeDriverError:
                     print(self.__msg_download_error)
             else:
                 print(self.__msg_required_choose_platform)
                 print(self.__msg_optional_add_extract)
+
             sys.exit(0)
 
         ####################
@@ -314,63 +312,77 @@ class App:
             return True
         return False
 
-    def print_latest_urls(self):
-        latest_stable = 'Latest stable release for '
+    def print_urls(self):
+        latest_stable_release_for_str = 'Latest stable release for '
 
         get_driver = GetChromeDriver(self.__platforms.win)
-        print(latest_stable + 'Windows:')
-        print(get_driver.latest_stable_release_url())
-
+        print(latest_stable_release_for_str + 'Windows:')
+        try:
+            print(get_driver.stable_release_url())
+        except GetChromeDriverError:
+            print('not found')
         print('')
 
         get_driver = GetChromeDriver(self.__platforms.linux)
-        print(latest_stable + 'Linux:')
-        print(get_driver.latest_stable_release_url())
-
+        print(latest_stable_release_for_str + 'Linux:')
+        try:
+            print(get_driver.stable_release_url())
+        except GetChromeDriverError:
+            print('not found')
         print('')
 
         get_driver = GetChromeDriver(self.__platforms.mac)
-        print(latest_stable + 'Mac:')
-        print(get_driver.latest_stable_release_url())
+        print(latest_stable_release_for_str + 'Mac:')
+        try:
+            print(get_driver.stable_release_url())
+        except GetChromeDriverError:
+            print('not found')
 
     def print_phase_version(self, phase):
         if phase == self.__phases.beta:
             get_driver = GetChromeDriver(self.__platforms.win)
-            beta = get_driver.latest_beta_release_version()
-            if beta is None:
+            try:
+                print(get_driver.beta_release_version())
+            except GetChromeDriverError:
                 print(self.__c_fore.RED + 'error: could not find a beta release version' + self.__c_style.RESET_ALL)
-            else:
-                print(beta)
+
         elif phase == self.__phases.stable:
             get_driver = GetChromeDriver(self.__platforms.win)
-            stable = get_driver.latest_stable_release_version()
-            if stable is None:
+            try:
+                print(get_driver.stable_release_version())
+            except GetChromeDriverError:
                 print(self.__c_fore.RED + 'error: could not find a stable release version' + self.__c_style.RESET_ALL)
-            else:
-                print(stable)
+
+        else:
+            print(self.__c_fore.RED + 'error: could not find release version' + self.__c_style.RESET_ALL)
 
     def print_phase_url(self, platform, phase):
         get_driver = GetChromeDriver(platform)
         if phase == self.__phases.beta:
-            print(get_driver.latest_beta_release_url())
+            try:
+                print(get_driver.beta_release_url())
+            except GetChromeDriverError:
+                print('release not found')
         elif phase == self.__phases.stable:
-            print(get_driver.latest_stable_release_url())
+            try:
+                print(get_driver.stable_release_url())
+            except GetChromeDriverError:
+                print('release not found')
 
     def print_release_url(self, platform, release):
         get_driver = GetChromeDriver(platform)
-        print(get_driver.release_url(release))
+        try:
+            print(get_driver.release_url(release))
+        except GetChromeDriverError:
+            print('release not found')
 
-    def download_latest_phase_release(self, platform, phase, extract):
+    def download_phase_release(self, platform, phase, extract):
         if phase == self.__phases.beta:
             get_driver = GetChromeDriver(platform)
-            if get_driver.download_latest_beta_release(extract=extract):
-                return True
+            get_driver.download_beta_release(extract=extract)
         elif phase == self.__phases.stable:
             get_driver = GetChromeDriver(platform)
-            if get_driver.download_latest_stable_release(extract=extract):
-                return True
-
-        return False
+            get_driver.download_stable_release(extract=extract)
 
     def download_release(self, platform, release, extract):
         get_driver = GetChromeDriver(platform)
