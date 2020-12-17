@@ -86,7 +86,7 @@ $ get-chrome-driver --download-release mac 84.0.4147.30 --extract
 
 #### Downloaded drivers will be downloaded by default at:
 
-*`<current directory>/<chrome_driver_downloads>/<release version>/<platform>/<chromedriver.zip>`*
+*`<current directory>/<chrome_driver_downloads>/<release version>/<platform>/<chromedriver>`*
 
 *Note: Beta release related options and functions will only work if one is currently available.*
 

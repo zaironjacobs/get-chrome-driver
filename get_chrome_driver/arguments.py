@@ -43,4 +43,4 @@ def print_help():
         print(descriptor.format(argument[0], argument[1]))
     print('')
     print('Find the downloaded drivers at: ')
-    print('<current directory>/<get-chromedriver_downloads>/<release version>/<platform>/<chromedriver.zip>')
+    print('<current directory>/<get-chromedriver_downloads>/<release version>/<platform>/<chromedriver>')
