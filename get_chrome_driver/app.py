@@ -9,7 +9,9 @@ from . import arguments
 from .get_driver import GetChromeDriver
 from .platforms import Platforms
 from .phase import Phase
-from .exceptions import GetChromeDriverError
+from .exceptions import ReleaseVersionError
+from .exceptions import ReleaseUrlError
+from .exceptions import DownloadError
 
 
 def main():
@@ -224,7 +226,7 @@ class App:
                 try:
                     self.download_phase_release(platform, self.__phases.beta, extract)
                     print(self.__msg_download_finished)
-                except GetChromeDriverError:
+                except DownloadError:
                     print(self.__msg_download_error)
                     print(self.__c_fore.RED + 'there is no beta release at the moment' + self.__c_style.RESET_ALL)
             else:
@@ -253,7 +255,7 @@ class App:
                 try:
                     self.download_phase_release(platform, self.__phases.stable, extract)
                     print(self.__msg_download_finished)
-                except GetChromeDriverError:
+                except DownloadError:
                     print(self.__msg_download_error)
             else:
                 print(self.__msg_required_choose_platform)
@@ -292,7 +294,7 @@ class App:
                     try:
                         self.download_release(platform, release, extract)
                         print(self.__msg_download_finished)
-                    except GetChromeDriverError:
+                    except DownloadError:
                         print(self.__msg_download_error)
                 else:
                     print(custom_required_message)
@@ -319,7 +321,7 @@ class App:
         print(latest_stable_release_for_str + 'Windows:')
         try:
             print(get_driver.stable_release_url())
-        except GetChromeDriverError:
+        except ReleaseUrlError:
             print('not found')
         print('')
 
@@ -327,7 +329,7 @@ class App:
         print(latest_stable_release_for_str + 'Linux:')
         try:
             print(get_driver.stable_release_url())
-        except GetChromeDriverError:
+        except ReleaseUrlError:
             print('not found')
         print('')
 
@@ -335,7 +337,7 @@ class App:
         print(latest_stable_release_for_str + 'Mac:')
         try:
             print(get_driver.stable_release_url())
-        except GetChromeDriverError:
+        except ReleaseUrlError:
             print('not found')
 
     def print_phase_version(self, phase):
@@ -343,14 +345,14 @@ class App:
             get_driver = GetChromeDriver(self.__platforms.win)
             try:
                 print(get_driver.beta_release_version())
-            except GetChromeDriverError:
+            except ReleaseVersionError:
                 print(self.__c_fore.RED + 'error: could not find a beta release version' + self.__c_style.RESET_ALL)
 
         elif phase == self.__phases.stable:
             get_driver = GetChromeDriver(self.__platforms.win)
             try:
                 print(get_driver.stable_release_version())
-            except GetChromeDriverError:
+            except ReleaseVersionError:
                 print(self.__c_fore.RED + 'error: could not find a stable release version' + self.__c_style.RESET_ALL)
 
         else:
@@ -361,19 +363,19 @@ class App:
         if phase == self.__phases.beta:
             try:
                 print(get_driver.beta_release_url())
-            except GetChromeDriverError:
+            except ReleaseUrlError:
                 print('release not found')
         elif phase == self.__phases.stable:
             try:
                 print(get_driver.stable_release_url())
-            except GetChromeDriverError:
+            except ReleaseUrlError:
                 print('release not found')
 
     def print_release_url(self, platform, release):
         get_driver = GetChromeDriver(platform)
         try:
             print(get_driver.release_url(release))
-        except GetChromeDriverError:
+        except ReleaseUrlError:
             print('release not found')
 
     def download_phase_release(self, platform, phase, extract):
