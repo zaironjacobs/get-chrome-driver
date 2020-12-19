@@ -138,7 +138,7 @@ $ get-chrome-driver --download-release 84.0.4147.30 --extract
 
 --stable-url                Print the stable release url for a platform.
 
---auto-download             Auto download ChromeDriver for the installed Chrome Version
+--auto-download             Auto download ChromeDriver for the installed Chrome Version.
 
 --download-beta             Download the beta release for a platform.
 
