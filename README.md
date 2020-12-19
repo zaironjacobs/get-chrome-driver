@@ -5,8 +5,9 @@ Get ChromeDriver
 [![PyPI - Status](https://img.shields.io/pypi/status/get-chrome-driver)](https://pypi.python.org/pypi/get-chrome-driver)
 [![PyPI - License](https://img.shields.io/pypi/l/get-chrome-driver)](https://pypi.python.org/pypi/get-chrome-driver)
 
-A tool to download ChromeDriver. You can choose to download the beta release (if one is currently available), the stable
-release or a specific release. You can use this tool as a package import or as a command-line application.
+A tool to download and install ChromeDriver. Automatically download a ChromeDriver version for the current installed
+Chrome version. Or you can choose to download the beta release (if one is currently available), the stable release or
+another specific release. You can use this tool as a package import or as a command-line application.
 
 ## Install
 
@@ -24,7 +25,28 @@ $ pip install get-chrome-driver --upgrade
 
 ## Usage
 
-#### Package import
+#### Install and use ChromeDriver with Selenium
+
+```Python
+import time
+from get_chrome_driver import GetChromeDriver
+from selenium import webdriver
+
+# Install the driver:
+# Downloads a ChromeDriver version that matches the installed Chrome version on the machine
+# Adds the downloaded ChromeDriver to path
+# Platforms to choose from: 'win', 'linux' or 'mac'
+get_driver = GetChromeDriver('win')
+get_driver.install()
+
+# Use the installed ChromeDriver with Selenium
+chrome_driver = webdriver.Chrome()
+chrome_driver.get("https://google.com")
+time.sleep(3)
+chrome_driver.quit()
+```
+
+#### Download only
 
 ```Python
 from get_chrome_driver import GetChromeDriver
@@ -42,12 +64,12 @@ print(get_driver.stable_release_url())
 print(get_driver.release_url('84.0.4147.30'))
 
 # Download the stable driver release
-# Optional: use output_path='' to specify where to download the driver
+# Optional: use output_path= to specify where to download the driver
 # Optional: use extract=True to extract the zip file
 get_driver.download_stable_release(output_path='webdriver', extract=True)
 
 # Download a specific driver release
-# Optional: use output_path='' to specify where to download the driver
+# Optional: use output_path= to specify where to download the driver
 # Optional: use extract=True to extract the zip file
 get_driver.download_release('84.0.4147.30', extract=True)
 ```

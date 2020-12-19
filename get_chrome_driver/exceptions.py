@@ -16,3 +16,11 @@ class UnknownReleaseError(GetChromeDriverError):
 
 class DownloadError(GetChromeDriverError):
     pass
+
+
+class VersionError(GetChromeDriverError):
+    pass
+
+
+class FeatureNotImplementedError(GetChromeDriverError):
+    pass

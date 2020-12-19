@@ -1,18 +1,25 @@
+import os
 import requests
 import zipfile
+import platform as pl
+import xml.etree.ElementTree as ElTree
+import subprocess
+from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 from requests.exceptions import RequestException
 from requests.exceptions import HTTPError
 
 from . import constants
-from .platforms import Platforms
 from . import retriever
+from .platforms import Platforms
 from .phase import Phase
 from .exceptions import UnknownPlatformError
 from .exceptions import ReleaseUrlError
 from .exceptions import UnknownReleaseError
 from .exceptions import DownloadError
+from .exceptions import VersionError
+from .exceptions import FeatureNotImplementedError
 
 
 class GetChromeDriver:
@@ -114,6 +121,10 @@ class GetChromeDriver:
             if extract:
                 with zipfile.ZipFile(output_path_with_file_name, 'r') as zip_ref:
                     zip_ref.extractall(path=output_path_no_file_name)
+                os.remove(output_path_with_file_name)
+
+                if platform_arch == self.__available_platforms.linux_arch:
+                    os.chmod(output_path_no_file_name + '/' + constants.FILE_NAME_CHROMEDRIVER, 0o755)
 
         if self.__current_set_platform == self.__available_platforms.win:
             download(self.__available_platforms.win_arch)
@@ -144,3 +155,92 @@ class GetChromeDriver:
             raise UnknownPlatformError('error: platform not recognized, choose a platform from: '
                                        + str(self.__available_platforms.list))
         return platform
+
+    def install(self) -> None:
+        """ Download and install ChromeDriver for the installed Chrome version on machine """
+
+        if pl.system() == 'Darwin':
+            raise FeatureNotImplementedError('feature has not been implemented for macOS yet')
+
+        all_chromedriver_versions = self.__get_all_chromedriver_versions()
+        installed_chrome_version = self.__get_installed_chrome_version()
+
+        chromedriver_version_to_download = ''
+        for chromedriver_version in reversed(all_chromedriver_versions):
+            if '.'.join(installed_chrome_version.split('.')[:-1]) == '.'.join(chromedriver_version.split('.')[:-1]):
+                chromedriver_version_to_download = chromedriver_version
+
+        if chromedriver_version_to_download == '':
+            raise VersionError('error: unable to find a ChromeDriver version that matches the installed Chrome version')
+
+        if pl.system() == 'Windows':
+            output_path = os.path.join(os.path.abspath(os.getcwd()), 'chromedriver\\bin')
+            get_driver = GetChromeDriver('win')
+            get_driver.download_release(chromedriver_version_to_download, output_path=output_path, extract=True)
+            path = os.path.join(os.path.abspath(os.path.dirname(__file__)), output_path)
+            os.environ['PATH'] += os.pathsep + os.pathsep.join([path])
+
+        elif pl.system() == 'Linux':
+            output_path = os.path.join(os.path.abspath(os.getcwd()), 'chromedriver/bin')
+            get_driver = GetChromeDriver('linux')
+            get_driver.download_release(chromedriver_version_to_download, output_path=output_path, extract=True)
+            path = os.path.join(os.path.abspath(os.path.dirname(__file__)), output_path)
+            os.environ['PATH'] += os.pathsep + os.pathsep.join([path])
+
+    def __get_all_chromedriver_versions(self) -> list:
+        """ Return a list with all ChromeDriver versions """
+
+        key_texts = []
+        versions = []
+
+        url = constants.CHROMEDRIVER_STORAGE_URL
+
+        with urlopen(url) as xml_file:
+            tree = ElTree.parse(xml_file)
+            root = tree.getroot()
+
+            for root_item in root:
+                # Remove namespace
+                root_item.tag = root_item.tag.split('}', 1)[1]
+
+            for content in root.findall('Contents'):
+
+                for content_item in content:
+                    # Remove namespace
+                    content_item.tag = content_item.tag.split('}', 1)[1]
+
+                    key_texts.append(content.find('Key').text)
+
+        for text in key_texts:
+
+            version = ''
+            for char in text:
+                if char.isnumeric() or char == '.':
+                    version += char
+                else:
+                    break
+
+            if len(version) < 1:
+                continue
+
+            versions.append(version)
+
+        return list(dict.fromkeys(versions))
+
+    def __get_installed_chrome_version(self) -> str:
+        """ Return the installed Chrome version on the machine """
+
+        if pl.system() == 'Windows':
+            process = subprocess.Popen(
+                ['reg', 'query', 'HKEY_CURRENT_USER\\SOFTWARE\\Google\\Chrome\\BLBeacon', '/v', 'version'],
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+            return process.communicate()[0].decode('UTF-8').split()[-1]
+
+        elif pl.system() == 'Linux':
+            process = subprocess.Popen(
+                ['google-chrome', '--version'],
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+            return process.communicate()[0].decode('UTF-8').split()[-1]
+
+        elif pl.system() == 'Darwin':
+            raise FeatureNotImplementedError('feature has not been implemented for macOS yet')
