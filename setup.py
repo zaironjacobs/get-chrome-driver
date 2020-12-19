@@ -2,7 +2,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 name = 'get-chrome-driver'
-version = '1.1.22'
+version = '1.1.23'
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
@@ -23,7 +23,7 @@ setup(
     long_description=long_description,
     url='https://github.com/zaironjacobs/get-chrome-driver',
     download_url='https://github.com/zaironjacobs/get-chrome-driver/archive/v' + version + '.tar.gz',
-    keywords=['chrome', 'chromedriver', 'download', 'web', 'driver', 'tool', 'get'],
+    keywords=['chrome', 'chromedriver', 'download', 'install', 'web', 'driver', 'tool', 'get'],
     packages=find_packages(),
     entry_points={
         'console_scripts': [name + '=get_chrome_driver.app:main'],
