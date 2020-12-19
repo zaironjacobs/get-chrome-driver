@@ -111,6 +111,32 @@ class TestApp:
         actual = out.stdout.split()[0]
         assert url == str(actual)
 
+    ##############################
+    # AUTO DOWNLOAD - NO EXTRACT #
+    ##############################
+    def test_auto_download_no_extract(self):
+        # Keep Chrome on test machine updated to match the stable ChromeDriver during testing
+
+        release = stable_release
+        subprocess.run(args=[name, '--auto-download'], stdout=subprocess.PIPE)
+        file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
+                     + 'bin' + '/' + file_name_zipped)
+        result = path.exists(file_path)
+        assert result
+
+    ###########################
+    # AUTO DOWNLOAD - EXTRACT #
+    ###########################
+    def test_auto_download_extract(self):
+        # Keep Chrome on test machine updated to match the stable ChromeDriver during testing
+
+        release = stable_release
+        subprocess.run(args=[name, '--auto-download', '--extract'], stdout=subprocess.PIPE)
+        file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
+                     + 'bin' + '/' + file_name)
+        result = path.exists(file_path)
+        assert result
+
     ########################################
     # DOWNLOAD STABLE RELEASE - NO EXTRACT #
     ########################################
