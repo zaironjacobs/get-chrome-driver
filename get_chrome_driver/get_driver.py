@@ -114,16 +114,15 @@ class GetChromeDriver:
         """ Download a chromedriver release """
 
         self.__check_release(release)
-        url = self.release_url(release)
 
-        def download(platform_arch):
+        def download(url_download) -> str:
             if output_path is None:
                 output_path_no_file_name = constants.DIR_DOWNLOAD + '/' + release + '/bin'
             else:
                 output_path_no_file_name = output_path
 
             try:
-                output_path_with_file_name, file_name = retriever.download(url=url,
+                output_path_with_file_name, file_name = retriever.download(url=url_download,
                                                                            output_path=output_path_no_file_name)
             except (OSError, HTTPError, RequestException) as err:
                 raise DownloadError(err)
@@ -133,17 +132,18 @@ class GetChromeDriver:
                     zip_ref.extractall(path=output_path_no_file_name)
                 os.remove(output_path_with_file_name)
 
-                if platform_arch == self.__available_platforms.linux_arch:
+                if pl.system() == 'Linux':
                     os.chmod(output_path_no_file_name + '/' + constants.FILE_NAME_CHROMEDRIVER, 0o755)
 
             return output_path_no_file_name
 
+        url = self.release_url(release)
         if self.__current_set_platform == self.__available_platforms.win:
-            return download(self.__available_platforms.win_arch)
+            return download(url)
         elif self.__current_set_platform == self.__available_platforms.linux:
-            return download(self.__available_platforms.linux_arch)
+            return download(url)
         elif self.__current_set_platform == self.__available_platforms.mac:
-            return download(self.__available_platforms.mac_arch)
+            return download(url)
 
     def __check_url(self, url) -> None:
         """ Check if url is valid """
