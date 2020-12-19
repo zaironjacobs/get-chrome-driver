@@ -20,27 +20,24 @@ platforms = Platforms()
 stable_release = config('STABLE_RELEASE')
 random_release = config('RANDOM_RELEASE')
 
-stable_release_win_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_win32.zip'
-stable_release_linux_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_linux64.zip'
-stable_release_mac_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_mac64.zip'
-
-random_release_win_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_win32.zip'
-random_release_linux_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_linux64.zip'
-random_release_mac_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_mac64.zip'
-
 file_name_zipped = ''
+stable_release_url = ''
+random_release_url = ''
 if pl.system() == 'Windows':
     file_name_zipped = 'chromedriver_win32.zip'
+    file_name = 'chromedriver.exe'
+    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_win32.zip'
+    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_win32.zip'
 elif pl.system() == 'Linux':
     file_name_zipped = 'chromedriver_linux64.zip'
+    file_name = 'chromedriver'
+    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_linux64.zip'
+    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_linux64.zip'
 elif pl.system() == 'Darwin':
     file_name_zipped = 'chromedriver_mac64.zip'
-
-file_name = ''
-if pl.system() == 'Windows':
-    file_name = 'chromedriver.exe'
-else:
     file_name = 'chromedriver'
+    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_mac64.zip'
+    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_mac64.zip'
 
 # Change to the current test directory
 os.chdir(os.path.dirname(__file__))
@@ -96,7 +93,7 @@ class TestApp:
     # RANDOM RELEASE URL #
     ######################
     def test_random_win_release_url(self):
-        url = random_release_win_url
+        url = random_release_url
         out = subprocess.run(args=[name, '--release-url', random_release],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
@@ -107,7 +104,7 @@ class TestApp:
     # STABLE RELEASE URL #
     ######################
     def test_stable_release_url(self):
-        url = stable_release_win_url
+        url = stable_release_url
         out = subprocess.run(args=[name, '--stable-url'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
