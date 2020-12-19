@@ -2,7 +2,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 name = 'get-chrome-driver'
-version = '1.1.24'
+version = '1.1.25'
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
@@ -19,7 +19,7 @@ setup(
     version=version,
     author='Zairon Jacobs',
     author_email='zaironjacobs@gmail.com',
-    description='A tool to download ChromeDriver.',
+    description='A tool to download and install ChromeDriver.',
     long_description=long_description,
     url='https://github.com/zaironjacobs/get-chrome-driver',
     download_url='https://github.com/zaironjacobs/get-chrome-driver/archive/v' + version + '.tar.gz',
