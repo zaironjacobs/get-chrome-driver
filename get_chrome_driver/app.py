@@ -85,7 +85,7 @@ class App:
         ################
         self.__arg_beta_version = self.__args.beta_version
         if self.__arg_passed(self.__arg_beta_version):
-            self.print_phase_version(self.__phases.beta)
+            self.__print_phase_version(self.__phases.beta)
             sys.exit(0)
 
         ##################
@@ -93,7 +93,7 @@ class App:
         ##################
         self.__arg_stable_version = self.__args.stable_version
         if self.__arg_passed(self.__arg_stable_version):
-            self.print_phase_version(self.__phases.stable)
+            self.__print_phase_version(self.__phases.stable)
             sys.exit(0)
 
         ###############
@@ -101,7 +101,7 @@ class App:
         ###############
         self.__arg_latest_urls = self.__args.latest_urls
         if self.__arg_passed(self.__arg_latest_urls):
-            self.print_urls()
+            self.__print_latest_urls()
             sys.exit(0)
 
         ###############
@@ -112,7 +112,7 @@ class App:
             if len(self.__arg_release_url) < 1:
                 print(self.__msg_required_add_release)
             else:
-                self.print_release_url(self.__arg_release_url[0])
+                self.__print_release_url(self.__arg_release_url[0])
             sys.exit(0)
 
         ############
@@ -120,7 +120,7 @@ class App:
         ############
         self.__arg_beta_url = self.__args.beta_url
         if self.__arg_passed(self.__arg_beta_url):
-            self.print_phase_url(self.__phases.beta)
+            self.__print_phase_url(self.__phases.beta)
             sys.exit(0)
 
         ##############
@@ -128,7 +128,7 @@ class App:
         ##############
         self.__arg_stable_url = self.__args.stable_url
         if self.__arg_passed(self.__arg_stable_url):
-            self.print_phase_url(self.__phases.stable)
+            self.__print_phase_url(self.__phases.stable)
             sys.exit(0)
 
         #################
@@ -140,7 +140,7 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            self.auto_download(extract)
+            self.__auto_download(extract)
             sys.exit(0)
 
         #################
@@ -152,7 +152,7 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            self.download_phase_release(self.__phases.beta, extract)
+            self.__download_phase_release(self.__phases.beta, extract)
 
         ###################
         # DOWNLOAD STABLE #
@@ -163,7 +163,7 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            self.download_phase_release(self.__phases.stable, extract)
+            self.__download_phase_release(self.__phases.stable, extract)
 
         ####################
         # DOWNLOAD RELEASE #
@@ -180,7 +180,7 @@ class App:
                 sys.exit(0)
             else:
                 release = self.__arg_download_release[0]
-                self.download_release(release, extract)
+                self.__download_release(release, extract)
             sys.exit(0)
 
         ###########
@@ -198,7 +198,7 @@ class App:
             return True
         return False
 
-    def print_urls(self):
+    def __print_latest_urls(self):
         """ Print the stable nd beta url release for all platforms """
 
         get_driver_win = GetChromeDriver(self.__platforms.win)
@@ -220,7 +220,7 @@ class App:
             if index < len(drivers) - 1:
                 print('')
 
-    def print_phase_version(self, phase):
+    def __print_phase_version(self, phase):
         """ Print stable version or beta version """
 
         get_driver = GetChromeDriver()
@@ -236,7 +236,7 @@ class App:
             except GetChromeDriverError:
                 print(self.__msg_no_stable_release_version_error)
 
-    def print_phase_url(self, phase):
+    def __print_phase_url(self, phase):
         """ Print stable url or beta url """
 
         get_driver = GetChromeDriver()
@@ -251,7 +251,7 @@ class App:
             except GetChromeDriverError:
                 print(self.__msg_release_url_error)
 
-    def print_release_url(self, release):
+    def __print_release_url(self, release):
         """ Print the url for a given version """
 
         get_driver = GetChromeDriver()
@@ -261,7 +261,7 @@ class App:
         except GetChromeDriverError:
             print(self.__msg_release_url_error)
 
-    def auto_download(self, extract):
+    def __auto_download(self, extract):
         """ Auto download ChromeDriver """
 
         get_driver = GetChromeDriver()
@@ -272,7 +272,7 @@ class App:
         except GetChromeDriverError:
             print(self.__msg_download_error)
 
-    def download_phase_release(self, phase, extract):
+    def __download_phase_release(self, phase, extract):
         """ Download the release for the stable version or beta version """
 
         get_driver = GetChromeDriver()
@@ -291,7 +291,7 @@ class App:
             except GetChromeDriverError:
                 print(self.__msg_download_error)
 
-    def download_release(self, release, extract):
+    def __download_release(self, release, extract):
         """ Download the release of a given version """
 
         get_driver = GetChromeDriver()
