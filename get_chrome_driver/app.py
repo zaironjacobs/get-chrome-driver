@@ -35,8 +35,6 @@ class App:
         self.__phases = Phase()
 
         self.__msg_download_finished = 'download finished'
-        self.__msg_required_choose_platform = (self.__c_fore.RED + 'required: choose one of the following platforms: '
-                                               + str(self.__platforms.list) + self.__c_style.RESET_ALL)
         self.__msg_required_add_release = (self.__c_fore.RED + 'required: add a release version'
                                            + self.__c_style.RESET_ALL)
         self.__msg_optional_add_extract = 'optional: add --extract to extract the zip file'
@@ -45,12 +43,12 @@ class App:
                 + '\n' + 'tip: use --help to see all available arguments')
         self.__msg_download_error = (self.__c_fore.RED + 'error: an error occurred at downloading'
                                      + self.__c_style.RESET_ALL)
-        self.__msg_no_release_version_error = (self.__c_fore.RED + 'error: could not find release version'
-                                               + self.__c_style.RESET_ALL)
         self.__msg_release_url_error = (self.__c_fore.RED + 'error: could not find release url'
                                         + self.__c_style.RESET_ALL)
-        self.__msg_not_found_error = (self.__c_fore.RED + 'not found'
-                                      + self.__c_style.RESET_ALL)
+        self.__msg_no_stable_found_error = (self.__c_fore.RED + 'not found'
+                                            + self.__c_style.RESET_ALL)
+        self.__msg_no_beta_available_error = (self.__c_fore.RED + 'not beta version available'
+                                              + self.__c_style.RESET_ALL)
         self.__msg_no_beta_release_version_error = (self.__c_fore.RED
                                                     + 'error: could not find a beta release version'
                                                     + self.__c_style.RESET_ALL)
@@ -98,9 +96,9 @@ class App:
             self.print_phase_version(self.__phases.stable)
             sys.exit(0)
 
-        ########
-        # URLS #
-        ########
+        ###############
+        # LATEST URLS #
+        ###############
         self.__arg_latest_urls = self.__args.latest_urls
         if self.__arg_passed(self.__arg_latest_urls):
             self.print_urls()
@@ -111,24 +109,10 @@ class App:
         ###############
         self.__arg_release_url = self.__args.release_url
         if self.__arg_passed(self.__arg_release_url):
-            custom_required_message = (self.__msg_required_choose_platform + '\n' + self.__msg_required_add_release)
-            if not self.__arg_release_url:
-                print(custom_required_message)
-                sys.exit(0)
-            if len(self.__arg_release_url) != 2:
-                print(custom_required_message)
-                sys.exit(0)
-
-            platform = self.__arg_release_url[0]
-            release = self.__arg_release_url[1]
-            if self.__platforms.win == platform:
-                self.print_release_url(self.__platforms.win, release)
-            elif self.__platforms.linux == platform:
-                self.print_release_url(self.__platforms.linux, release)
-            elif self.__platforms.mac == platform:
-                self.print_release_url(self.__platforms.mac, release)
+            if len(self.__arg_release_url) < 1:
+                print(self.__msg_required_add_release)
             else:
-                print(custom_required_message)
+                self.print_release_url(self.__arg_release_url[0])
             sys.exit(0)
 
         ############
@@ -136,22 +120,7 @@ class App:
         ############
         self.__arg_beta_url = self.__args.beta_url
         if self.__arg_passed(self.__arg_beta_url):
-            if not self.__arg_beta_url:
-                print(self.__msg_required_choose_platform)
-                sys.exit(0)
-            if len(self.__arg_beta_url) != 1:
-                print(self.__msg_required_choose_platform)
-                sys.exit(0)
-
-            platform = self.__arg_beta_url[0]
-            if self.__platforms.win == platform:
-                self.print_phase_url(self.__platforms.win, self.__phases.beta)
-            elif self.__platforms.linux == platform:
-                self.print_phase_url(self.__platforms.linux, self.__phases.beta)
-            elif self.__platforms.mac == platform:
-                self.print_phase_url(self.__platforms.mac, self.__phases.beta)
-            else:
-                print(self.__msg_required_choose_platform)
+            self.print_phase_url(self.__phases.beta)
             sys.exit(0)
 
         ##############
@@ -159,22 +128,19 @@ class App:
         ##############
         self.__arg_stable_url = self.__args.stable_url
         if self.__arg_passed(self.__arg_stable_url):
-            if not self.__arg_stable_url:
-                print(self.__msg_required_choose_platform)
-                sys.exit(0)
-            if len(self.__arg_stable_url) != 1:
-                print(self.__msg_required_choose_platform)
-                sys.exit(0)
+            self.print_phase_url(self.__phases.stable)
+            sys.exit(0)
 
-            self.__platform = self.__arg_stable_url[0]
-            if self.__platforms.win == self.__platform:
-                self.print_phase_url(self.__platforms.win, self.__phases.stable)
-            elif self.__platforms.linux == self.__platform:
-                self.print_phase_url(self.__platforms.linux, self.__phases.stable)
-            elif self.__platforms.mac == self.__platform:
-                self.print_phase_url(self.__platforms.mac, self.__phases.stable)
-            else:
-                print(self.__msg_required_choose_platform)
+        #################
+        # AUTO DOWNLOAD #
+        #################
+        self.__arg_auto_download = self.__args.auto_download
+        if self.__arg_passed(self.__arg_auto_download):
+            extract = False
+            self.__arg_extract = self.__args.extract
+            if self.__arg_passed(self.__arg_extract):
+                extract = True
+            self.auto_download(extract)
             sys.exit(0)
 
         #################
@@ -182,79 +148,39 @@ class App:
         #################
         self.__arg_download_beta = self.__args.download_beta
         if self.__arg_passed(self.__arg_download_beta):
-            if not self.__arg_download_beta:
-                print(self.__msg_required_choose_platform)
-                print(self.__msg_optional_add_extract)
-                sys.exit(0)
-
             extract = False
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-
-            platform = self.__arg_download_beta[0]
-            if platform in self.__platforms.list:
-                self.download_phase_release(platform, self.__phases.beta, extract)
-            else:
-                print(self.__msg_required_choose_platform)
-                print(self.__msg_optional_add_extract)
-            sys.exit(0)
+            self.download_phase_release(self.__phases.beta, extract)
 
         ###################
         # DOWNLOAD STABLE #
         ###################
         self.__arg_download_stable = self.__args.download_stable
         if self.__arg_passed(self.__arg_download_stable):
-            if not self.__arg_download_stable:
-                print(self.__msg_required_choose_platform)
-                print(self.__msg_optional_add_extract)
-                sys.exit(0)
-
             extract = False
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-
-            platform = self.__arg_download_stable[0]
-            if platform in self.__platforms.list:
-                self.download_phase_release(platform, self.__phases.stable, extract)
-            else:
-                print(self.__msg_required_choose_platform)
-                print(self.__msg_optional_add_extract)
-            sys.exit(0)
+            self.download_phase_release(self.__phases.stable, extract)
 
         ####################
         # DOWNLOAD RELEASE #
         ####################
         self.__arg_download_release = self.__args.download_release
         if self.__arg_passed(self.__arg_download_release):
-            custom_required_message = (self.__msg_required_choose_platform
-                                       + '\n' + self.__msg_required_add_release)
-            if not self.__arg_download_release:
-                print(custom_required_message)
-                print(self.__msg_optional_add_extract)
-                sys.exit(0)
-            if len(self.__arg_download_release) != 2:
-                print(custom_required_message)
-                print(self.__msg_optional_add_extract)
-                sys.exit(0)
-
             extract = False
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            if len(self.__arg_download_release) != 2:
-                print(custom_required_message)
+            if len(self.__arg_download_release) < 1:
+                print(self.__msg_required_add_release)
                 print(self.__msg_optional_add_extract)
                 sys.exit(0)
             else:
-                platform = self.__arg_download_release[0]
-                if platform in self.__platforms.list:
-                    release = self.__arg_download_release[1]
-                    self.download_release(platform, release, extract)
-                else:
-                    print(custom_required_message)
-                    print(self.__msg_optional_add_extract)
+                release = self.__arg_download_release[0]
+                self.download_release(release, extract)
             sys.exit(0)
 
         ###########
@@ -273,79 +199,84 @@ class App:
         return False
 
     def print_urls(self):
-        """ Print the stable url release for all platforms """
+        """ Print the stable nd beta url release for all platforms """
 
-        latest_stable_release_for_str = 'Latest stable release for '
+        get_driver_win = GetChromeDriver(self.__platforms.win)
+        get_driver_linux = GetChromeDriver(self.__platforms.linux)
+        get_driver_mac = GetChromeDriver(self.__platforms.mac)
+        drivers = {'Windows': get_driver_win, 'Linux': get_driver_linux, 'macOS': get_driver_mac}
 
-        get_driver = GetChromeDriver(self.__platforms.win)
-        print(latest_stable_release_for_str + 'Windows:')
-        try:
-            print(get_driver.stable_release_url())
-        except GetChromeDriverError:
-            print(self.__msg_not_found_error)
-        print('')
+        for index, (key, value) in enumerate(drivers.items()):
+            print('Latest beta and stable release for ' + key + ': ')
+            try:
+                print('stable : ' + value.stable_release_url())
+            except GetChromeDriverError:
+                print(self.__msg_no_stable_found_error)
+            try:
+                print('beta   : ' + value.beta_release_url())
+            except GetChromeDriverError:
+                print(self.__msg_no_beta_available_error)
 
-        get_driver = GetChromeDriver(self.__platforms.linux)
-        print(latest_stable_release_for_str + 'Linux:')
-        try:
-            print(get_driver.stable_release_url())
-        except GetChromeDriverError:
-            print(self.__msg_not_found_error)
-        print('')
-
-        get_driver = GetChromeDriver(self.__platforms.mac)
-        print(latest_stable_release_for_str + 'Mac:')
-        try:
-            print(get_driver.stable_release_url())
-        except GetChromeDriverError:
-            print(self.__msg_not_found_error)
+            if index < len(drivers) - 1:
+                print('')
 
     def print_phase_version(self, phase):
         """ Print stable version or beta version """
 
+        get_driver = GetChromeDriver()
+
         if phase == self.__phases.beta:
-            get_driver = GetChromeDriver(self.__platforms.win)
             try:
                 print(get_driver.beta_release_version())
             except GetChromeDriverError:
                 print(self.__msg_no_beta_release_version_error)
-        elif phase == self.__phases.stable:
-            get_driver = GetChromeDriver(self.__platforms.win)
+        else:
             try:
                 print(get_driver.stable_release_version())
             except GetChromeDriverError:
                 print(self.__msg_no_stable_release_version_error)
-        else:
-            print(self.__msg_no_release_version_error)
 
-    def print_phase_url(self, platform, phase):
+    def print_phase_url(self, phase):
         """ Print stable url or beta url """
 
-        get_driver = GetChromeDriver(platform)
+        get_driver = GetChromeDriver()
         if phase == self.__phases.beta:
             try:
                 print(get_driver.beta_release_url())
             except GetChromeDriverError:
                 print(self.__msg_release_url_error)
-        elif phase == self.__phases.stable:
+        else:
             try:
                 print(get_driver.stable_release_url())
             except GetChromeDriverError:
                 print(self.__msg_release_url_error)
 
-    def print_release_url(self, platform, release):
+    def print_release_url(self, release):
         """ Print the url for a given version """
 
-        get_driver = GetChromeDriver(platform)
+        get_driver = GetChromeDriver()
+
         try:
             print(get_driver.release_url(release))
         except GetChromeDriverError:
             print(self.__msg_release_url_error)
 
-    def download_phase_release(self, platform, phase, extract):
+    def auto_download(self, extract):
+        """ Auto download ChromeDriver """
+
+        get_driver = GetChromeDriver()
+
+        try:
+            get_driver.auto_download(extract=extract)
+            print(self.__msg_download_finished)
+        except GetChromeDriverError:
+            print(self.__msg_download_error)
+
+    def download_phase_release(self, phase, extract):
         """ Download the release for the stable version or beta version """
 
-        get_driver = GetChromeDriver(platform)
+        get_driver = GetChromeDriver()
+
         if phase == self.__phases.beta:
             try:
                 get_driver.download_beta_release(extract=extract)
@@ -353,17 +284,18 @@ class App:
             except GetChromeDriverError:
                 print(self.__msg_download_error)
                 print(self.__msg_no_beta_release_version_error)
-        elif phase == self.__phases.stable:
+        else:
             try:
                 get_driver.download_stable_release(extract=extract)
                 print(self.__msg_download_finished)
             except GetChromeDriverError:
                 print(self.__msg_download_error)
 
-    def download_release(self, platform, release, extract):
+    def download_release(self, release, extract):
         """ Download the release of a given version """
 
-        get_driver = GetChromeDriver(platform)
+        get_driver = GetChromeDriver()
+
         try:
             get_driver.download_release(release, extract=extract)
             print(self.__msg_download_finished)

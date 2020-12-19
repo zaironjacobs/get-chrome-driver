@@ -35,9 +35,8 @@ from selenium import webdriver
 # Install the driver:
 # Downloads a ChromeDriver version that matches the installed Chrome version on the machine
 # Adds the downloaded ChromeDriver to path
-# Platforms to choose from: 'win', 'linux' or 'mac'
-get_driver = GetChromeDriver('win')
-get_driver.install()
+get_driver = GetChromeDriver()
+get_driver.auto_install()
 
 # Use the installed ChromeDriver with Selenium
 chrome_driver = webdriver.Chrome()
@@ -46,13 +45,12 @@ time.sleep(3)
 chrome_driver.quit()
 ```
 
-#### Download only
+#### For downloading only
 
 ```Python
 from get_chrome_driver import GetChromeDriver
 
-# Platforms to choose from: 'win', 'linux' or 'mac'
-get_driver = GetChromeDriver(platform='win')
+get_driver = GetChromeDriver()
 
 # Print the stable release version
 print(get_driver.stable_release_version())
@@ -63,10 +61,15 @@ print(get_driver.stable_release_url())
 # Print the download link of a specific release
 print(get_driver.release_url('84.0.4147.30'))
 
+# Auto download ChromeDriver for the installed Chrome version
+# Optional: use output_path= to specify where to download the driver
+# Optional: use extract=True to extract the zip file
+get_driver.auto_download(extract=True)
+
 # Download the stable driver release
 # Optional: use output_path= to specify where to download the driver
 # Optional: use extract=True to extract the zip file
-get_driver.download_stable_release(output_path='webdriver', extract=True)
+get_driver.download_stable_release(extract=True)
 
 # Download a specific driver release
 # Optional: use output_path= to specify where to download the driver
@@ -88,27 +91,33 @@ Print the stable release version:
 $ get-chrome-driver --stable-version
 ```
 
-Print the stable release url of a specific platform:
+Print the stable release url:
 
 ```console
-$ get-chrome-driver --stable-url linux
+$ get-chrome-driver --stable-url
 ```
 
-Download the stable release of a specific platform:
+Auto download ChromeDriver for the current installed Chrome version and extract the file:
 
 ```console
-$ get-chrome-driver --download-stable win
+$ get-chrome-driver --auto-download --extract
 ```
 
-Download a specific release for a specific platform and extract the zip file:
+Download the stable release and extract the file:
 
 ```console
-$ get-chrome-driver --download-release mac 84.0.4147.30 --extract
+$ get-chrome-driver --download-stable --extract
 ```
 
-#### Downloaded drivers will be downloaded by default at:
+Download a specific release and extract the file:
 
-*`<current directory>/<chrome_driver_downloads>/<release version>/<platform>/<chromedriver>`*
+```console
+$ get-chrome-driver --download-release 84.0.4147.30 --extract
+```
+
+#### The downloaded driver can be found at:
+
+*`<current directory>/<chromedriver>/<version>/<bin>/<chromedriver>`*
 
 *Note: Beta release related options and functions will only work if one is currently available.*
 
@@ -128,6 +137,8 @@ $ get-chrome-driver --download-release mac 84.0.4147.30 --extract
 --beta-url                  Print the beta release url for a platform.
 
 --stable-url                Print the stable release url for a platform.
+
+--auto-download             Auto download ChromeDriver for the installed Chrome Version
 
 --download-beta             Download the beta release for a platform.
 

@@ -2,6 +2,7 @@ import pytest
 import os
 import shutil
 import subprocess
+import platform as pl
 from os import path
 
 from bs4 import BeautifulSoup
@@ -26,6 +27,20 @@ stable_release_mac_url = 'https://chromedriver.storage.googleapis.com/' + stable
 random_release_win_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_win32.zip'
 random_release_linux_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_linux64.zip'
 random_release_mac_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_mac64.zip'
+
+file_name_zipped = ''
+if pl.system() == 'Windows':
+    file_name_zipped = 'chromedriver_win32.zip'
+elif pl.system() == 'Linux':
+    file_name_zipped = 'chromedriver_linux64.zip'
+elif pl.system() == 'Darwin':
+    file_name_zipped = 'chromedriver_mac64.zip'
+
+file_name = ''
+if pl.system() == 'Windows':
+    file_name = 'chromedriver.exe'
+else:
+    file_name = 'chromedriver'
 
 # Change to the current test directory
 os.chdir(os.path.dirname(__file__))
@@ -82,50 +97,18 @@ class TestApp:
     ######################
     def test_random_win_release_url(self):
         url = random_release_win_url
-        out = subprocess.run(args=[name, '--release-url', 'win', random_release],
+        out = subprocess.run(args=[name, '--release-url', random_release],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
         assert url, str(actual)
 
-    def test_random_linux_release_url(self):
-        url = random_release_linux_url
-        out = subprocess.run(args=[name, '--release-url', 'linux', random_release],
-                             universal_newlines=True,
-                             stdout=subprocess.PIPE)
-        actual = out.stdout.split()[0]
-        assert url == str(actual)
-
-    def test_random_mac_release_url(self):
-        url = random_release_mac_url
-        out = subprocess.run(args=[name, '--release-url', 'mac', random_release],
-                             universal_newlines=True,
-                             stdout=subprocess.PIPE)
-        actual = out.stdout.split()[0]
-        assert url == str(actual)
-
     ######################
     # STABLE RELEASE URL #
     ######################
-    def test_stable_win_release_url(self):
+    def test_stable_release_url(self):
         url = stable_release_win_url
-        out = subprocess.run(args=[name, '--stable-url', 'win'],
-                             universal_newlines=True,
-                             stdout=subprocess.PIPE)
-        actual = out.stdout.split()[0]
-        assert url == str(actual)
-
-    def test_stable_linux_release_url(self):
-        url = stable_release_linux_url
-        out = subprocess.run(args=[name, '--stable-url', 'linux'],
-                             universal_newlines=True,
-                             stdout=subprocess.PIPE)
-        actual = out.stdout.split()[0]
-        assert url == str(actual)
-
-    def test_stable_mac_release_url(self):
-        url = stable_release_mac_url
-        out = subprocess.run(args=[name, '--stable-url', 'mac'],
+        out = subprocess.run(args=[name, '--stable-url'],
                              universal_newlines=True,
                              stdout=subprocess.PIPE)
         actual = out.stdout.split()[0]
@@ -134,27 +117,11 @@ class TestApp:
     ########################################
     # DOWNLOAD STABLE RELEASE - NO EXTRACT #
     ########################################
-    def test_download_stable_win_release_no_extract(self):
+    def test_download_stable_release_no_extract(self):
         release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'win'], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
-        result = path.exists(file_path)
-        assert result
-
-    def test_download_stable_linux_release_no_extract(self):
-        release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'linux'], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
-        result = path.exists(file_path)
-        assert result
-
-    def test_download_stable_mac_release_no_extract(self):
-        release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'mac'], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
+        subprocess.run(args=[name, '--download-stable'], stdout=subprocess.PIPE)
+        file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
+                     + 'bin' + '/' + file_name_zipped)
         result = path.exists(file_path)
         assert result
 
@@ -163,25 +130,9 @@ class TestApp:
     #######################################
     def test_download_stable_win_release_extract(self):
         release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'win', '--extract'], stdout=subprocess.PIPE)
-        file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                               + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
-        result = path.exists(file_path_extracted)
-        assert result
-
-    def test_download_stable_linux_release_extract(self):
-        release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'linux', '--extract'], stdout=subprocess.PIPE)
-        file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                               + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
-        result = path.exists(file_path_extracted)
-        assert result
-
-    def test_download_stable_mac_release_extract(self):
-        release = stable_release
-        subprocess.run(args=[name, '--download-stable', 'mac', '--extract'], stdout=subprocess.PIPE)
-        file_path_extracted = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                               + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
+        subprocess.run(args=[name, '--download-stable', '--extract'], stdout=subprocess.PIPE)
+        file_path_extracted = (constants.DIR_DOWNLOAD + '/' + release + '/'
+                               + 'bin' + '/' + file_name)
         result = path.exists(file_path_extracted)
         assert result
 
@@ -190,25 +141,9 @@ class TestApp:
     ########################################
     def test_download_random_win_release_no_extract(self):
         release = random_release
-        subprocess.run(args=[name, '--download-release', 'win', release], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP)
-        result = path.exists(file_path)
-        assert result
-
-    def test_download_random_linux_release_no_extract(self):
-        release = random_release
-        subprocess.run(args=[name, '--download-release', 'linux', release], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP)
-        result = path.exists(file_path)
-        assert result
-
-    def test_download_random_mac_release_no_extract(self):
-        release = random_release
-        subprocess.run(args=[name, '--download-release', 'mac', release], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                     + platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP)
+        subprocess.run(args=[name, '--download-release', release], stdout=subprocess.PIPE)
+        file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
+                     + 'bin' + '/' + file_name_zipped)
         result = path.exists(file_path)
         assert result
 
@@ -217,29 +152,11 @@ class TestApp:
     #######################################
     def test_download_random_win_release_extract(self):
         release = random_release
-        subprocess.run(args=[name, '--download-release', 'win', release, '--extract'],
+        subprocess.run(args=[name, '--download-release', release, '--extract'],
                        stdout=subprocess.PIPE)
-        file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                             + platforms.win_arch + '/' + constants.FILE_NAME_CHROMEDRIVER_EXE)
-        result = path.exists(file_path_extract)
-        assert result
-
-    def test_download_random_linux_release_extract(self):
-        release = random_release
-        subprocess.run(args=[name, '--download-release', 'linux', release, '--extract'],
-                       stdout=subprocess.PIPE)
-        file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                             + platforms.linux_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
-        result = path.exists(file_path_extract)
-        assert result
-
-    def test_download_random_mac_release_extract(self):
-        release = random_release
-        subprocess.run(args=[name, '--download-release', 'mac', release, '--extract'],
-                       stdout=subprocess.PIPE)
-        file_path_extract = (constants.DIR_DOWNLOADS + '/' + release + '/'
-                             + platforms.mac_arch + '/' + constants.FILE_NAME_CHROMEDRIVER)
-        result = path.exists(file_path_extract)
+        file_path_extracted = (constants.DIR_DOWNLOAD + '/' + release + '/'
+                               + 'bin' + '/' + file_name)
+        result = path.exists(file_path_extracted)
         assert result
 
     ###########
@@ -259,6 +176,6 @@ class TestApp:
     def cleanup(self):
         yield
         try:
-            shutil.rmtree(constants.DIR_DOWNLOADS)
+            shutil.rmtree('chromedriver')
         except FileNotFoundError:
             pass

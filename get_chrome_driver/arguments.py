@@ -3,8 +3,6 @@ from .platforms import Platforms
 platforms = Platforms()
 
 descriptor = '  {:<30} {}'
-message_help_required_platform = descriptor.format('', 'required: add one of the following platforms '
-                                                   + str(platforms.list))
 message_help_required_release = descriptor.format('', 'required: add a release version')
 message_help_optional_extract = descriptor.format('', 'optional: use --extract to extract the zip file')
 
@@ -13,20 +11,16 @@ args_options = [
     ['--stable-version', 'print the stable release version'],
     ['--latest-urls', 'print the beta and stable release urls for all platforms'],
     ['--release-url', 'print the url of a release for a platform' + '\n'
-     + message_help_required_platform + '\n'
      + message_help_required_release],
-    ['--beta-url', 'print the beta release url for a platform' + '\n'
-     + message_help_required_platform],
-    ['--stable-url', 'print the stable release url for a platform' + '\n'
-     + message_help_required_platform],
+    ['--beta-url', 'print the beta release url for a platform'],
+    ['--stable-url', 'print the stable release url for a platform'],
+    ['--auto-download', 'auto download ChromeDriver for the installed Chrome Version' + '\n'
+     + message_help_optional_extract],
     ['--download-beta', 'download the beta release for a platform' + '\n'
-     + message_help_required_platform + '\n'
      + message_help_optional_extract],
     ['--download-stable', 'download the stable release for a platform' + '\n'
-     + message_help_required_platform + '\n'
      + message_help_optional_extract],
     ['--download-release', 'download a release' + '\n'
-     + message_help_required_platform + '\n'
      + message_help_required_release + '\n'
      + message_help_optional_extract],
     ['--extract', 'option to extract the zip file'],
@@ -42,5 +36,5 @@ def print_help():
     for i, argument in enumerate(args_options):
         print(descriptor.format(argument[0], argument[1]))
     print('')
-    print('Find the downloaded drivers at: ')
-    print('<current directory>/<get-chromedriver_downloads>/<release version>/<platform>/<chromedriver>')
+    print('The downloaded driver can be found at: ')
+    print('<current directory>/<chromedriver>/<version>/<bin>/<chromedriver>')
