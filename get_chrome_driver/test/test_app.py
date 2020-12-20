@@ -92,7 +92,7 @@ class TestApp:
     ######################
     # RANDOM RELEASE URL #
     ######################
-    def test_random_win_release_url(self):
+    def test_random_release_url(self):
         url = random_release_url
         out = subprocess.run(args=[name, '--release-url', random_release],
                              universal_newlines=True,
@@ -151,7 +151,7 @@ class TestApp:
     #######################################
     # DOWNLOAD STABLE RELEASE - EXTRACTED #
     #######################################
-    def test_download_stable_win_release_extract(self):
+    def test_download_stable_release_extract(self):
         release = stable_release
         subprocess.run(args=[name, '--download-stable', '--extract'], stdout=subprocess.PIPE)
         file_path_extracted = (constants.DIR_DOWNLOAD + '/' + release + '/'
@@ -162,7 +162,7 @@ class TestApp:
     ########################################
     # DOWNLOAD RANDOM RELEASE - NO EXTRACT #
     ########################################
-    def test_download_random_win_release_no_extract(self):
+    def test_download_random_release_no_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', release], stdout=subprocess.PIPE)
         file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
@@ -173,7 +173,7 @@ class TestApp:
     #######################################
     # DOWNLOAD RANDOM RELEASE - EXTRACTED #
     #######################################
-    def test_download_random_win_release_extract(self):
+    def test_download_random_release_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', release, '--extract'],
                        stdout=subprocess.PIPE)
