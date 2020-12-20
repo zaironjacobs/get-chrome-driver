@@ -14,6 +14,7 @@ from . import constants
 from . import retriever
 from .platforms import Platforms
 from .phase import Phase
+from .exceptions import GetChromeDriverError
 from .exceptions import UnknownPlatformError
 from .exceptions import ReleaseUrlError
 from .exceptions import UnknownReleaseError
@@ -53,6 +54,10 @@ class GetChromeDriver:
         """ Return the stable or beta release version """
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
+
+        if result.status_code != 200:
+            raise GetChromeDriverError('error: could not connect to ' + constants.CHROMEDRIVER_CHROMIUM_URL)
+
         soup = BeautifulSoup(result.content, 'html.parser')
         ul = soup.select_one(constants.UL_RELEASES_SELECTOR)
         for li in ul:
