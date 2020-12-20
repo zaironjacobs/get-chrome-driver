@@ -33,7 +33,7 @@ from get_chrome_driver import GetChromeDriver
 from selenium import webdriver
 
 # Install the driver:
-# Downloads a ChromeDriver version that matches the installed Chrome version on the machine
+# Downloads ChromeDriver for the installed Chrome version on the machine
 # Adds the downloaded ChromeDriver to path
 get_driver = GetChromeDriver()
 get_driver.auto_install()
@@ -144,9 +144,9 @@ $ get-chrome-driver --download-release 84.0.4147.30 --extract
 
 --download-stable           Download the stable release for a platform.
 
---download-release          Download a release.
+--download-release          Download a specific release.
 
---extract                   Option to extract the zip file.
+--extract                   Extract the compressed driver file.
 
 --version                   Program version.
 ```

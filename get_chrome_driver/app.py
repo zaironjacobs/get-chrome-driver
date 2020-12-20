@@ -13,6 +13,7 @@ from .exceptions import GetChromeDriverError
 
 
 def main():
+
     # noinspection PyUnusedLocal
     def signal_handler(signal_received, frame):
         """ Handles clean Ctrl+C exit """
@@ -61,6 +62,8 @@ class App:
             self.__parser.add_argument(arguments.args_options[i][0], nargs='*')
         self.__args, self.__unknown = self.__parser.parse_known_args()
 
+        self.__get_driver = GetChromeDriver()
+
         if self.__unknown:
             print(self.__msg_error_unrecognized_argument)
             sys.exit(0)
@@ -85,7 +88,7 @@ class App:
         ################
         self.__arg_beta_version = self.__args.beta_version
         if self.__arg_passed(self.__arg_beta_version):
-            self.__print_phase_version(self.__phases.beta)
+            self.__print_latest_version(self.__phases.beta)
             sys.exit(0)
 
         ##################
@@ -93,7 +96,7 @@ class App:
         ##################
         self.__arg_stable_version = self.__args.stable_version
         if self.__arg_passed(self.__arg_stable_version):
-            self.__print_phase_version(self.__phases.stable)
+            self.__print_latest_version(self.__phases.stable)
             sys.exit(0)
 
         ###############
@@ -120,7 +123,7 @@ class App:
         ############
         self.__arg_beta_url = self.__args.beta_url
         if self.__arg_passed(self.__arg_beta_url):
-            self.__print_phase_url(self.__phases.beta)
+            self.__print_latest_url(self.__phases.beta)
             sys.exit(0)
 
         ##############
@@ -128,7 +131,7 @@ class App:
         ##############
         self.__arg_stable_url = self.__args.stable_url
         if self.__arg_passed(self.__arg_stable_url):
-            self.__print_phase_url(self.__phases.stable)
+            self.__print_latest_url(self.__phases.stable)
             sys.exit(0)
 
         #################
@@ -152,7 +155,7 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            self.__download_phase_release(self.__phases.beta, extract)
+            self.__download_latest_release(self.__phases.beta, extract)
 
         ###################
         # DOWNLOAD STABLE #
@@ -163,7 +166,7 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            self.__download_phase_release(self.__phases.stable, extract)
+            self.__download_latest_release(self.__phases.stable, extract)
 
         ####################
         # DOWNLOAD RELEASE #
@@ -191,14 +194,14 @@ class App:
             print('v' + __version__)
             sys.exit(0)
 
-    def __arg_passed(self, arg):
-        """ Check if arguments were passed """
+    def __arg_passed(self, arg) -> bool:
+        """ Check if argument(s) were passed """
 
         if isinstance(arg, list):
             return True
         return False
 
-    def __print_latest_urls(self):
+    def __print_latest_urls(self) -> None:
         """ Print the stable nd beta url release for all platforms """
 
         get_driver_win = GetChromeDriver(self.__platforms.win)
@@ -220,84 +223,73 @@ class App:
             if index < len(drivers) - 1:
                 print('')
 
-    def __print_phase_version(self, phase):
+    def __print_latest_version(self, phase) -> None:
         """ Print stable version or beta version """
-
-        get_driver = GetChromeDriver()
 
         if phase == self.__phases.beta:
             try:
-                print(get_driver.beta_release_version())
+                print(self.__get_driver.beta_release_version())
             except GetChromeDriverError:
                 print(self.__msg_no_beta_release_version_error)
         else:
             try:
-                print(get_driver.stable_release_version())
+                print(self.__get_driver.stable_release_version())
             except GetChromeDriverError:
                 print(self.__msg_no_stable_release_version_error)
 
-    def __print_phase_url(self, phase):
+    def __print_latest_url(self, phase) -> None:
         """ Print stable url or beta url """
 
-        get_driver = GetChromeDriver()
         if phase == self.__phases.beta:
             try:
-                print(get_driver.beta_release_url())
+                print(self.__get_driver.beta_release_url())
             except GetChromeDriverError:
                 print(self.__msg_release_url_error)
         else:
             try:
-                print(get_driver.stable_release_url())
+                print(self.__get_driver.stable_release_url())
             except GetChromeDriverError:
                 print(self.__msg_release_url_error)
 
-    def __print_release_url(self, release):
+    def __print_release_url(self, release) -> None:
         """ Print the url for a given version """
 
-        get_driver = GetChromeDriver()
-
         try:
-            print(get_driver.release_url(release))
+            print(self.__get_driver.release_url(release))
         except GetChromeDriverError:
             print(self.__msg_release_url_error)
 
-    def __auto_download(self, extract):
+    def __auto_download(self, extract) -> None:
         """ Auto download ChromeDriver """
 
-        get_driver = GetChromeDriver()
-
         try:
-            get_driver.auto_download(extract=extract)
+            self.__get_driver.auto_download(extract=extract)
             print(self.__msg_download_finished)
         except GetChromeDriverError:
             print(self.__msg_download_error)
 
-    def __download_phase_release(self, phase, extract):
+    def __download_latest_release(self, phase, extract) -> None:
         """ Download the release for the stable version or beta version """
-
-        get_driver = GetChromeDriver()
 
         if phase == self.__phases.beta:
             try:
-                get_driver.download_beta_release(extract=extract)
+                self.__get_driver.download_beta_release(extract=extract)
                 print(self.__msg_download_finished)
             except GetChromeDriverError:
                 print(self.__msg_download_error)
                 print(self.__msg_no_beta_release_version_error)
         else:
             try:
-                get_driver.download_stable_release(extract=extract)
+                self.__get_driver.download_stable_release(extract=extract)
                 print(self.__msg_download_finished)
             except GetChromeDriverError:
                 print(self.__msg_download_error)
 
-    def __download_release(self, release, extract):
+    def __download_release(self, release, extract) -> None:
         """ Download the release of a given version """
 
-        get_driver = GetChromeDriver()
-
         try:
-            get_driver.download_release(release, extract=extract)
+            self.__get_driver.download_release(release, extract=extract)
             print(self.__msg_download_finished)
         except GetChromeDriverError:
             print(self.__msg_download_error)

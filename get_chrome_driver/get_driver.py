@@ -185,7 +185,7 @@ class GetChromeDriver:
                 break
 
         if chromedriver_version_to_download == '':
-            raise VersionError('error: unable to find a ChromeDriver version that matches the installed Chrome version')
+            raise VersionError('error: unable to find a ChromeDriver version for the installed Chrome version')
 
         if pl.system() == 'Windows':
             return self.download_release(chromedriver_version_to_download, extract=extract)

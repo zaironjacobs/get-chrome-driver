@@ -20,10 +20,10 @@ args_options = [
      + message_help_optional_extract],
     ['--download-stable', 'download the stable release for a platform' + '\n'
      + message_help_optional_extract],
-    ['--download-release', 'download a release' + '\n'
+    ['--download-release', 'download a specific release' + '\n'
      + message_help_required_release + '\n'
      + message_help_optional_extract],
-    ['--extract', 'option to extract the zip file'],
+    ['--extract', 'extract the compressed driver file'],
     ['--version', 'program version'],
     ['--help', 'show help']
 ]
