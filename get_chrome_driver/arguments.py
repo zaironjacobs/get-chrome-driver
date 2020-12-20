@@ -14,7 +14,7 @@ args_options = [
      + message_help_required_release],
     ['--beta-url', 'print the beta release url for a platform'],
     ['--stable-url', 'print the stable release url for a platform'],
-    ['--auto-download', 'auto download ChromeDriver for the installed Chrome Version' + '\n'
+    ['--auto-download', 'auto download a ChromeDriver release for the installed Chrome Version' + '\n'
      + message_help_optional_extract],
     ['--download-beta', 'download the beta release for a platform' + '\n'
      + message_help_optional_extract],

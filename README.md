@@ -63,7 +63,7 @@ print(get_driver.release_url('84.0.4147.30'))
 
 # Auto download ChromeDriver for the installed Chrome version
 # Optional: use output_path= to specify where to download the driver
-# Optional: use extract=True to extract the zip file
+# Optional: use extract=True to extract the file
 get_driver.auto_download(extract=True)
 
 # Download the stable driver release
@@ -73,7 +73,7 @@ get_driver.download_stable_release(extract=True)
 
 # Download a specific driver release
 # Optional: use output_path= to specify where to download the driver
-# Optional: use extract=True to extract the zip file
+# Optional: use extract=True to extract the file
 get_driver.download_release('84.0.4147.30', extract=True)
 ```
 
@@ -132,17 +132,17 @@ $ get-chrome-driver --download-release 84.0.4147.30 --extract
 
 --latest-urls               Print the beta and stable release urls for all platforms.
 
---release-url               Print the url of a release for a platform.
+--release-url               Print the url of a release.
 
---beta-url                  Print the beta release url for a platform.
+--beta-url                  Print the beta release url.
 
---stable-url                Print the stable release url for a platform.
+--stable-url                Print the stable release url.
 
---auto-download             Auto download ChromeDriver for the installed Chrome Version.
+--auto-download             Auto download a ChromeDriver release for the installed Chrome Version.
 
---download-beta             Download the beta release for a platform.
+--download-beta             Download the beta release.
 
---download-stable           Download the stable release for a platform.
+--download-stable           Download the stable release.
 
 --download-release          Download a specific release.
 
