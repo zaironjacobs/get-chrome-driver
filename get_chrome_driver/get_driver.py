@@ -53,12 +53,12 @@ class GetChromeDriver:
     def __latest_release_version(self, phase) -> str:
         """ Return the stable or beta release version """
 
-        result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
+        res = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
 
-        if result.status_code != 200:
+        if res.status_code != 200:
             raise GetChromeDriverError('error: could not connect to ' + constants.CHROMEDRIVER_CHROMIUM_URL)
 
-        soup = BeautifulSoup(result.content, 'html.parser')
+        soup = BeautifulSoup(res.content, 'html.parser')
         ul = soup.select_one(constants.UL_RELEASES_SELECTOR)
         for li in ul:
             li_text = li.text.replace(u'\u00A0', ' ')
