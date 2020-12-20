@@ -4,6 +4,7 @@ import zipfile
 import platform as pl
 import xml.etree.ElementTree as ElTree
 import subprocess
+import struct
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
@@ -26,17 +27,17 @@ from .exceptions import FeatureNotImplementedError
 class GetChromeDriver:
 
     def __init__(self, platform=None) -> None:
-        self.__available_platforms = Platforms()
+        self.__platforms = Platforms()
 
         if not platform:
             if pl.system() == 'Windows':
-                self.__current_set_platform = self.__check_platform(self.__available_platforms.win)
+                self.__platform = self.__check_platform(self.__platforms.win)
             elif pl.system() == 'Linux':
-                self.__current_set_platform = self.__check_platform(self.__available_platforms.linux)
+                self.__platform = self.__check_platform(self.__platforms.linux)
             elif pl.system() == 'Darwin':
-                self.__current_set_platform = self.__check_platform(self.__available_platforms.mac)
+                self.__platform = self.__check_platform(self.__platforms.mac)
         else:
-            self.__current_set_platform = self.__check_platform(platform)
+            self.__platform = self.__check_platform(platform)
 
         self.__phases = Phase()
 
@@ -91,17 +92,59 @@ class GetChromeDriver:
 
         self.__check_release(release)
 
-        url = ''
-        if self.__current_set_platform == self.__available_platforms.win:
-            url = constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.FILE_NAME_CHROMEDRIVER_WIN_ZIP
-        elif self.__current_set_platform == self.__available_platforms.linux:
-            url = constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.FILE_NAME_CHROMEDRIVER_LINUX_ZIP
-        elif self.__current_set_platform == self.__available_platforms.mac:
-            url = constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.FILE_NAME_CHROMEDRIVER_MAC_ZIP
+        arch = struct.calcsize('P') * 8
+        arch_64 = 64
 
-        self.__check_url(url)
+        if self.__platform == self.__platforms.win:
 
-        return url
+            # 64bit
+            if arch == arch_64:
+                try:
+                    url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.CHROMEDRIVER + '_'
+                           + self.__platforms.win_64 + constants.ZIP_TYPE)
+                    self.__check_url(url)
+                    return url
+                except ReleaseUrlError:
+                    pass
+            # 32bit
+            url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.CHROMEDRIVER + '_'
+                   + self.__platforms.win_32 + constants.ZIP_TYPE)
+            self.__check_url(url)
+            return url
+
+        elif self.__platform == self.__platforms.linux:
+
+            # 64bit
+            if arch == arch_64:
+                try:
+                    url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.CHROMEDRIVER + '_'
+                           + self.__platforms.linux_64 + constants.ZIP_TYPE)
+                    self.__check_url(url)
+                    return url
+                except ReleaseUrlError:
+                    pass
+            # 32bit
+            url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.CHROMEDRIVER + '_'
+                   + self.__platforms.linux_32 + constants.ZIP_TYPE)
+            self.__check_url(url)
+            return url
+
+        elif self.__platform == self.__platforms.mac:
+
+            # 64bit
+            if arch == arch_64:
+                try:
+                    url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.CHROMEDRIVER + '_'
+                           + self.__platforms.mac_64 + constants.ZIP_TYPE)
+                    self.__check_url(url)
+                    return url
+                except ReleaseUrlError:
+                    pass
+            # 32bit
+            url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + release + '/' + constants.CHROMEDRIVER + '_'
+                   + self.__platforms.mac_32 + constants.ZIP_TYPE)
+            self.__check_url(url)
+            return url
 
     def download_stable_release(self, output_path=None, extract=False) -> None:
         """ Download the latest stable chromedriver release """
@@ -138,16 +181,16 @@ class GetChromeDriver:
                 os.remove(output_path_with_file_name)
 
                 if pl.system() == 'Linux':
-                    os.chmod(output_path_no_file_name + '/' + constants.FILE_NAME_CHROMEDRIVER, 0o755)
+                    os.chmod(output_path_no_file_name + '/' + constants.CHROMEDRIVER, 0o755)
 
             return output_path_no_file_name
 
         url = self.release_url(release)
-        if self.__current_set_platform == self.__available_platforms.win:
+        if self.__platform == self.__platforms.win:
             return download(url)
-        elif self.__current_set_platform == self.__available_platforms.linux:
+        elif self.__platform == self.__platforms.linux:
             return download(url)
-        elif self.__current_set_platform == self.__available_platforms.mac:
+        elif self.__platform == self.__platforms.mac:
             return download(url)
 
     def __check_url(self, url) -> None:
@@ -168,9 +211,9 @@ class GetChromeDriver:
     def __check_platform(self, platform) -> str:
         """ Check if platform is valid """
 
-        if platform not in self.__available_platforms.list:
+        if platform not in self.__platforms.list:
             raise UnknownPlatformError('error: platform not recognized, choose a platform from: '
-                                       + str(self.__available_platforms.list))
+                                       + str(self.__platforms.list))
 
         return platform
 
