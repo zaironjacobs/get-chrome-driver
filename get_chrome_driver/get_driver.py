@@ -241,7 +241,7 @@ class GetChromeDriver:
         elif pl.system() == 'Linux':
             return self.download_release(chromedriver_version_to_download, extract=extract)
 
-    def auto_install(self) -> None:
+    def install(self) -> None:
         """ Install ChromeDriver for the installed Chrome version on machine """
 
         if pl.system() == 'Darwin':

@@ -36,13 +36,13 @@ from selenium import webdriver
 # Downloads ChromeDriver for the installed Chrome version on the machine
 # Adds the downloaded ChromeDriver to path
 get_driver = GetChromeDriver()
-get_driver.auto_install()
+get_driver.install()
 
 # Use the installed ChromeDriver with Selenium
-chrome_driver = webdriver.Chrome()
-chrome_driver.get("https://google.com")
+driver = webdriver.Chrome()
+driver.get("https://google.com")
 time.sleep(3)
-chrome_driver.quit()
+driver.quit()
 ```
 
 #### For downloading only
@@ -138,7 +138,7 @@ $ get-chrome-driver --download-release 84.0.4147.30 --extract
 
 --stable-url                Print the stable release url.
 
---auto-download             Auto download a ChromeDriver release for the installed Chrome Version.
+--auto-download             Download a ChromeDriver release for the installed Chrome Version.
 
 --download-beta             Download the beta release.
 
