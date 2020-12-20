@@ -195,14 +195,14 @@ class App:
             sys.exit(0)
 
     def __arg_passed(self, arg) -> bool:
-        """ Check if argument(s) were passed """
+        """ Check if the argument was passed """
 
         if isinstance(arg, list):
             return True
         return False
 
     def __print_latest_urls(self) -> None:
-        """ Print the stable nd beta url release for all platforms """
+        """ Print the stable and beta url release for all platforms """
 
         get_driver_win = GetChromeDriver(self.__platforms.win)
         get_driver_linux = GetChromeDriver(self.__platforms.linux)
