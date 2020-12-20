@@ -248,14 +248,8 @@ class GetChromeDriver:
             raise FeatureNotImplementedError('feature has not been implemented for macOS yet')
 
         output_path = self.auto_download(extract=True)
-
-        if pl.system() == 'Windows':
-            path = os.path.join(os.path.abspath(os.getcwd()), output_path)
-            os.environ['PATH'] += os.pathsep + os.pathsep.join([path])
-
-        elif pl.system() == 'Linux':
-            path = os.path.join(os.path.abspath(os.getcwd()), output_path)
-            os.environ['PATH'] += os.pathsep + os.pathsep.join([path])
+        path = os.path.join(os.path.abspath(os.getcwd()), output_path)
+        os.environ['PATH'] += os.pathsep + os.pathsep.join([path])
 
     def __get_all_chromedriver_versions(self) -> list:
         """ Return a list with all ChromeDriver versions """

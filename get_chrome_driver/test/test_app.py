@@ -20,24 +20,21 @@ platforms = Platforms()
 stable_release = config('STABLE_RELEASE')
 random_release = config('RANDOM_RELEASE')
 
-file_name_zipped = ''
-stable_release_url = ''
-random_release_url = ''
 if pl.system() == 'Windows':
     file_name_zipped = 'chromedriver_win32.zip'
     file_name = 'chromedriver.exe'
-    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_win32.zip'
-    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_win32.zip'
+    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/' + file_name_zipped
+    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/' + file_name_zipped
 elif pl.system() == 'Linux':
     file_name_zipped = 'chromedriver_linux64.zip'
     file_name = 'chromedriver'
-    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_linux64.zip'
-    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_linux64.zip'
+    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/' + file_name_zipped
+    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/' + file_name_zipped
 elif pl.system() == 'Darwin':
     file_name_zipped = 'chromedriver_mac64.zip'
     file_name = 'chromedriver'
-    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/chromedriver_mac64.zip'
-    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/chromedriver_mac64.zip'
+    stable_release_url = 'https://chromedriver.storage.googleapis.com/' + stable_release + '/' + file_name_zipped
+    random_release_url = 'https://chromedriver.storage.googleapis.com/' + random_release + '/' + file_name_zipped
 
 # Change to the current test directory
 os.chdir(os.path.dirname(__file__))
