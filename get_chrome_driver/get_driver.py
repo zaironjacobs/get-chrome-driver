@@ -241,6 +241,12 @@ class GetChromeDriver:
         if chromedriver_version_to_download == '':
             raise VersionError('error: unable to find a ChromeDriver version for the installed Chrome version')
 
+        path = constants.CHROMEDRIVER + '/' + chromedriver_version_to_download + '/' + 'bin'
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file[:len(constants.CHROMEDRIVER)] == constants.CHROMEDRIVER:
+                    return path
+
         if pl.system() == 'Windows':
             return self.download_release(chromedriver_version_to_download, extract=extract)
 
