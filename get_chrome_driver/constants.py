@@ -8,8 +8,6 @@ CHROMEDRIVER = 'chromedriver'
 FILE_NAME_CHROMEDRIVER = 'chromedriver'
 FILE_NAME_CHROMEDRIVER_EXE = 'chromedriver.exe'
 
-DIR_DOWNLOAD = 'chromedriver'
-
 UL_RELEASES_SELECTOR = '#sites-canvas-main-content > table > tbody > tr > td > div > div:nth-child(5) > ul'
 
 LATEST_STABLE_RELEASE_STR = 'Latest stable release'

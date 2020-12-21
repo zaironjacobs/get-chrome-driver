@@ -1,3 +1,3 @@
-__version__ = '1.1.30'
+__version__ = '1.1.31'
 
 from .get_driver import GetChromeDriver

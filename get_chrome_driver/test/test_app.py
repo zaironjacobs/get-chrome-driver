@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import requests
 from decouple import config
 
+from get_chrome_driver import GetChromeDriver
 from .. import constants
 from .. import __version__
 from ..platforms import Platforms
@@ -112,11 +113,11 @@ class TestApp:
     # AUTO DOWNLOAD - NO EXTRACT #
     ##############################
     def test_auto_download_no_extract(self):
-        # Keep Chrome on test machine updated to match the stable ChromeDriver during testing
 
-        release = stable_release
+        get_driver = GetChromeDriver()
+        release = get_driver.matching_version()
         subprocess.run(args=[name, '--auto-download'], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
+        file_path = (constants.CHROMEDRIVER + '/' + release + '/'
                      + 'bin' + '/' + file_name_zipped)
         result = path.exists(file_path)
         assert result
@@ -125,11 +126,11 @@ class TestApp:
     # AUTO DOWNLOAD - EXTRACT #
     ###########################
     def test_auto_download_extract(self):
-        # Keep Chrome on test machine updated to match the stable ChromeDriver during testing
 
-        release = stable_release
+        get_driver = GetChromeDriver()
+        release = get_driver.matching_version()
         subprocess.run(args=[name, '--auto-download', '--extract'], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
+        file_path = (constants.CHROMEDRIVER + '/' + release + '/'
                      + 'bin' + '/' + file_name)
         result = path.exists(file_path)
         assert result
@@ -140,7 +141,7 @@ class TestApp:
     def test_download_stable_release_no_extract(self):
         release = stable_release
         subprocess.run(args=[name, '--download-stable'], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
+        file_path = (constants.CHROMEDRIVER + '/' + release + '/'
                      + 'bin' + '/' + file_name_zipped)
         result = path.exists(file_path)
         assert result
@@ -151,7 +152,7 @@ class TestApp:
     def test_download_stable_release_extract(self):
         release = stable_release
         subprocess.run(args=[name, '--download-stable', '--extract'], stdout=subprocess.PIPE)
-        file_path_extracted = (constants.DIR_DOWNLOAD + '/' + release + '/'
+        file_path_extracted = (constants.CHROMEDRIVER + '/' + release + '/'
                                + 'bin' + '/' + file_name)
         result = path.exists(file_path_extracted)
         assert result
@@ -162,7 +163,7 @@ class TestApp:
     def test_download_random_release_no_extract(self):
         release = random_release
         subprocess.run(args=[name, '--download-release', release], stdout=subprocess.PIPE)
-        file_path = (constants.DIR_DOWNLOAD + '/' + release + '/'
+        file_path = (constants.CHROMEDRIVER + '/' + release + '/'
                      + 'bin' + '/' + file_name_zipped)
         result = path.exists(file_path)
         assert result
@@ -174,7 +175,7 @@ class TestApp:
         release = random_release
         subprocess.run(args=[name, '--download-release', release, '--extract'],
                        stdout=subprocess.PIPE)
-        file_path_extracted = (constants.DIR_DOWNLOAD + '/' + release + '/'
+        file_path_extracted = (constants.CHROMEDRIVER + '/' + release + '/'
                                + 'bin' + '/' + file_name)
         result = path.exists(file_path_extracted)
         assert result
@@ -192,10 +193,10 @@ class TestApp:
     ###########
     # CLEANUP #
     ###########
-    @pytest.fixture(scope='session', autouse=True)
+    @pytest.fixture(scope='function', autouse=True)
     def cleanup(self):
         yield
         try:
-            shutil.rmtree('chromedriver')
+            shutil.rmtree(constants.CHROMEDRIVER)
         except FileNotFoundError:
             pass

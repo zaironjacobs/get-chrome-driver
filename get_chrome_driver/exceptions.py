@@ -20,7 +20,3 @@ class DownloadError(GetChromeDriverError):
 
 class VersionError(GetChromeDriverError):
     pass
-
-
-class FeatureNotImplementedError(GetChromeDriverError):
-    pass
