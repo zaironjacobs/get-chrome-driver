@@ -217,11 +217,8 @@ class GetChromeDriver:
 
         return platform
 
-    def auto_download(self, extract=False) -> str:
-        """ Download ChromeDriver for the installed Chrome version on machine """
-
-        if pl.system() == 'Darwin':
-            raise FeatureNotImplementedError('feature has not been implemented for macOS yet')
+    def matching_version(self):
+        """ Return a matching ChromeDriver version """
 
         all_chromedriver_versions = self.__get_all_chromedriver_versions()
         installed_chrome_version = self.__get_installed_chrome_version()
@@ -231,6 +228,15 @@ class GetChromeDriver:
             if '.'.join(installed_chrome_version.split('.')[:-1]) == '.'.join(chromedriver_version.split('.')[:-1]):
                 chromedriver_version_to_download = chromedriver_version
                 break
+        return chromedriver_version_to_download
+
+    def auto_download(self, extract=False) -> str:
+        """ Download ChromeDriver for the installed Chrome version on machine """
+
+        if pl.system() == 'Darwin':
+            raise FeatureNotImplementedError('feature has not been implemented for macOS yet')
+
+        chromedriver_version_to_download = self.matching_version()
 
         if chromedriver_version_to_download == '':
             raise VersionError('error: unable to find a ChromeDriver version for the installed Chrome version')
