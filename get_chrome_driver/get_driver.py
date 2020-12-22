@@ -162,35 +162,38 @@ class GetChromeDriver:
 
         self.__check_release(release)
 
-        def download(url_download) -> str:
-            if output_path is None:
-                output_path_no_file_name = constants.CHROMEDRIVER + '/' + release + '/bin'
-            else:
-                output_path_no_file_name = output_path
+        if not output_path:
+            path = self._create_output_path_str(release)
+        else:
+            path = output_path
 
+        # If the driver file already exists, return the dir path of the driver file
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if (file.lower() == constants.CHROMEDRIVER.lower() or
+                        file.lower() == constants.CHROMEDRIVER.lower() + '.exe'):
+                    return path
+
+        def download(download_url, download_path) -> str:
             try:
-                output_path_with_file_name, file_name = retriever.download(url=url_download,
-                                                                           output_path=output_path_no_file_name)
+                output_path_with_file_name, file_name = retriever.download(url=download_url, output_path=download_path)
             except (OSError, HTTPError, RequestException) as err:
                 raise DownloadError(err)
 
             if extract:
                 with zipfile.ZipFile(output_path_with_file_name, 'r') as zip_ref:
-                    zip_ref.extractall(path=output_path_no_file_name)
+                    zip_ref.extractall(path=download_path)
                 os.remove(output_path_with_file_name)
 
                 if pl.system() == 'Linux' or pl.system() == 'Darwin':
-                    os.chmod(output_path_no_file_name + '/' + constants.CHROMEDRIVER, 0o755)
+                    os.chmod(path + '/' + constants.CHROMEDRIVER, 0o755)
 
-            return output_path_no_file_name
+            return path
 
         url = self.release_url(release)
-        if self.__platform == self.__platforms.win:
-            return download(url)
-        elif self.__platform == self.__platforms.linux:
-            return download(url)
-        elif self.__platform == self.__platforms.mac:
-            return download(url)
+
+        # Download the driver file and return the dir path of the driver file
+        return download(url, path)
 
     def __check_url(self, url) -> None:
         """ Check if url is valid """
@@ -232,17 +235,11 @@ class GetChromeDriver:
     def auto_download(self, extract=False) -> str:
         """ Download ChromeDriver for the installed Chrome version on machine """
 
-        chromedriver_version_to_download = self.matching_version()
-        if chromedriver_version_to_download == '':
+        release = self.matching_version()
+        if release == '' or release is None:
             raise VersionError('error: unable to find a ChromeDriver version for the installed Chrome version')
 
-        path = constants.CHROMEDRIVER + '/' + chromedriver_version_to_download + '/' + 'bin'
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                if file[:len(constants.CHROMEDRIVER)] == constants.CHROMEDRIVER:
-                    return path
-
-        return self.download_release(chromedriver_version_to_download, extract=extract)
+        return self.download_release(release, extract=extract)
 
     def install(self) -> None:
         """ Install ChromeDriver for the installed Chrome version on machine """
@@ -311,3 +308,8 @@ class GetChromeDriver:
                 ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'],
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
             return process.communicate()[0].decode('UTF-8').split()[-1]
+
+    def _create_output_path_str(self, release) -> str:
+        """ Return the default output path """
+
+        return constants.CHROMEDRIVER + '/' + release + '/' + 'bin'

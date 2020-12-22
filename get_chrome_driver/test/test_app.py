@@ -113,12 +113,10 @@ class TestApp:
     # AUTO DOWNLOAD - NO EXTRACT #
     ##############################
     def test_auto_download_no_extract(self):
-
         get_driver = GetChromeDriver()
         release = get_driver.matching_version()
         subprocess.run(args=[name, '--auto-download'], stdout=subprocess.PIPE)
-        file_path = (constants.CHROMEDRIVER + '/' + release + '/'
-                     + 'bin' + '/' + file_name_zipped)
+        file_path = get_driver._create_output_path_str(release) + '/' + file_name_zipped
         result = path.exists(file_path)
         assert result
 
@@ -126,23 +124,21 @@ class TestApp:
     # AUTO DOWNLOAD - EXTRACT #
     ###########################
     def test_auto_download_extract(self):
-
         get_driver = GetChromeDriver()
         release = get_driver.matching_version()
         subprocess.run(args=[name, '--auto-download', '--extract'], stdout=subprocess.PIPE)
-        file_path = (constants.CHROMEDRIVER + '/' + release + '/'
-                     + 'bin' + '/' + file_name)
-        result = path.exists(file_path)
+        file_path_extracted = get_driver._create_output_path_str(release) + '/' + file_name
+        result = path.exists(file_path_extracted)
         assert result
 
     ########################################
     # DOWNLOAD STABLE RELEASE - NO EXTRACT #
     ########################################
     def test_download_stable_release_no_extract(self):
+        get_driver = GetChromeDriver()
         release = stable_release
         subprocess.run(args=[name, '--download-stable'], stdout=subprocess.PIPE)
-        file_path = (constants.CHROMEDRIVER + '/' + release + '/'
-                     + 'bin' + '/' + file_name_zipped)
+        file_path = get_driver._create_output_path_str(release) + '/' + file_name_zipped
         result = path.exists(file_path)
         assert result
 
@@ -150,10 +146,10 @@ class TestApp:
     # DOWNLOAD STABLE RELEASE - EXTRACTED #
     #######################################
     def test_download_stable_release_extract(self):
+        get_driver = GetChromeDriver()
         release = stable_release
         subprocess.run(args=[name, '--download-stable', '--extract'], stdout=subprocess.PIPE)
-        file_path_extracted = (constants.CHROMEDRIVER + '/' + release + '/'
-                               + 'bin' + '/' + file_name)
+        file_path_extracted = get_driver._create_output_path_str(release) + '/' + file_name
         result = path.exists(file_path_extracted)
         assert result
 
@@ -161,10 +157,10 @@ class TestApp:
     # DOWNLOAD RANDOM RELEASE - NO EXTRACT #
     ########################################
     def test_download_random_release_no_extract(self):
+        get_driver = GetChromeDriver()
         release = random_release
         subprocess.run(args=[name, '--download-release', release], stdout=subprocess.PIPE)
-        file_path = (constants.CHROMEDRIVER + '/' + release + '/'
-                     + 'bin' + '/' + file_name_zipped)
+        file_path = get_driver._create_output_path_str(release) + '/' + file_name_zipped
         result = path.exists(file_path)
         assert result
 
@@ -172,11 +168,11 @@ class TestApp:
     # DOWNLOAD RANDOM RELEASE - EXTRACTED #
     #######################################
     def test_download_random_release_extract(self):
+        get_driver = GetChromeDriver()
         release = random_release
         subprocess.run(args=[name, '--download-release', release, '--extract'],
                        stdout=subprocess.PIPE)
-        file_path_extracted = (constants.CHROMEDRIVER + '/' + release + '/'
-                               + 'bin' + '/' + file_name)
+        file_path_extracted = get_driver._create_output_path_str(release) + '/' + file_name
         result = path.exists(file_path_extracted)
         assert result
 
