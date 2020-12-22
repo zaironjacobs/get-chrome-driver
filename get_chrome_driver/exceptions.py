@@ -2,7 +2,7 @@ class GetChromeDriverError(Exception):
     pass
 
 
-class ReleaseUrlError(GetChromeDriverError):
+class VersionUrlError(GetChromeDriverError):
     pass
 
 
@@ -10,7 +10,7 @@ class UnknownPlatformError(GetChromeDriverError):
     pass
 
 
-class UnknownReleaseError(GetChromeDriverError):
+class UnknownVersionError(GetChromeDriverError):
     pass
 
 

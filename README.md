@@ -6,8 +6,8 @@ Get ChromeDriver
 [![PyPI - License](https://img.shields.io/pypi/l/get-chrome-driver)](https://pypi.python.org/pypi/get-chrome-driver)
 
 A tool to download and install ChromeDriver. Automatically download a ChromeDriver version for the current installed
-Chrome version. Or you can choose to download the beta release (if one is currently available), the stable release or
-another specific release. You can use this tool as a package import or as a command-line application.
+Chrome version. Or you can choose to download the beta version (if one is currently available), the stable version or
+another specific version. You can use this tool as a package import or as a command-line application.
 
 ## Install
 
@@ -52,46 +52,46 @@ from get_chrome_driver import GetChromeDriver
 
 get_driver = GetChromeDriver()
 
-# Print the stable release version
-print(get_driver.stable_release_version())
+# Print the stable version
+print(get_driver.stable_version())
 
-# Print the stable release download link
-print(get_driver.stable_release_url())
+# Print the stable version download link
+print(get_driver.stable_version_url())
 
-# Print the download link of a specific release
-print(get_driver.release_url('84.0.4147.30'))
+# Print the download link of a specific version
+print(get_driver.version_url('84.0.4147.30'))
 
 # Auto download ChromeDriver for the installed Chrome version
 # Optional: use output_path= to specify where to download the driver
 # Optional: use extract=True to extract the file
 get_driver.auto_download(extract=True)
 
-# Download the stable driver release
+# Download the stable driver version
 # Optional: use output_path= to specify where to download the driver
 # Optional: use extract=True to extract the zip file
-get_driver.download_stable_release(extract=True)
+get_driver.download_stable_version(extract=True)
 
-# Download a specific driver release
+# Download a specific driver version
 # Optional: use output_path= to specify where to download the driver
 # Optional: use extract=True to extract the file
-get_driver.download_release('84.0.4147.30', extract=True)
+get_driver.download_version('84.0.4147.30', extract=True)
 ```
 
 #### Command-line
 
-Print the stable release url of all platforms:
+Print the stable version url of all platforms:
 
 ```console
 $ get-chrome-driver --latest-urls
 ```
 
-Print the stable release version:
+Print the stable version:
 
 ```console
 $ get-chrome-driver --stable-version
 ```
 
-Print the stable release url:
+Print the stable version url:
 
 ```console
 $ get-chrome-driver --stable-url
@@ -103,48 +103,48 @@ Auto download ChromeDriver for the current installed Chrome version and extract 
 $ get-chrome-driver --auto-download --extract
 ```
 
-Download the stable release and extract the file:
+Download the stable version and extract the file:
 
 ```console
 $ get-chrome-driver --download-stable --extract
 ```
 
-Download a specific release and extract the file:
+Download a specific version and extract the file:
 
 ```console
-$ get-chrome-driver --download-release 84.0.4147.30 --extract
+$ get-chrome-driver --download-version 84.0.4147.30 --extract
 ```
 
 #### The downloaded driver can be found at:
 
 *`<current directory>/<chromedriver>/<version>/<bin>/<chromedriver>`*
 
-*Note: Beta release related options and functions will only work if one is currently available.*
+*Note: Beta version related options and functions will only work if one is currently available.*
 
 ### Options
 
 ```
 --help                      Show help.
 
---beta-version              Print the beta release version.
+--beta-version              Print the beta version.
 
---stable-version            Print the stable release version.
+--stable-version            Print the stable version.
 
---latest-urls               Print the beta and stable release urls for all platforms.
+--latest-urls               Print the beta and stable version urls for all platforms.
 
---release-url               Print the url of a release.
+--version-url               Print the url of a version.
 
---beta-url                  Print the beta release url.
+--beta-url                  Print the beta version url.
 
---stable-url                Print the stable release url.
+--stable-url                Print the stable version url.
 
---auto-download             Download a ChromeDriver release for the installed Chrome Version.
+--auto-download             Download a ChromeDriver version for the installed Chrome Version.
 
---download-beta             Download the beta release.
+--download-beta             Download the beta version.
 
---download-stable           Download the stable release.
+--download-stable           Download the stable version.
 
---download-release          Download a specific release.
+--download-version          Download a specific version.
 
 --extract                   Extract the compressed driver file.
 

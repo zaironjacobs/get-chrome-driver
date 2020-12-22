@@ -13,7 +13,6 @@ from .exceptions import GetChromeDriverError
 
 
 def main():
-
     # noinspection PyUnusedLocal
     def signal_handler(signal_received, frame):
         """ Handles clean Ctrl+C exit """
@@ -36,7 +35,7 @@ class App:
         self.__phases = Phase()
 
         self.__msg_download_finished = 'download finished'
-        self.__msg_required_add_release = (self.__c_fore.RED + 'required: add a release version'
+        self.__msg_required_add_version = (self.__c_fore.RED + 'required: add a version'
                                            + self.__c_style.RESET_ALL)
         self.__msg_optional_add_extract = 'optional: add --extract to extract the zip file'
         self.__msg_error_unrecognized_argument = (
@@ -44,18 +43,18 @@ class App:
                 + '\n' + 'tip: use --help to see all available arguments')
         self.__msg_download_error = (self.__c_fore.RED + 'error: an error occurred at downloading'
                                      + self.__c_style.RESET_ALL)
-        self.__msg_release_url_error = (self.__c_fore.RED + 'error: could not find release url'
+        self.__msg_version_url_error = (self.__c_fore.RED + 'error: could not find version url'
                                         + self.__c_style.RESET_ALL)
         self.__msg_no_stable_found_error = (self.__c_fore.RED + 'not found'
                                             + self.__c_style.RESET_ALL)
         self.__msg_no_beta_available_error = (self.__c_fore.RED + 'not beta version available'
                                               + self.__c_style.RESET_ALL)
-        self.__msg_no_beta_release_version_error = (self.__c_fore.RED
-                                                    + 'error: could not find a beta release version'
-                                                    + self.__c_style.RESET_ALL)
-        self.__msg_no_stable_release_version_error = (self.__c_fore.RED
-                                                      + 'error: could not find a stable release version'
-                                                      + self.__c_style.RESET_ALL)
+        self.__msg_no_beta_version_error = (self.__c_fore.RED
+                                            + 'error: could not find a beta version'
+                                            + self.__c_style.RESET_ALL)
+        self.__msg_no_stable_version_error = (self.__c_fore.RED
+                                              + 'error: could not find a stable version'
+                                              + self.__c_style.RESET_ALL)
 
         self.__parser = argparse.ArgumentParser(add_help=False)
         for i, arg in enumerate(arguments.args_options):
@@ -108,14 +107,14 @@ class App:
             sys.exit(0)
 
         ###############
-        # RELEASE URL #
+        # VERSION URL #
         ###############
-        self.__arg_release_url = self.__args.release_url
-        if self.__arg_passed(self.__arg_release_url):
-            if len(self.__arg_release_url) < 1:
-                print(self.__msg_required_add_release)
+        self.__arg_version_url = self.__args.version_url
+        if self.__arg_passed(self.__arg_version_url):
+            if len(self.__arg_version_url) < 1:
+                print(self.__msg_required_add_version)
             else:
-                self.__print_release_url(self.__arg_release_url[0])
+                self.__print_version_url(self.__arg_version_url[0])
             sys.exit(0)
 
         ############
@@ -155,7 +154,7 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            self.__download_latest_release(self.__phases.beta, extract)
+            self.__download_latest_version(self.__phases.beta, extract)
 
         ###################
         # DOWNLOAD STABLE #
@@ -166,24 +165,24 @@ class App:
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            self.__download_latest_release(self.__phases.stable, extract)
+            self.__download_latest_version(self.__phases.stable, extract)
 
         ####################
-        # DOWNLOAD RELEASE #
+        # DOWNLOAD VERSION #
         ####################
-        self.__arg_download_release = self.__args.download_release
-        if self.__arg_passed(self.__arg_download_release):
+        self.__arg_download_version = self.__args.download_version
+        if self.__arg_passed(self.__arg_download_version):
             extract = False
             self.__arg_extract = self.__args.extract
             if self.__arg_passed(self.__arg_extract):
                 extract = True
-            if len(self.__arg_download_release) < 1:
-                print(self.__msg_required_add_release)
+            if len(self.__arg_download_version) < 1:
+                print(self.__msg_required_add_version)
                 print(self.__msg_optional_add_extract)
                 sys.exit(0)
             else:
-                release = self.__arg_download_release[0]
-                self.__download_release(release, extract)
+                version = self.__arg_download_version[0]
+                self.__download_version(version, extract)
             sys.exit(0)
 
         ###########
@@ -202,7 +201,7 @@ class App:
         return False
 
     def __print_latest_urls(self) -> None:
-        """ Print the stable and beta url release for all platforms """
+        """ Print the stable and beta url version for all platforms """
 
         get_driver_win = GetChromeDriver(self.__platforms.win)
         get_driver_linux = GetChromeDriver(self.__platforms.linux)
@@ -210,13 +209,13 @@ class App:
         drivers = {'Windows': get_driver_win, 'Linux': get_driver_linux, 'macOS': get_driver_mac}
 
         for index, (key, value) in enumerate(drivers.items()):
-            print('Latest beta and stable release for ' + key + ': ')
+            print('Latest beta and stable version for ' + key + ': ')
             try:
-                print('stable : ' + value.stable_release_url())
+                print('stable : ' + value.stable_version_url())
             except GetChromeDriverError:
                 print(self.__msg_no_stable_found_error)
             try:
-                print('beta   : ' + value.beta_release_url())
+                print('beta   : ' + value.beta_version_url())
             except GetChromeDriverError:
                 print(self.__msg_no_beta_available_error)
 
@@ -228,36 +227,36 @@ class App:
 
         if phase == self.__phases.beta:
             try:
-                print(self.__get_driver.beta_release_version())
+                print(self.__get_driver.beta_version())
             except GetChromeDriverError:
-                print(self.__msg_no_beta_release_version_error)
+                print(self.__msg_no_beta_version_error)
         else:
             try:
-                print(self.__get_driver.stable_release_version())
+                print(self.__get_driver.stable_version())
             except GetChromeDriverError:
-                print(self.__msg_no_stable_release_version_error)
+                print(self.__msg_no_stable_version_error)
 
     def __print_latest_url(self, phase) -> None:
         """ Print stable url or beta url """
 
         if phase == self.__phases.beta:
             try:
-                print(self.__get_driver.beta_release_url())
+                print(self.__get_driver.beta_version_url())
             except GetChromeDriverError:
-                print(self.__msg_release_url_error)
+                print(self.__msg_version_url_error)
         else:
             try:
-                print(self.__get_driver.stable_release_url())
+                print(self.__get_driver.stable_version_url())
             except GetChromeDriverError:
-                print(self.__msg_release_url_error)
+                print(self.__msg_version_url_error)
 
-    def __print_release_url(self, release) -> None:
+    def __print_version_url(self, version) -> None:
         """ Print the url for a given version """
 
         try:
-            print(self.__get_driver.release_url(release))
+            print(self.__get_driver.version_url(version))
         except GetChromeDriverError:
-            print(self.__msg_release_url_error)
+            print(self.__msg_version_url_error)
 
     def __auto_download(self, extract) -> None:
         """ Auto download ChromeDriver """
@@ -268,28 +267,28 @@ class App:
         except GetChromeDriverError:
             print(self.__msg_download_error)
 
-    def __download_latest_release(self, phase, extract) -> None:
-        """ Download the release for the stable version or beta version """
+    def __download_latest_version(self, phase, extract) -> None:
+        """ Download the version for the stable version or beta version """
 
         if phase == self.__phases.beta:
             try:
-                self.__get_driver.download_beta_release(extract=extract)
+                self.__get_driver.download_beta_version(extract=extract)
                 print(self.__msg_download_finished)
             except GetChromeDriverError:
                 print(self.__msg_download_error)
-                print(self.__msg_no_beta_release_version_error)
+                print(self.__msg_no_beta_version_error)
         else:
             try:
-                self.__get_driver.download_stable_release(extract=extract)
+                self.__get_driver.download_stable_version(extract=extract)
                 print(self.__msg_download_finished)
             except GetChromeDriverError:
                 print(self.__msg_download_error)
 
-    def __download_release(self, release, extract) -> None:
-        """ Download the release of a given version """
+    def __download_version(self, version, extract) -> None:
+        """ Download the version of a given version """
 
         try:
-            self.__get_driver.download_release(release, extract=extract)
+            self.__get_driver.download_version(version, extract=extract)
             print(self.__msg_download_finished)
         except GetChromeDriverError:
             print(self.__msg_download_error)
