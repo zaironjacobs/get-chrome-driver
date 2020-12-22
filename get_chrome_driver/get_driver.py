@@ -185,10 +185,10 @@ class GetChromeDriver:
                     zip_ref.extractall(path=download_path)
                 os.remove(output_path_with_file_name)
 
-                if pl.system() == 'Linux' or pl.system() == 'Darwin':
-                    os.chmod(path + '/' + constants.CHROMEDRIVER, 0o755)
+                if self.__platform == self.__platforms.linux or self.__platform == self.__platforms.mac:
+                    os.chmod(download_path + '/' + constants.CHROMEDRIVER, 0o755)
 
-            return path
+            return download_path
 
         url = self.release_url(release)
 
@@ -291,19 +291,19 @@ class GetChromeDriver:
     def __get_installed_chrome_version(self) -> str:
         """ Return the installed Chrome version on the machine """
 
-        if pl.system() == 'Windows':
+        if self.__platform == self.__platforms.win:
             process = subprocess.Popen(
                 ['reg', 'query', 'HKEY_CURRENT_USER\\SOFTWARE\\Google\\Chrome\\BLBeacon', '/v', 'version'],
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
             return process.communicate()[0].decode('UTF-8').split()[-1]
 
-        elif pl.system() == 'Linux':
+        elif self.__platform == self.__platforms.linux:
             process = subprocess.Popen(
                 ['google-chrome', '--version'],
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
             return process.communicate()[0].decode('UTF-8').split()[-1]
 
-        elif pl.system() == 'Darwin':
+        elif self.__platform == self.__platforms.mac:
             process = subprocess.Popen(
                 ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'],
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)

@@ -2,7 +2,7 @@ from setuptools import setup
 from setuptools import find_packages
 
 name = 'get-chrome-driver'
-version = '1.1.32'
+version = '1.1.33'
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()

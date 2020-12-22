@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import requests
 from decouple import config
 
-from get_chrome_driver import GetChromeDriver
+from .. import GetChromeDriver
 from .. import constants
 from .. import __version__
 from ..platforms import Platforms
