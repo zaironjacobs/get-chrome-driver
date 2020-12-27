@@ -14,7 +14,7 @@ from requests.exceptions import HTTPError
 from . import constants
 from . import retriever
 from .platforms import Platforms
-from .phase import Phase
+from .phases import Phases
 from .exceptions import GetChromeDriverError
 from .exceptions import UnknownPlatformError
 from .exceptions import VersionUrlError
@@ -38,20 +38,20 @@ class GetChromeDriver:
         else:
             self.__platform = self.__check_platform(platform)
 
-        self.__phases = Phase()
+        self.__phases = Phases()
 
     def stable_version(self) -> str:
         """ Return the latest stable version """
 
-        return self.__latest_version('stable')
+        return self.__latest_version_by_phase('stable')
 
     def beta_version(self) -> str:
         """ Return the latest beta version """
 
-        return self.__latest_version('beta')
+        return self.__latest_version_by_phase('beta')
 
-    def __latest_version(self, phase) -> str:
-        """ Return the stable or beta version """
+    def __latest_version_by_phase(self, phase) -> str:
+        """ Return the latest stable or latest beta version """
 
         res = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
 
@@ -79,12 +79,12 @@ class GetChromeDriver:
     def stable_version_url(self) -> str:
         """ Return the latest stable version url """
 
-        return self.version_url(self.__latest_version(self.__phases.stable))
+        return self.version_url(self.__latest_version_by_phase(self.__phases.stable))
 
     def beta_version_url(self) -> str:
         """ Return the latest beta version url """
 
-        return self.version_url(self.__latest_version(self.__phases.beta))
+        return self.version_url(self.__latest_version_by_phase(self.__phases.beta))
 
     def version_url(self, version) -> str:
         """ Return the version download url """
@@ -95,7 +95,6 @@ class GetChromeDriver:
         arch_64 = 64
 
         if self.__platform == self.__platforms.win:
-
             # 64bit
             if arch == arch_64:
                 try:
@@ -112,7 +111,6 @@ class GetChromeDriver:
             return url
 
         elif self.__platform == self.__platforms.linux:
-
             # 64bit
             if arch == arch_64:
                 try:
@@ -129,7 +127,6 @@ class GetChromeDriver:
             return url
 
         elif self.__platform == self.__platforms.mac:
-
             # 64bit
             if arch == arch_64:
                 try:
@@ -148,13 +145,13 @@ class GetChromeDriver:
     def download_stable_version(self, output_path=None, extract=False) -> None:
         """ Download the latest stable chromedriver version """
 
-        version = self.__latest_version(self.__phases.stable)
+        version = self.__latest_version_by_phase(self.__phases.stable)
         self.download_version(version, output_path, extract)
 
     def download_beta_version(self, output_path=None, extract=False) -> None:
         """ Download the latest stable chromedriver version """
 
-        version = self.__latest_version(self.__phases.beta)
+        version = self.__latest_version_by_phase(self.__phases.beta)
         self.download_version(version, output_path, extract)
 
     def download_version(self, version, path=None, extract=False) -> str:
@@ -199,7 +196,6 @@ class GetChromeDriver:
         """ Check if version format is valid """
 
         split_version = version.split('.')
-
         for number in split_version:
             if not number.isnumeric():
                 raise UnknownVersionError('error: Invalid version format')
@@ -210,7 +206,6 @@ class GetChromeDriver:
         if platform not in self.__platforms.list:
             raise UnknownPlatformError('error: platform not recognized, choose a platform from: '
                                        + str(self.__platforms.list))
-
         return platform
 
     def matching_version(self):

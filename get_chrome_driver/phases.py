@@ -1,4 +1,4 @@
-class Phase:
+class Phases:
 
     def __init__(self):
         self.beta = 'beta'

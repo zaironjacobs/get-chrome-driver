@@ -8,7 +8,7 @@ from . import __version__
 from . import arguments
 from .get_driver import GetChromeDriver
 from .platforms import Platforms
-from .phase import Phase
+from .phases import Phases
 from .exceptions import GetChromeDriverError
 
 
@@ -32,7 +32,7 @@ class App:
         colorama.init()
 
         self.__platforms = Platforms()
-        self.__phases = Phase()
+        self.__phases = Phases()
 
         self.__msg_download_finished = 'download finished'
         self.__msg_required_add_version = (self.__c_fore.RED + 'required: add a version'
