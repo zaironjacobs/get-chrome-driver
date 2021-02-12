@@ -52,7 +52,7 @@ def __retry_session(retries, backoff_factor, status_forcelist, method_whitelist)
         connect=retries,
         backoff_factor=backoff_factor,
         status_forcelist=status_forcelist,
-        method_whitelist=method_whitelist)
+        allowed_methods=method_whitelist)
 
     adapter = HTTPAdapter(max_retries=retry)
     session = requests.Session()
@@ -75,4 +75,3 @@ def __create_dir(directory):
         os.makedirs(directory, exist_ok=True)
     except OSError as err:
         raise OSError(err)
-
