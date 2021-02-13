@@ -155,6 +155,7 @@ class App:
             if self.__arg_passed(self.__arg_extract):
                 extract = True
             self.__download_latest_version(self.__phases.beta, extract)
+            sys.exit(0)
 
         ###################
         # DOWNLOAD STABLE #
@@ -166,6 +167,7 @@ class App:
             if self.__arg_passed(self.__arg_extract):
                 extract = True
             self.__download_latest_version(self.__phases.stable, extract)
+            sys.exit(0)
 
         ####################
         # DOWNLOAD VERSION #
