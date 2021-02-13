@@ -7,10 +7,10 @@ from requests.exceptions import RequestException
 from requests.exceptions import HTTPError
 
 
-def download(url, output_path=None, file_name=None):
+def download(url, output_path='', file_name=''):
     """
     Download a file from url
-    If output_path is None, the file will be downloaded directly in the current directory
+    If output_path is '', the file will be downloaded directly in the current directory
     """
 
     session = __retry_session(retries=3,
@@ -25,10 +25,10 @@ def download(url, output_path=None, file_name=None):
         if res.status_code != 200:
             raise HTTPError('Invalid URL')
 
-        if file_name is None:
+        if file_name == '' or None:
             file_name = get_file_name_from_url(url)
 
-        if output_path is None:
+        if output_path == '' or None:
             output_path = file_name
         else:
             __create_dir(output_path)

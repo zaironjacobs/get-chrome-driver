@@ -116,7 +116,7 @@ class TestApp:
         get_driver = GetChromeDriver()
         version = get_driver.matching_version()
         subprocess.run(args=[name, '--auto-download'], stdout=subprocess.PIPE)
-        file_path = get_driver._default_output_path_str(version) + '/' + file_name_zipped
+        file_path = get_driver._default_output_path(version) + '/' + file_name_zipped
         result = path.exists(file_path)
         assert result
 
@@ -127,7 +127,7 @@ class TestApp:
         get_driver = GetChromeDriver()
         version = get_driver.matching_version()
         subprocess.run(args=[name, '--auto-download', '--extract'], stdout=subprocess.PIPE)
-        file_path_extracted = get_driver._default_output_path_str(version) + '/' + file_name
+        file_path_extracted = get_driver._default_output_path(version) + '/' + file_name
         result = path.exists(file_path_extracted)
         assert result
 
@@ -138,7 +138,7 @@ class TestApp:
         get_driver = GetChromeDriver()
         version = stable_version
         subprocess.run(args=[name, '--download-stable'], stdout=subprocess.PIPE)
-        file_path = get_driver._default_output_path_str(version) + '/' + file_name_zipped
+        file_path = get_driver._default_output_path(version) + '/' + file_name_zipped
         result = path.exists(file_path)
         assert result
 
@@ -149,7 +149,7 @@ class TestApp:
         get_driver = GetChromeDriver()
         version = stable_version
         subprocess.run(args=[name, '--download-stable', '--extract'], stdout=subprocess.PIPE)
-        file_path_extracted = get_driver._default_output_path_str(version) + '/' + file_name
+        file_path_extracted = get_driver._default_output_path(version) + '/' + file_name
         result = path.exists(file_path_extracted)
         assert result
 
@@ -160,7 +160,7 @@ class TestApp:
         get_driver = GetChromeDriver()
         version = random_version
         subprocess.run(args=[name, '--download-version', version], stdout=subprocess.PIPE)
-        file_path = get_driver._default_output_path_str(version) + '/' + file_name_zipped
+        file_path = get_driver._default_output_path(version) + '/' + file_name_zipped
         result = path.exists(file_path)
         assert result
 
@@ -172,7 +172,7 @@ class TestApp:
         version = random_version
         subprocess.run(args=[name, '--download-version', version, '--extract'],
                        stdout=subprocess.PIPE)
-        file_path_extracted = get_driver._default_output_path_str(version) + '/' + file_name
+        file_path_extracted = get_driver._default_output_path(version) + '/' + file_name
         result = path.exists(file_path_extracted)
         assert result
 

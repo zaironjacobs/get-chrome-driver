@@ -159,15 +159,17 @@ class GetChromeDriver:
 
         self.__check_version(version)
 
-        if not path:
-            path = self._default_output_path_str(version)
+        if len(str(path)) == 0:
+            # on path == '',
+            # ChromeDriver will be downloaded in the current dir
+            path = ''
+        elif not path:
+            # on path == None,
+            # ChromeDriver will be downloaded at e.g. chromedriver/88.0.4324.96/bin/chromedriver.exe
+            path = self._default_output_path(version)
 
-        # If the driver file already exists, return the dir path of the driver file
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                if (file.lower() == constants.CHROMEDRIVER.lower() or
-                        file.lower() == constants.CHROMEDRIVER.lower() + '.exe'):
-                    return path
+        # on path == webdriver/bin (or any other dir name),
+        # ChromeDriver will be downloaded at webdriver/bin/chromedriver.exe
 
         def download(download_url, download_path) -> str:
             try:
@@ -221,14 +223,14 @@ class GetChromeDriver:
                 break
         return chromedriver_version_to_download
 
-    def auto_download(self, extract=False) -> str:
+    def auto_download(self, output_path=None, extract=False) -> str:
         """ Download ChromeDriver for the installed Chrome version on machine """
 
         version = self.matching_version()
         if version == '' or version is None:
             raise VersionError('error: unable to find a ChromeDriver version for the installed Chrome version')
 
-        return self.download_version(version, extract=extract)
+        return self.download_version(version, output_path, extract)
 
     def install(self) -> None:
         """ Install ChromeDriver for the installed Chrome version on machine """
@@ -298,7 +300,7 @@ class GetChromeDriver:
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
             return process.communicate()[0].decode('UTF-8').split()[-1]
 
-    def _default_output_path_str(self, version) -> str:
+    def _default_output_path(self, version) -> str:
         """ Return the default output path """
 
         return constants.CHROMEDRIVER + '/' + version + '/' + 'bin'
