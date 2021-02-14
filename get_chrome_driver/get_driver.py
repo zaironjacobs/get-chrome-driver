@@ -154,19 +154,19 @@ class GetChromeDriver:
         version = self.__latest_version_by_phase(self.__phases.beta)
         self.download_version(version, output_path, extract)
 
-    def download_version(self, version, path=None, extract=False) -> str:
+    def download_version(self, version, output_path=None, extract=False) -> str:
         """ Download a chromedriver version """
 
         self.__check_version(version)
 
-        if len(str(path)) == 0:
+        if len(str(output_path)) == 0:
             # on path == '',
             # ChromeDriver will be downloaded in the current dir
-            path = ''
-        elif not path:
+            output_path = ''
+        elif not output_path:
             # on path == None,
             # ChromeDriver will be downloaded at e.g. chromedriver/88.0.4324.96/bin/chromedriver.exe
-            path = self._default_output_path(version)
+            output_path = self._default_output_path(version)
 
         # on path == webdriver/bin (or any other dir name),
         # ChromeDriver will be downloaded at webdriver/bin/chromedriver.exe
@@ -186,7 +186,7 @@ class GetChromeDriver:
 
         # Download the driver file and return the dir path of the driver file
         url = self.version_url(version)
-        return download(url, path)
+        return download(url, output_path)
 
     def __check_url(self, url) -> None:
         """ Check if url is valid """

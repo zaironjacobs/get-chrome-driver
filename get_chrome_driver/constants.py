@@ -4,6 +4,7 @@ CHROMEDRIVER_STORAGE_URL = 'https://chromedriver.storage.googleapis.com'
 ZIP_TYPE = '.zip'
 
 CHROMEDRIVER = 'chromedriver'
+WEBDRIVER = 'webdriver'
 FILE_NAME_CHROMEDRIVER = 'chromedriver'
 FILE_NAME_CHROMEDRIVER_EXE = 'chromedriver.exe'
 

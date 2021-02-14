@@ -131,6 +131,15 @@ class TestApp:
         result = path.exists(file_path_extracted)
         assert result
 
+    ################################################
+    # AUTO DOWNLOAD - EXTRACT AND WITH CUSTOM PATH #
+    ################################################
+    def test_auto_download_extract_custom_path(self):
+        get_driver = GetChromeDriver()
+        get_driver.auto_download(output_path='webdriver/bin/chromedriver', extract=True)
+        result = path.exists('webdriver/bin/chromedriver/' + file_name)
+        assert result
+
     ########################################
     # DOWNLOAD STABLE VERSION - NO EXTRACT #
     ########################################
@@ -142,15 +151,24 @@ class TestApp:
         result = path.exists(file_path)
         assert result
 
-    #######################################
-    # DOWNLOAD STABLE VERSION - EXTRACTED #
-    #######################################
+    #####################################
+    # DOWNLOAD STABLE VERSION - EXTRACT #
+    #####################################
     def test_download_stable_version_extract(self):
         get_driver = GetChromeDriver()
         version = stable_version
         subprocess.run(args=[name, '--download-stable', '--extract'], stdout=subprocess.PIPE)
         file_path_extracted = get_driver._default_output_path(version) + '/' + file_name
         result = path.exists(file_path_extracted)
+        assert result
+
+    ##########################################################
+    # STABLE VERSION DOWNLOAD - EXTRACT AND WITH CUSTOM PATH #
+    ##########################################################
+    def test_download_stable_version_extract_custom_path(self):
+        get_driver = GetChromeDriver()
+        get_driver.download_stable_version(output_path='webdriver/bin/chromedriver', extract=True)
+        result = path.exists('webdriver/bin/chromedriver/' + file_name)
         assert result
 
     ########################################
@@ -164,9 +182,9 @@ class TestApp:
         result = path.exists(file_path)
         assert result
 
-    #######################################
-    # DOWNLOAD RANDOM VERSION - EXTRACTED #
-    #######################################
+    #####################################
+    # DOWNLOAD RANDOM VERSION - EXTRACT #
+    #####################################
     def test_download_random_version_extract(self):
         get_driver = GetChromeDriver()
         version = random_version
@@ -174,6 +192,16 @@ class TestApp:
                        stdout=subprocess.PIPE)
         file_path_extracted = get_driver._default_output_path(version) + '/' + file_name
         result = path.exists(file_path_extracted)
+        assert result
+
+    ##########################################################
+    # RANDOM VERSION DOWNLOAD - EXTRACT AND WITH CUSTOM PATH #
+    ##########################################################
+    def test_download_random_version_extract_custom_path(self):
+        get_driver = GetChromeDriver()
+        version = random_version
+        get_driver.download_version(version, output_path='webdriver/bin/chromedriver', extract=True)
+        result = path.exists('webdriver/bin/chromedriver/' + file_name)
         assert result
 
     ###########
@@ -194,5 +222,6 @@ class TestApp:
         yield
         try:
             shutil.rmtree(constants.CHROMEDRIVER)
+            shutil.rmtree(constants.WEBDRIVER)
         except FileNotFoundError:
             pass
