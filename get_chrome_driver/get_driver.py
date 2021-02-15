@@ -149,7 +149,7 @@ class GetChromeDriver:
         self.download_version(version, output_path, extract)
 
     def download_beta_version(self, output_path=None, extract=False) -> None:
-        """ Download the latest stable chromedriver version """
+        """ Download the latest beta chromedriver version """
 
         version = self.__latest_version_by_phase(self.__phases.beta)
         self.download_version(version, output_path, extract)
@@ -184,7 +184,7 @@ class GetChromeDriver:
                     os.chmod(download_path + '/' + constants.CHROMEDRIVER, 0o755)
             return download_path
 
-        # Download the driver file and return the dir path of the driver file
+        # Download the driver file and return the relative dir path of the driver file
         url = self.version_url(version)
         return download(url, output_path)
 
