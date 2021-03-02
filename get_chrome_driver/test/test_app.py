@@ -222,6 +222,9 @@ class TestApp:
         yield
         try:
             shutil.rmtree(constants.CHROMEDRIVER)
+        except (FileNotFoundError, PermissionError):
+            pass
+        try:
             shutil.rmtree(constants.WEBDRIVER)
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass

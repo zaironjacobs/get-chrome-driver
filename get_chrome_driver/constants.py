@@ -5,8 +5,6 @@ ZIP_TYPE = '.zip'
 
 CHROMEDRIVER = 'chromedriver'
 WEBDRIVER = 'webdriver'
-FILE_NAME_CHROMEDRIVER = 'chromedriver'
-FILE_NAME_CHROMEDRIVER_EXE = 'chromedriver.exe'
 
 UL_VERSIONS_SELECTOR = '#sites-canvas-main-content > table > tbody > tr > td > div > div:nth-child(5) > ul'
 
