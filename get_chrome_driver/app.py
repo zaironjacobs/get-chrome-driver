@@ -277,7 +277,6 @@ class App:
                 self.__get_driver.download_beta_version(extract=extract)
                 print(self.__msg_download_finished)
             except GetChromeDriverError:
-                print(self.__msg_download_error)
                 print(self.__msg_no_beta_version_error)
         else:
             try:

@@ -59,7 +59,7 @@ class GetChromeDriver:
             raise GetChromeDriverError('error: could not connect to ' + constants.CHROMEDRIVER_CHROMIUM_URL)
 
         soup = BeautifulSoup(res.content, 'html.parser')
-        ul = soup.select_one(constants.UL_VERSIONS_SELECTOR)
+        ul = soup.select_one(constants.CSS_VERSIONS_SELECTOR_UL)
         for li in ul:
             li_text = li.text.replace(u'\u00A0', ' ')
             if self.__phases.stable == phase:

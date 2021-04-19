@@ -6,7 +6,7 @@ ZIP_TYPE = '.zip'
 CHROMEDRIVER = 'chromedriver'
 WEBDRIVER = 'webdriver'
 
-UL_VERSIONS_SELECTOR = '#sites-canvas-main-content > table > tbody > tr > td > div > div:nth-child(5) > ul'
+CSS_VERSIONS_SELECTOR_UL = '.sites-layout-tile > div:nth-child(1) > div:nth-child(8) > ul:nth-child(1)'
 
 LATEST_STABLE_VERSION_STR = 'Latest stable release'
 LATEST_BETA_VERSION_STR = 'Latest beta release'

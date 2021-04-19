@@ -51,7 +51,7 @@ class TestApp:
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.UL_VERSIONS_SELECTOR)
+        ul = soup.select_one(constants.CSS_VERSIONS_SELECTOR_UL)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
             if text[:len(constants.LATEST_STABLE_VERSION_STR)].lower() == constants.LATEST_STABLE_VERSION_STR.lower():
@@ -68,7 +68,7 @@ class TestApp:
 
         result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
         soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.UL_VERSIONS_SELECTOR)
+        ul = soup.select_one(constants.CSS_VERSIONS_SELECTOR_UL)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
             if text[:len(constants.LATEST_BETA_VERSION_STR)].lower() == constants.LATEST_BETA_VERSION_STR.lower():
