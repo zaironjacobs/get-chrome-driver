@@ -2,16 +2,16 @@ from setuptools import setup
 from setuptools import find_packages
 
 name = 'get-chrome-driver'
-version = '1.3'
+version = '1.3.1'
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 requires = [
     'bs4>=0.0.1',
-    'requests>=2.24.0',
+    'requests>=2.24.1',
     'colorama>=0.4.3',
-    'urllib3>=1.26.4'
+    'urllib3>=1.26.5'
 ]
 
 setup(
