@@ -9,6 +9,8 @@ A tool to download and install ChromeDriver. Automatically download a ChromeDriv
 Chrome version. Or you can choose to download the beta version (if one is currently available), the stable version or
 another specific version. You can use this tool as a package import or as a command-line application.
 
+This Python package runs through a Jenkins test pipeline every hour to ensure proper functionality.
+
 ## Install
 
 To install:
