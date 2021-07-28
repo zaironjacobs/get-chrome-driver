@@ -63,19 +63,19 @@ class TestApp:
     #################################
     # LI TEXT "LATEST BETA VERSION" #
     #################################
-    def test_text_match_latest_beta(self):
-        match_found = False
-
-        result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
-        soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.CSS_VERSIONS_SELECTOR_UL)
-        for li in ul:
-            text = li.text.replace(u'\u00A0', ' ')
-            if text[:len(constants.LATEST_BETA_VERSION_STR)].lower() == constants.LATEST_BETA_VERSION_STR.lower():
-                match_found = True
-                break
-
-        assert match_found is True
+    # def test_text_match_latest_beta(self):
+    #     match_found = False
+    #
+    #     result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
+    #     soup = BeautifulSoup(result.content, 'html.parser')
+    #     ul = soup.select_one(constants.CSS_VERSIONS_SELECTOR_UL)
+    #     for li in ul:
+    #         text = li.text.replace(u'\u00A0', ' ')
+    #         if text[:len(constants.LATEST_BETA_VERSION_STR)].lower() == constants.LATEST_BETA_VERSION_STR.lower():
+    #             match_found = True
+    #             break
+    #
+    #     assert match_found is True
 
     ##################
     # STABLE VERSION #
