@@ -75,8 +75,8 @@ class GetChromeDriver:
                 else:
                     self.__check_version(version)
                     return version
-            else:
-                raise UnknownVersionError('error: could not find version')
+        else:
+            raise UnknownVersionError('error: could not find version')
 
     def stable_version_url(self) -> str:
         """ Return the latest stable version url """
