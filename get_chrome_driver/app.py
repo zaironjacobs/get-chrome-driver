@@ -202,7 +202,7 @@ class App:
             return True
         return False
 
-    def __print_latest_urls(self) -> None:
+    def __print_latest_urls(self):
         """ Print the stable and beta url version for all platforms """
 
         get_driver_win = GetChromeDriver(self.__platforms.win)
@@ -224,8 +224,12 @@ class App:
             if index < len(drivers) - 1:
                 print('')
 
-    def __print_latest_version(self, phase) -> None:
-        """ Print stable version or beta version """
+    def __print_latest_version(self, phase):
+        """
+        Print stable version or beta version
+
+        :param phase: Stable or beta
+        """
 
         if phase == self.__phases.beta:
             try:
@@ -238,8 +242,12 @@ class App:
             except GetChromeDriverError:
                 print(self.__msg_no_stable_version_error)
 
-    def __print_latest_url(self, phase) -> None:
-        """ Print stable url or beta url """
+    def __print_latest_url(self, phase):
+        """
+        Print stable url or beta url
+
+        :param phase: Stable or beta
+        """
 
         if phase == self.__phases.beta:
             try:
@@ -252,16 +260,24 @@ class App:
             except GetChromeDriverError:
                 print(self.__msg_version_url_error)
 
-    def __print_version_url(self, version) -> None:
-        """ Print the url for a given version """
+    def __print_version_url(self, version):
+        """
+        Print the url for a given version
+
+        :param version: Chromedriver version
+        """
 
         try:
             print(self.__get_driver.version_url(version))
         except GetChromeDriverError:
             print(self.__msg_version_url_error)
 
-    def __auto_download(self, extract) -> None:
-        """ Auto download ChromeDriver """
+    def __auto_download(self, extract):
+        """
+        Auto download ChromeDriver
+
+        :param extract: Extract the downloaded driver or not
+        """
 
         try:
             self.__get_driver.auto_download(extract=extract)
@@ -269,8 +285,13 @@ class App:
         except GetChromeDriverError:
             print(self.__msg_download_error)
 
-    def __download_latest_version(self, phase, extract) -> None:
-        """ Download the version for the stable version or beta version """
+    def __download_latest_version(self, phase, extract):
+        """
+        Download the version for the stable version or beta version
+
+        :param phase: Stable or beta
+        :param extract: Extract the downloaded driver or not
+        """
 
         if phase == self.__phases.beta:
             try:
@@ -285,8 +306,13 @@ class App:
             except GetChromeDriverError:
                 print(self.__msg_download_error)
 
-    def __download_version(self, version, extract) -> None:
-        """ Download the version of a given version """
+    def __download_version(self, version, extract):
+        """
+        Download the version of a given version
+
+        :param version: Chromedriver version
+        :param extract: Extract the downloaded driver or not
+        """
 
         try:
             self.__get_driver.download_version(version, extract=extract)

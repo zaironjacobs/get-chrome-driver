@@ -26,11 +26,11 @@ def download(url, output_path='', file_name=''):
         if res.status_code != 200:
             raise HTTPError('Invalid URL')
 
-        if file_name == '' or None:
+        if file_name == '' or file_name is None:
             # Get the file name from the url
-            file_name = get_file_name_from_url(url)
+            file_name = __get_file_name_from_url(url)
 
-        if output_path == '' or None:
+        if output_path == '' or file_name is None:
             # The full path will be the file name if no output path was given
             full_output_path = file_name
         else:
@@ -66,7 +66,7 @@ def __retry_session(retries, backoff_factor, status_forcelist, method_whitelist)
     return session
 
 
-def get_file_name_from_url(url):
+def __get_file_name_from_url(url):
     """ Get file name from url """
 
     path = urlparse(url).path

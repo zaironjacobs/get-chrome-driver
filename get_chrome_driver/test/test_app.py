@@ -10,7 +10,6 @@ import requests
 from decouple import config
 
 from .. import GetChromeDriver
-from .. import constants
 from .. import __version__
 from ..platforms import Platforms
 
@@ -40,6 +39,11 @@ elif pl.system() == 'Darwin':
 # Change to the current test directory
 os.chdir(os.path.dirname(__file__))
 
+latest_stable_version_str = 'Latest stable release'
+latest_beta_version_str = 'Latest beta release'
+url_chromium = 'https://chromedriver.chromium.org'
+css_selector_versions = 'ul.n8H08c:nth-child(5)'
+
 
 class TestApp:
 
@@ -49,12 +53,12 @@ class TestApp:
     def test_text_match_latest_stable(self):
         match_found = False
 
-        result = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
+        result = requests.get(url_chromium)
         soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(constants.CSS_VERSIONS_SELECTOR_UL)
+        ul = soup.select_one(css_selector_versions)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
-            if text[:len(constants.LATEST_STABLE_VERSION_STR)].lower() == constants.LATEST_STABLE_VERSION_STR.lower():
+            if text[:len(latest_stable_version_str)].lower() == latest_stable_version_str.lower():
                 match_found = True
                 break
 
@@ -221,10 +225,10 @@ class TestApp:
     def cleanup(self):
         yield
         try:
-            shutil.rmtree(constants.CHROMEDRIVER)
+            shutil.rmtree('webdriver')
         except (FileNotFoundError, PermissionError):
             pass
         try:
-            shutil.rmtree(constants.WEBDRIVER)
+            shutil.rmtree('chromedriver')
         except (FileNotFoundError, PermissionError):
             pass

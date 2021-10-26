@@ -11,7 +11,6 @@ from bs4 import BeautifulSoup
 from requests.exceptions import RequestException
 from requests.exceptions import HTTPError
 
-from . import constants
 from . import retriever
 from .platforms import Platforms
 from .phases import Phases
@@ -22,10 +21,12 @@ from .exceptions import UnknownVersionError
 from .exceptions import DownloadError
 from .exceptions import VersionError
 
+url_chromedriver_storage = 'https://chromedriver.storage.googleapis.com'
+
 
 class GetChromeDriver:
 
-    def __init__(self, platform=None) -> None:
+    def __init__(self, platform=None):
         self.__platforms = Platforms()
 
         if not platform:
@@ -51,21 +52,28 @@ class GetChromeDriver:
         return self.__latest_version_by_phase('beta')
 
     def __latest_version_by_phase(self, phase) -> str:
-        """ Return the latest stable or latest beta version """
+        """
+        Return the latest stable or latest beta version
 
-        res = requests.get(constants.CHROMEDRIVER_CHROMIUM_URL)
+        :param phase: Stable or beta
+        """
 
-        if res.status_code != 200:
-            raise GetChromeDriverError('error: could not connect to ' + constants.CHROMEDRIVER_CHROMIUM_URL)
+        url_chromium = 'https://chromedriver.chromium.org'
+        response = requests.get(url_chromium)
+        if not response.ok:
+            raise GetChromeDriverError('error: could not get ' + url_chromium)
 
-        soup = BeautifulSoup(res.content, 'html.parser')
-        ul = soup.select_one(constants.CSS_VERSIONS_SELECTOR_UL)
+        latest_stable_version_str = 'Latest stable release'
+        latest_beta_version_str = 'Latest beta release'
+        soup = BeautifulSoup(response.content, 'html.parser')
+        css_selector_versions = 'ul.n8H08c:nth-child(5)'
+        ul = soup.select_one(css_selector_versions)
         for li in ul:
             li_text = li.text.replace(u'\u00A0', ' ')
             if self.__phases.stable == phase:
-                version_str = constants.LATEST_STABLE_VERSION_STR
+                version_str = latest_stable_version_str
             else:
-                version_str = constants.LATEST_BETA_VERSION_STR
+                version_str = latest_beta_version_str
 
             if li_text[:len(version_str)].lower() == version_str.lower():
                 try:
@@ -89,26 +97,32 @@ class GetChromeDriver:
         return self.version_url(self.__latest_version_by_phase(self.__phases.beta))
 
     def version_url(self, version) -> str:
-        """ Return the version download url """
+        """
+        Return the version download url
+
+        :param version: Chromedriver version
+        """
 
         self.__check_version(version)
-
         arch = struct.calcsize('P') * 8
         arch_64 = 64
+        chromedriver = 'chromedriver'
+        zip_ext = '.zip'
 
         if self.__platform == self.__platforms.win:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + version + '/' + constants.CHROMEDRIVER + '_'
-                           + self.__platforms.win_64 + constants.ZIP_TYPE)
+                    url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                           + self.__platforms.win_64 + zip_ext)
                     self.__check_url(url)
                     return url
                 except VersionUrlError:
+                    # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + version + '/' + constants.CHROMEDRIVER + '_'
-                   + self.__platforms.win_32 + constants.ZIP_TYPE)
+            url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                   + self.__platforms.win_32 + zip_ext)
             self.__check_url(url)
             return url
 
@@ -116,15 +130,16 @@ class GetChromeDriver:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + version + '/' + constants.CHROMEDRIVER + '_'
-                           + self.__platforms.linux_64 + constants.ZIP_TYPE)
+                    url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                           + self.__platforms.linux_64 + zip_ext)
                     self.__check_url(url)
                     return url
                 except VersionUrlError:
+                    # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + version + '/' + constants.CHROMEDRIVER + '_'
-                   + self.__platforms.linux_32 + constants.ZIP_TYPE)
+            url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                   + self.__platforms.linux_32 + zip_ext)
             self.__check_url(url)
             return url
 
@@ -132,41 +147,53 @@ class GetChromeDriver:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + version + '/' + constants.CHROMEDRIVER + '_'
-                           + self.__platforms.mac_64 + constants.ZIP_TYPE)
+                    url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                           + self.__platforms.mac_64 + zip_ext)
                     self.__check_url(url)
                     return url
                 except VersionUrlError:
+                    # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = (constants.CHROMEDRIVER_STORAGE_URL + '/' + version + '/' + constants.CHROMEDRIVER + '_'
-                   + self.__platforms.mac_32 + constants.ZIP_TYPE)
+            url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                   + self.__platforms.mac_32 + zip_ext)
             self.__check_url(url)
             return url
 
-    def download_stable_version(self, output_path=None, extract=False) -> None:
-        """ Download the latest stable chromedriver version """
+    def download_stable_version(self, output_path=None, extract=False):
+        """
+        Download the latest stable chromedriver version
+
+        :param output_path: Path to download the driver to
+        :param extract: Extract the downloaded driver or not
+        """
 
         version = self.__latest_version_by_phase(self.__phases.stable)
         self.download_version(version, output_path, extract)
 
-    def download_beta_version(self, output_path=None, extract=False) -> None:
-        """ Download the latest beta chromedriver version """
+    def download_beta_version(self, output_path=None, extract=False):
+        """
+        Download the latest beta chromedriver version
+
+        :param output_path: Path to download the driver to
+        :param extract: Extract the downloaded driver or not
+        """
 
         version = self.__latest_version_by_phase(self.__phases.beta)
         self.download_version(version, output_path, extract)
 
     def download_version(self, version, output_path=None, extract=False) -> str:
-        """ Download a chromedriver version """
+        """
+        Download a chromedriver version
+
+        :param version: Chromedriver version
+        :param output_path: Path to download the driver to
+        :param extract: Extract the downloaded driver or not
+        """
 
         self.__check_version(version)
-
-        if len(str(output_path)) == 0:
-            # on path == '',
-            # ChromeDriver will be downloaded in the current dir
-            output_path = ''
-        elif not output_path:
-            # on path == None,
+        if not output_path:
+            # on path is None,
             # ChromeDriver will be downloaded at e.g. chromedriver/88.0.4324.96/bin/chromedriver.exe
             output_path = self._default_output_path(version)
 
@@ -183,21 +210,29 @@ class GetChromeDriver:
                     zip_ref.extractall(path=download_path)
                 os.remove(output_path_with_file_name)
                 if self.__platform == self.__platforms.linux or self.__platform == self.__platforms.mac:
-                    os.chmod(download_path + '/' + constants.CHROMEDRIVER, 0o755)
+                    os.chmod(download_path + '/' + 'chromedriver', 0o755)
             return download_path
 
-        # Download the driver file and return the relative dir path of the driver file
+        # Download the driver file and return the path of the driver file
         url = self.version_url(version)
         return download(url, output_path)
 
     def __check_url(self, url) -> None:
-        """ Check if url is valid """
+        """
+        Check if url is valid
+
+        :param url: The driver download url
+        """
 
         if requests.head(url).status_code != 200:
             raise VersionUrlError('error: Invalid url')
 
-    def __check_version(self, version) -> None:
-        """ Check if version format is valid """
+    def __check_version(self, version):
+        """
+        Check if version format is valid
+
+        :param version: Chromedriver version
+        """
 
         split_version = version.split('.')
         for number in split_version:
@@ -205,7 +240,11 @@ class GetChromeDriver:
                 raise UnknownVersionError('error: Invalid version format')
 
     def __check_platform(self, platform) -> str:
-        """ Check if platform is valid """
+        """
+        Check if platform is valid
+
+        :param platform: OS
+        """
 
         if platform not in self.__platforms.list:
             raise UnknownPlatformError('error: platform not recognized, choose a platform from: '
@@ -226,15 +265,19 @@ class GetChromeDriver:
         return chromedriver_version_to_download
 
     def auto_download(self, output_path=None, extract=False) -> str:
-        """ Download ChromeDriver for the installed Chrome version on machine """
+        """
+        Download ChromeDriver for the installed Chrome version on machine
+
+        :param output_path: Path to download the driver to
+        :param extract: Extract the downloaded driver or not
+        """
 
         version = self.matching_version()
         if version == '' or version is None:
             raise VersionError('error: unable to find a ChromeDriver version for the installed Chrome version')
-
         return self.download_version(version, output_path, extract)
 
-    def install(self) -> None:
+    def install(self):
         """ Install ChromeDriver for the installed Chrome version on machine """
 
         output_path = self.auto_download(extract=True)
@@ -247,9 +290,7 @@ class GetChromeDriver:
         key_texts = []
         versions = []
 
-        url = constants.CHROMEDRIVER_STORAGE_URL
-
-        with urlopen(url) as xml_file:
+        with urlopen(url_chromedriver_storage) as xml_file:
             tree = ElTree.parse(xml_file)
             root = tree.getroot()
 
@@ -303,6 +344,10 @@ class GetChromeDriver:
             return process.communicate()[0].decode('UTF-8').split()[-1]
 
     def _default_output_path(self, version) -> str:
-        """ Return the default output path """
+        """
+        Return the default output path
 
-        return constants.CHROMEDRIVER + '/' + version + '/' + 'bin'
+        :param version: Chromedriver version
+        """
+
+        return f'chromedriver/{version}/bin'
