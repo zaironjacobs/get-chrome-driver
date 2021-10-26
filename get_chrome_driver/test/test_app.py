@@ -12,6 +12,7 @@ from decouple import config
 from .. import GetChromeDriver
 from .. import __version__
 from ..platforms import Platforms
+from .. import constants
 
 name = 'get-chrome-driver'
 
@@ -39,11 +40,6 @@ elif pl.system() == 'Darwin':
 # Change to the current test directory
 os.chdir(os.path.dirname(__file__))
 
-latest_stable_version_str = 'Latest stable release'
-latest_beta_version_str = 'Latest beta release'
-url_chromium = 'https://chromedriver.chromium.org'
-css_selector_versions = 'ul.n8H08c:nth-child(5)'
-
 
 class TestApp:
 
@@ -53,12 +49,12 @@ class TestApp:
     def test_text_match_latest_stable(self):
         match_found = False
 
-        result = requests.get(url_chromium)
+        result = requests.get(constants.url_chromium)
         soup = BeautifulSoup(result.content, 'html.parser')
-        ul = soup.select_one(css_selector_versions)
+        ul = soup.select_one(constants.css_selector_versions)
         for li in ul:
             text = li.text.replace(u'\u00A0', ' ')
-            if text[:len(latest_stable_version_str)].lower() == latest_stable_version_str.lower():
+            if text[:len(constants.latest_stable_version_str)].lower() == constants.latest_stable_version_str.lower():
                 match_found = True
                 break
 

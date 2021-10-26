@@ -12,6 +12,7 @@ from requests.exceptions import RequestException
 from requests.exceptions import HTTPError
 
 from . import retriever
+from . import constants
 from .platforms import Platforms
 from .phases import Phases
 from .exceptions import GetChromeDriverError
@@ -20,8 +21,6 @@ from .exceptions import VersionUrlError
 from .exceptions import UnknownVersionError
 from .exceptions import DownloadError
 from .exceptions import VersionError
-
-url_chromedriver_storage = 'https://chromedriver.storage.googleapis.com'
 
 
 class GetChromeDriver:
@@ -58,22 +57,18 @@ class GetChromeDriver:
         :param phase: Stable or beta
         """
 
-        url_chromium = 'https://chromedriver.chromium.org'
-        response = requests.get(url_chromium)
+        response = requests.get(constants.url_chromium)
         if not response.ok:
-            raise GetChromeDriverError('error: could not get ' + url_chromium)
+            raise GetChromeDriverError('error: could not get ' + constants.url_chromium)
 
-        latest_stable_version_str = 'Latest stable release'
-        latest_beta_version_str = 'Latest beta release'
         soup = BeautifulSoup(response.content, 'html.parser')
-        css_selector_versions = 'ul.n8H08c:nth-child(5)'
-        ul = soup.select_one(css_selector_versions)
+        ul = soup.select_one(constants.css_selector_versions)
         for li in ul:
             li_text = li.text.replace(u'\u00A0', ' ')
             if self.__phases.stable == phase:
-                version_str = latest_stable_version_str
+                version_str = constants.latest_stable_version_str
             else:
-                version_str = latest_beta_version_str
+                version_str = constants.latest_beta_version_str
 
             if li_text[:len(version_str)].lower() == version_str.lower():
                 try:
@@ -113,7 +108,7 @@ class GetChromeDriver:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                    url = (constants.url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
                            + self.__platforms.win_64 + zip_ext)
                     self.__check_url(url)
                     return url
@@ -121,7 +116,7 @@ class GetChromeDriver:
                     # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+            url = (constants.url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
                    + self.__platforms.win_32 + zip_ext)
             self.__check_url(url)
             return url
@@ -130,7 +125,7 @@ class GetChromeDriver:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                    url = (constants.url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
                            + self.__platforms.linux_64 + zip_ext)
                     self.__check_url(url)
                     return url
@@ -138,7 +133,7 @@ class GetChromeDriver:
                     # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+            url = (constants.url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
                    + self.__platforms.linux_32 + zip_ext)
             self.__check_url(url)
             return url
@@ -147,7 +142,7 @@ class GetChromeDriver:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+                    url = (constants.url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
                            + self.__platforms.mac_64 + zip_ext)
                     self.__check_url(url)
                     return url
@@ -155,7 +150,7 @@ class GetChromeDriver:
                     # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = (url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
+            url = (constants.url_chromedriver_storage + '/' + version + '/' + chromedriver + '_'
                    + self.__platforms.mac_32 + zip_ext)
             self.__check_url(url)
             return url
@@ -290,7 +285,7 @@ class GetChromeDriver:
         key_texts = []
         versions = []
 
-        with urlopen(url_chromedriver_storage) as xml_file:
+        with urlopen(constants.url_chromedriver_storage) as xml_file:
             tree = ElTree.parse(xml_file)
             root = tree.getroot()
 
