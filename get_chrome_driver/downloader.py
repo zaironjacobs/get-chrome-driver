@@ -7,11 +7,11 @@ from requests.exceptions import RequestException
 from requests.exceptions import HTTPError
 
 
-def download(url, output_path='', file_name=''):
+def download(url, output_path=None, file_name=None):
     """
     Download a file from url
-    If output_path is '', the file will be downloaded directly into the current directory
-    If file_name is '', the file name from the url will be used
+    If output_path is None, the file will be downloaded directly at the current directory
+    If file_name is None, the file name from the url will be used
     """
 
     session = __retry_session(retries=3,
@@ -30,20 +30,18 @@ def download(url, output_path='', file_name=''):
             # Get the file name from the url
             file_name = __get_file_name_from_url(url)
 
-        if output_path == '' or file_name is None:
-            # The full path will be the file name if no output path was given
-            full_output_path = file_name
+        if output_path == '' or output_path is None:
+            file_path = file_name
         else:
-            # The full path will be the given output path with the file name at the end
             __create_dir(output_path)
-            full_output_path = output_path + '/' + file_name
+            file_path = output_path + '/' + file_name
 
-        with open(full_output_path, 'wb') as file:
+        with open(file_path, 'wb') as file:
             # Download the file in chunks
             for chunk in res.iter_content(chunk_size=1048576):
                 if chunk:
                     file.write(chunk)
-        return full_output_path, file_name
+        return file_path, file_name
     finally:
         session.close()
 

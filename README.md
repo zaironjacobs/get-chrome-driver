@@ -16,13 +16,13 @@ This Python package runs through a Jenkins test pipeline every hour to ensure pr
 To install:
 
 ```console
-$ pip install get-chrome-driver
+pip install get-chrome-driver
 ```
 
 To upgrade:
 
 ```console
-$ pip install get-chrome-driver --upgrade
+pip install get-chrome-driver --upgrade
 ```
 
 ## Usage
@@ -84,19 +84,19 @@ get_driver.download_version('84.0.4147.30', extract=True)
 Print the stable version url of all platforms:
 
 ```console
-$ get-chrome-driver --latest-urls
+get-chrome-driver --latest-urls
 ```
 
 Print the stable version:
 
 ```console
-$ get-chrome-driver --stable-version
+get-chrome-driver --stable-version
 ```
 
 Print the stable version url:
 
 ```console
-$ get-chrome-driver --stable-url
+get-chrome-driver --stable-url
 ```
 
 Auto download ChromeDriver for the current installed Chrome version and extract the file:
@@ -108,13 +108,13 @@ $ get-chrome-driver --auto-download --extract
 Download the stable version and extract the file:
 
 ```console
-$ get-chrome-driver --download-stable --extract
+get-chrome-driver --download-stable --extract
 ```
 
 Download a specific version and extract the file:
 
 ```console
-$ get-chrome-driver --download-version 84.0.4147.30 --extract
+get-chrome-driver --download-version 84.0.4147.30 --extract
 ```
 
 #### The downloaded driver can be found at:
