@@ -123,8 +123,6 @@ def __print_latest_urls():
     get_driver_mac = GetChromeDriver(Platform.mac)
     get_drivers = {'Windows': get_driver_win, 'Linux': get_driver_linux, 'macOS': get_driver_mac}
 
-    error = 'Could not get latest urls'
-
     result = ''
     for index, (key, value) in enumerate(get_drivers.items()):
         try:
@@ -134,7 +132,7 @@ def __print_latest_urls():
             if index < len(get_drivers) - 1:
                 result += '\n'
         except GetChromeDriverError:
-            print(error)
+            continue
 
     print(result)
 
