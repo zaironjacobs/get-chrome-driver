@@ -19,7 +19,7 @@ from .exceptions import GetChromeDriverError, UnknownPlatformError, VersionUrlEr
 
 class GetChromeDriver:
 
-    def __init__(self, platform: Platform | None = None):
+    def __init__(self, platform: Platform = None):
         if not platform:
             if pl.system() == 'Windows':
                 self.__platform = self.__check_platform(Platform.win)
@@ -139,7 +139,7 @@ class GetChromeDriver:
             self.__check_if_url_is_valid(url)
             return url
 
-    def download_stable_version(self, output_path: str | None = None, extract: bool = False):
+    def download_stable_version(self, output_path: str = None, extract: bool = False):
         """
         Download the latest stable chromedriver version
 
@@ -150,7 +150,7 @@ class GetChromeDriver:
         version = self.__latest_version_by_phase(Phase.stable)
         self.download_version(version=version, output_path=output_path, extract=extract)
 
-    def download_beta_version(self, output_path: str | None = None, extract: bool = False):
+    def download_beta_version(self, output_path: str = None, extract: bool = False):
         """
         Download the latest beta chromedriver version
 
@@ -161,7 +161,7 @@ class GetChromeDriver:
         version = self.__latest_version_by_phase(Phase.beta)
         self.download_version(version=version, output_path=output_path, extract=extract)
 
-    def download_version(self, version, output_path: str | None = None, extract: bool = False) -> str:
+    def download_version(self, version, output_path: str = None, extract: bool = False) -> str:
         """
         Download a chromedriver version
 
@@ -240,7 +240,7 @@ class GetChromeDriver:
             if '.'.join(installed_chrome_version.split('.')[:-1]) == '.'.join(chromedriver_version.split('.')[:-1]):
                 return chromedriver_version
 
-    def auto_download(self, output_path: str | None = None, extract: bool = False) -> str:
+    def auto_download(self, output_path: str = None, extract: bool = False) -> str:
         """
         Download ChromeDriver for the installed Chrome version on machine
 

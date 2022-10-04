@@ -7,7 +7,7 @@ from requests.exceptions import RequestException
 from requests.exceptions import HTTPError
 
 
-def download(url: str, output_path: str | None = None, file_name: str | None = None):
+def download(url: str, output_path: str = None, file_name: str = None):
     """
     Download a file from url
     If output_path is None, the file will be downloaded directly at the current directory
