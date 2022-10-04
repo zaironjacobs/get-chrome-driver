@@ -19,7 +19,7 @@ from .exceptions import GetChromeDriverError, UnknownPlatformError, VersionUrlEr
 
 class GetChromeDriver:
 
-    def __init__(self, platform=None):
+    def __init__(self, platform: Platform | None = None):
         if not platform:
             if pl.system() == 'Windows':
                 self.__platform = self.__check_platform(Platform.win)
@@ -40,7 +40,7 @@ class GetChromeDriver:
 
         return self.__latest_version_by_phase(Phase.beta)
 
-    def __latest_version_by_phase(self, phase) -> str:
+    def __latest_version_by_phase(self, phase: Phase) -> str:
         """
         Return the latest stable or latest beta version
 
@@ -139,7 +139,7 @@ class GetChromeDriver:
             self.__check_if_url_is_valid(url)
             return url
 
-    def download_stable_version(self, output_path=None, extract=False):
+    def download_stable_version(self, output_path: str | None = None, extract: bool = False):
         """
         Download the latest stable chromedriver version
 
@@ -150,7 +150,7 @@ class GetChromeDriver:
         version = self.__latest_version_by_phase(Phase.stable)
         self.download_version(version=version, output_path=output_path, extract=extract)
 
-    def download_beta_version(self, output_path=None, extract=False):
+    def download_beta_version(self, output_path: str | None = None, extract: bool = False):
         """
         Download the latest beta chromedriver version
 
@@ -161,7 +161,7 @@ class GetChromeDriver:
         version = self.__latest_version_by_phase(Phase.beta)
         self.download_version(version=version, output_path=output_path, extract=extract)
 
-    def download_version(self, version, output_path=None, extract=False) -> str:
+    def download_version(self, version, output_path: str | None = None, extract: bool = False) -> str:
         """
         Download a chromedriver version
 
@@ -179,7 +179,7 @@ class GetChromeDriver:
         # If path == webdriver/bin (or any other dir name)
         # ChromeDriver will be downloaded at webdriver/bin/chromedriver.exe
 
-        def download(download_url, download_output_path) -> str:
+        def download(download_url: str, download_output_path: str) -> str:
             try:
                 file_path, file_name = downloader.download(url=download_url, output_path=download_output_path)
             except (OSError, HTTPError, RequestException) as err:
@@ -196,7 +196,7 @@ class GetChromeDriver:
         url = self.version_url(version)
         return download(download_url=url, download_output_path=output_path)
 
-    def __check_if_url_is_valid(self, url) -> None:
+    def __check_if_url_is_valid(self, url: str):
         """
         Check if url is valid
 
@@ -206,7 +206,7 @@ class GetChromeDriver:
         if requests.head(url).status_code != 200:
             raise VersionUrlError('Invalid url')
 
-    def __check_if_version_format_is_valid(self, version):
+    def __check_if_version_format_is_valid(self, version: str):
         """
         Check if version format is valid
 
@@ -218,7 +218,7 @@ class GetChromeDriver:
             if not number.isnumeric():
                 raise UnknownVersionError('Invalid version format')
 
-    def __check_platform(self, platform) -> str:
+    def __check_platform(self, platform: Platform) -> str:
         """
         Check if platform is valid
 
@@ -240,7 +240,7 @@ class GetChromeDriver:
             if '.'.join(installed_chrome_version.split('.')[:-1]) == '.'.join(chromedriver_version.split('.')[:-1]):
                 return chromedriver_version
 
-    def auto_download(self, output_path=None, extract=False) -> str:
+    def auto_download(self, output_path: str | None = None, extract: bool = False) -> str:
         """
         Download ChromeDriver for the installed Chrome version on machine
 
@@ -319,7 +319,7 @@ class GetChromeDriver:
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
             return process.communicate()[0].decode('UTF-8').split()[-1]
 
-    def _output_path(self, version) -> str:
+    def _output_path(self, version: str) -> str:
         """
         Return the output path
 

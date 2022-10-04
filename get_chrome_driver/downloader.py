@@ -7,7 +7,7 @@ from requests.exceptions import RequestException
 from requests.exceptions import HTTPError
 
 
-def download(url, output_path=None, file_name=None):
+def download(url: str, output_path: str | None = None, file_name: str | None = None):
     """
     Download a file from url
     If output_path is None, the file will be downloaded directly at the current directory
@@ -46,7 +46,7 @@ def download(url, output_path=None, file_name=None):
         session.close()
 
 
-def __retry_session(retries, backoff_factor, status_forcelist, method_whitelist):
+def __retry_session(retries: int, backoff_factor: float, status_forcelist: any, method_whitelist: any):
     """ Retry session """
 
     retry = Retry(
@@ -64,14 +64,14 @@ def __retry_session(retries, backoff_factor, status_forcelist, method_whitelist)
     return session
 
 
-def __get_file_name_from_url(url):
+def __get_file_name_from_url(url: str):
     """ Get file name from url """
 
     path = urlparse(url).path
     return path.split('/')[-1]
 
 
-def __create_dir(directory):
+def __create_dir(directory: str):
     """ Create a directory """
 
     try:

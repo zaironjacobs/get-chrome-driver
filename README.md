@@ -102,7 +102,7 @@ get-chrome-driver --stable-url
 Auto download ChromeDriver for the current installed Chrome version and extract the file:
 
 ```console
-$ get-chrome-driver --auto-download --extract
+get-chrome-driver --auto-download --extract
 ```
 
 Download the stable version and extract the file:
@@ -150,5 +150,5 @@ get-chrome-driver --download-version 84.0.4147.30 --extract
 
 --extract                   Extract the compressed driver file.
 
---version                   Program version.
+--version                   App version.
 ```

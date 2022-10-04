@@ -193,7 +193,7 @@ def __auto_download(extract: bool):
         print('An error occurred at downloading')
 
 
-def __download_latest_version(phase: Phase, extract: bool = False):
+def __download_latest_version(phase: Phase, extract: bool):
     """
     Download the driver for the stable version or beta version
 

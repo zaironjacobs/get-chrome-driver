@@ -1,12 +1,12 @@
-import pytest
 import os
 import shutil
 import subprocess
 import platform as pl
 from os import path
 
-from bs4 import BeautifulSoup
+import pytest
 import requests
+from bs4 import BeautifulSoup
 from decouple import config
 
 from .. import GetChromeDriver
