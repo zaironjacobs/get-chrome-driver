@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class Phase(str, Enum):
+class Phase(Enum):
     stable = 'stable'
     beta = 'beta'

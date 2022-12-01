@@ -98,14 +98,14 @@ class GetChromeDriver:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.win64}{zip_ext}'
+                    url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.win64.value}{zip_ext}'
                     self.__check_if_url_is_valid(url)
                     return url
                 except VersionUrlError:
                     # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.win32}{zip_ext}'
+            url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.win32.value}{zip_ext}'
             self.__check_if_url_is_valid(url)
             return url
 
@@ -113,14 +113,14 @@ class GetChromeDriver:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.linux64}{zip_ext}'
+                    url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.linux64.value}{zip_ext}'
                     self.__check_if_url_is_valid(url)
                     return url
                 except VersionUrlError:
                     # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.linux32}{zip_ext}'
+            url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.linux32.value}{zip_ext}'
             self.__check_if_url_is_valid(url)
             return url
 
@@ -128,14 +128,14 @@ class GetChromeDriver:
             # 64bit
             if arch == arch_64:
                 try:
-                    url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.mac64}{zip_ext}'
+                    url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.mac64.value}{zip_ext}'
                     self.__check_if_url_is_valid(url)
                     return url
                 except VersionUrlError:
                     # No 64 bit, get 32 bit
                     pass
             # 32bit
-            url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.mac32}{zip_ext}'
+            url = f'{constants.url_chromedriver_storage}/{version}/{chromedriver}_{Platform.mac32.value}{zip_ext}'
             self.__check_if_url_is_valid(url)
             return url
 
@@ -218,7 +218,7 @@ class GetChromeDriver:
             if not number.isnumeric():
                 raise UnknownVersionError('Invalid version format')
 
-    def __check_platform(self, platform: Platform) -> str:
+    def __check_platform(self, platform: Platform) -> Platform:
         """
         Check if platform is valid
 

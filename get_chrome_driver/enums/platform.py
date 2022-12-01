@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Platform(str, Enum):
+class Platform(Enum):
     win = 'win'
     linux = 'linux'
     mac = 'mac'
