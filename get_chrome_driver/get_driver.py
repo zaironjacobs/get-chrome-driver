@@ -95,7 +95,7 @@ class GetChromeDriver:
         new_api_known_good_versions: list,
         version: str,
         platform_64: str,
-        platform_32: str | None = None,
+        platform_32: str = None,
         is_mac: bool = False,
     ) -> str:
         """
