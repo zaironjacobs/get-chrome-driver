@@ -14,29 +14,31 @@ def download(url: str, output_path: str = None, file_name: str = None):
     If file_name is None, the file name from the url will be used
     """
 
-    session = __retry_session(retries=3,
-                              backoff_factor=0.1,
-                              status_forcelist=[429, 500, 502, 503, 504],
-                              method_whitelist=['GET'])
+    session = __retry_session(
+        retries=3,
+        backoff_factor=0.1,
+        status_forcelist=[429, 500, 502, 503, 504],
+        method_whitelist=["GET"],
+    )
     try:
         res = session.get(url=url)
     except RequestException as err:
         raise RequestException(err)
     else:
         if res.status_code != 200:
-            raise HTTPError('Invalid URL')
+            raise HTTPError("Invalid URL")
 
-        if file_name == '' or file_name is None:
+        if file_name == "" or file_name is None:
             # Get the file name from the url
             file_name = __get_file_name_from_url(url)
 
-        if output_path == '' or output_path is None:
+        if output_path == "" or output_path is None:
             file_path = file_name
         else:
             __create_dir(output_path)
-            file_path = output_path + '/' + file_name
+            file_path = output_path + "/" + file_name
 
-        with open(file_path, 'wb') as file:
+        with open(file_path, "wb") as file:
             # Download the file in chunks
             for chunk in res.iter_content(chunk_size=1048576):
                 if chunk:
@@ -46,8 +48,10 @@ def download(url: str, output_path: str = None, file_name: str = None):
         session.close()
 
 
-def __retry_session(retries: int, backoff_factor: float, status_forcelist: any, method_whitelist: any):
-    """ Retry session """
+def __retry_session(
+    retries: int, backoff_factor: float, status_forcelist: any, method_whitelist: any
+):
+    """Retry session"""
 
     retry = Retry(
         total=retries,
@@ -55,24 +59,25 @@ def __retry_session(retries: int, backoff_factor: float, status_forcelist: any, 
         connect=retries,
         backoff_factor=backoff_factor,
         status_forcelist=status_forcelist,
-        allowed_methods=method_whitelist)
+        allowed_methods=method_whitelist,
+    )
 
     adapter = HTTPAdapter(max_retries=retry)
     session = requests.Session()
-    session.mount('http://', adapter)
-    session.mount('https://', adapter)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
     return session
 
 
 def __get_file_name_from_url(url: str):
-    """ Get file name from url """
+    """Get file name from url"""
 
     path = urlparse(url).path
-    return path.split('/')[-1]
+    return path.split("/")[-1]
 
 
 def __create_dir(directory: str):
-    """ Create a directory """
+    """Create a directory"""
 
     try:
         os.makedirs(directory, exist_ok=True)

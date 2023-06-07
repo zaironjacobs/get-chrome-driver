@@ -1,62 +1,57 @@
 import typer
 
-from . import __version__
-from .get_driver import GetChromeDriver
-from .enums import Phase, Platform
-from .exceptions import GetChromeDriverError
+from get_chrome_driver import __version__
+from get_chrome_driver.enums import Phase, OsPlatform
+from get_chrome_driver.exceptions import GetChromeDriverError
+from get_chrome_driver.get_driver import GetChromeDriver
 
-app = typer.Typer(name='Get ChromeDriver', add_completion=False)
+app = typer.Typer(name="Get ChromeDriver", add_completion=False)
 
 
 @app.command()
-def main(beta_version: bool = typer.Option(default=False,
-                                           help='Print the beta version',
-                                           show_default=False),
-
-         stable_version: bool = typer.Option(default=False,
-                                             help='Print the stable version',
-                                             show_default=False),
-
-         latest_urls: bool = typer.Option(default=False,
-                                          help='print the beta and stable version download urls for all platforms',
-                                          show_default=False),
-
-         version_url: str = typer.Option(default=None,
-                                         help='Print the version download url',
-                                         show_default=False),
-
-         beta_url: bool = typer.Option(default=False,
-                                       help='Print the beta version download url',
-                                       show_default=False),
-
-         stable_url: bool = typer.Option(default=False,
-                                         help='Print the stable version download url',
-                                         show_default=False),
-
-         auto_download: bool = typer.Option(default=False,
-                                            help='Download a ChromeDriver version for the installed Chrome Version',
-                                            show_default=False),
-
-         download_beta: bool = typer.Option(default=False,
-                                            help='Download beta version',
-                                            show_default=False),
-
-         download_stable: bool = typer.Option(default=False,
-                                              help='Download stable version',
-                                              show_default=False),
-
-         download_version: str = typer.Option(default=None,
-                                              help='Download a specific version',
-                                              show_default=False),
-
-         extract: bool = typer.Option(default=False,
-                                      help='Extract the compressed driver file',
-                                      show_default=False),
-
-         version: bool = typer.Option(default=False,
-                                      help='Application version',
-                                      show_default=False)):
-    """ Main """
+def main(
+    beta_version: bool = typer.Option(
+        default=False, help="Print the beta version", show_default=False
+    ),
+    stable_version: bool = typer.Option(
+        default=False, help="Print the stable version", show_default=False
+    ),
+    latest_urls: bool = typer.Option(
+        default=False,
+        help="print the beta and stable version download urls for all platforms",
+        show_default=False,
+    ),
+    version_url: str = typer.Option(
+        default=None, help="Print the version download url", show_default=False
+    ),
+    beta_url: bool = typer.Option(
+        default=False, help="Print the beta version download url", show_default=False
+    ),
+    stable_url: bool = typer.Option(
+        default=False, help="Print the stable version download url", show_default=False
+    ),
+    auto_download: bool = typer.Option(
+        default=False,
+        help="Download a ChromeDriver version for the installed Chrome Version",
+        show_default=False,
+    ),
+    download_beta: bool = typer.Option(
+        default=False, help="Download beta version", show_default=False
+    ),
+    download_stable: bool = typer.Option(
+        default=False, help="Download stable version", show_default=False
+    ),
+    download_version: str = typer.Option(
+        default=None, help="Download a specific version", show_default=False
+    ),
+    extract: bool = typer.Option(
+        default=False, help="Extract the compressed driver file", show_default=False
+    ),
+    version: bool = typer.Option(
+        default=False, help="Application version", show_default=False
+    ),
+):
+    """Main"""
 
     if beta_version:
         __print_latest_version(phase=Phase.beta)
@@ -89,7 +84,7 @@ def main(beta_version: bool = typer.Option(default=False,
         __download_version(version=download_version, extract=extract)
 
     elif version:
-        print(f'v{__version__}')
+        print(f"v{__version__}")
 
 
 def __print_latest_version(phase: Phase):
@@ -100,7 +95,7 @@ def __print_latest_version(phase: Phase):
     """
 
     get_driver = GetChromeDriver()
-    error = 'No latest version found'
+    error = "No latest version found"
     if phase == Phase.beta:
         try:
             print(get_driver.beta_version())
@@ -116,21 +111,25 @@ def __print_latest_version(phase: Phase):
 
 
 def __print_latest_urls():
-    """ Print the stable and beta url version for all platforms """
+    """Print the stable and beta url version for all platforms"""
 
-    get_driver_win = GetChromeDriver(Platform.win)
-    get_driver_linux = GetChromeDriver(Platform.linux)
-    get_driver_mac = GetChromeDriver(Platform.mac)
-    get_drivers = {'Windows': get_driver_win, 'Linux': get_driver_linux, 'macOS': get_driver_mac}
+    get_driver_win = GetChromeDriver(OsPlatform.win)
+    get_driver_linux = GetChromeDriver(OsPlatform.linux)
+    get_driver_mac = GetChromeDriver(OsPlatform.mac)
+    get_drivers = {
+        "Windows": get_driver_win,
+        "Linux": get_driver_linux,
+        "macOS": get_driver_mac,
+    }
 
-    result = ''
+    result = ""
     for index, (key, value) in enumerate(get_drivers.items()):
         try:
-            result += f'Latest beta and stable version for {key}:\n'
-            result += f'stable : {value.stable_version_url()}\n'
-            result += f'beta   : {value.beta_version_url()}'
+            result += f"Latest beta and stable version for {key}:\n"
+            result += f"stable : {value.stable_version_url()}\n"
+            result += f"beta   : {value.beta_version_url()}"
             if index < len(get_drivers) - 1:
-                result += '\n'
+                result += "\n"
         except GetChromeDriverError:
             continue
 
@@ -146,7 +145,7 @@ def __print_version_url(version: str):
 
     get_driver = GetChromeDriver()
 
-    error = 'Could not find version url'
+    error = "Could not find version url"
 
     try:
         print(get_driver.version_url(version))
@@ -163,7 +162,7 @@ def __print_latest_url(phase: Phase):
 
     get_driver = GetChromeDriver()
 
-    error = 'Could not find version url'
+    error = "Could not find version url"
 
     if phase == Phase.beta:
         try:
@@ -188,9 +187,9 @@ def __auto_download(extract: bool):
 
     try:
         get_driver.auto_download(extract=extract)
-        print('Download finished')
+        print("Download finished")
     except GetChromeDriverError:
-        print('An error occurred at downloading')
+        print("An error occurred at downloading")
 
 
 def __download_latest_version(phase: Phase, extract: bool):
@@ -203,9 +202,9 @@ def __download_latest_version(phase: Phase, extract: bool):
 
     get_driver = GetChromeDriver()
 
-    download_complete = 'Download complete'
-    beta_error = 'Could not download beta version'
-    stable_error = 'Could not download stable version'
+    download_complete = "Download complete"
+    beta_error = "Could not download beta version"
+    stable_error = "Could not download stable version"
 
     if phase == Phase.beta:
         try:
@@ -233,6 +232,6 @@ def __download_version(version: str, extract: bool):
 
     try:
         get_driver.download_version(version=version, extract=extract)
-        print('Download finished')
+        print("Download finished")
     except GetChromeDriverError:
-        print('Could not download version')
+        print("Could not download version")
