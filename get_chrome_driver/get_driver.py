@@ -1,5 +1,6 @@
 import os
 import platform as pl
+import shutil
 import struct
 import subprocess
 import xml.etree.ElementTree as ElTree
@@ -237,28 +238,145 @@ class GetChromeDriver:
             output_path = self._output_path(version)
 
         # e.g. if path == 'webdriver/bin', the driver will be downloaded at 'webdriver/bin/chromedriver.exe'
-        def download(download_url: str, download_output_path: str) -> str:
+        def download(download_url: str) -> str:
+            # Download
             try:
                 file_path, file_name = downloader.download(
-                    url=download_url, output_path=download_output_path
+                    url=download_url, output_path=output_path
                 )
             except (OSError, HTTPError, RequestException) as err:
                 raise DownloadError(err)
+
+            # Extract
             if extract:
                 with zipfile.ZipFile(file_path, "r") as zip_ref:
-                    zip_ref.extractall(path=download_output_path)
+                    zip_ref.extractall(path=output_path)
+
+                # Remove downloaded zip file
                 os.remove(file_path)
+
+                # Move driver to output dir
+                self.__move_driver_file_output_dir(
+                    os_platform=OsPlatform.win, output_path=output_path
+                )
+
                 if (
                     self.__os_platform == OsPlatform.linux
                     or self.__os_platform == OsPlatform.mac
                 ):
-                    os.chmod(f"{download_output_path}/chromedriver", 0o755)
-            return download_output_path
+                    os.chmod(f"{output_path}/chromedriver", 0o755)
+
+            return output_path
 
         url = self.version_url(version)
+        download(download_url=url)
 
-        # Download the driver file and return the path of the driver file
-        return download(download_url=url, download_output_path=output_path)
+        return output_path
+
+    def __move_driver_file_output_dir(self, os_platform: OsPlatform, output_path: str):
+        """Move driver file to output dir if extracted driver file is contained inside a dir"""
+
+        old_driver_file_path_32 = None
+        old_driver_file_parent_dir_32 = None
+
+        if os_platform == OsPlatform.win:
+            driver_file_ext = ".exe"
+            old_driver_file_path_64 = os.path.join(
+                output_path,
+                f"{self.__chromedriver_str}-win64",
+                f"{self.__chromedriver_str}{driver_file_ext}",
+            )
+            old_driver_file_parent_dir_64 = os.path.join(
+                output_path, f"{self.__chromedriver_str}-win64"
+            )
+            old_driver_file_path_32 = os.path.join(
+                output_path,
+                f"{self.__chromedriver_str}-win32",
+                f"{self.__chromedriver_str}{driver_file_ext}",
+            )
+            old_driver_file_parent_dir_32 = os.path.join(
+                output_path, f"{self.__chromedriver_str}-win32"
+            )
+        elif os_platform == OsPlatform.linux:
+            driver_file_ext = ""
+            old_driver_file_path_64 = os.path.join(
+                output_path,
+                f"{self.__chromedriver_str}-linux64",
+                f"{self.__chromedriver_str}{driver_file_ext}",
+            )
+            old_driver_file_parent_dir_64 = os.path.join(
+                output_path, f"{self.__chromedriver_str}-linux64"
+            )
+        elif os_platform == OsPlatform.mac:
+            driver_file_ext = ""
+            old_driver_file_path_64 = os.path.join(
+                output_path,
+                f"{self.__chromedriver_str}-mac-x64",
+                f"{self.__chromedriver_str}{driver_file_ext}",
+            )
+            old_driver_file_parent_dir_64 = os.path.join(
+                output_path, f"{self.__chromedriver_str}-mac-x64"
+            )
+        else:
+            raise GetChromeDriverError("Could not determine OS")
+
+        new_driver_file_path = os.path.join(
+            f"{output_path}", f"{self.__chromedriver_str}{driver_file_ext}"
+        )
+
+        # If driver file was not found directly inside output dir
+        if not os.path.isfile(
+            os.path.join(output_path, f"{self.__chromedriver_str}{driver_file_ext}")
+        ):
+            # If driver file was found inside <output dir>/chromedriver-<platform-arch>
+            if os.path.isfile(old_driver_file_path_64):
+                # Move the driver to output dir
+                shutil.move(old_driver_file_path_64, new_driver_file_path)
+
+            # Arch 32, only check for Windows
+            elif os_platform == OsPlatform.win:
+                # If driver file was found inside <output dir>/chromedriver-<platform-arch>
+                if os.path.isfile(old_driver_file_path_32):
+                    # Move the driver to output dir
+                    shutil.move(old_driver_file_path_32, new_driver_file_path)
+
+        # Cleanup
+        if old_driver_file_parent_dir_32:
+            shutil.rmtree(old_driver_file_parent_dir_32, ignore_errors=True)
+        if old_driver_file_path_64:
+            shutil.rmtree(old_driver_file_parent_dir_64, ignore_errors=True)
+
+        # for dir_path, sub_dir_names, sub_file_names in os.walk(output_path):
+        #     for sub_file_name in sub_file_names:
+        #         # Find the executable driver file
+        #         if (
+        #             sub_file_name == self.__chromedriver_str
+        #             or sub_file_name == f"{self.__chromedriver_str}.exe"
+        #         ):
+        #             # Use '/'
+        #             dir_path = dir_path.replace(os.sep, "/")
+        #
+        #             # If the driver file is not inside the output dir, move it to the output dir
+        #             old_driver_file_path = os.path.join(
+        #                 dir_path, sub_file_name
+        #             ).replace(os.sep, "/")
+        #             new_driver_file_path = os.path.join(
+        #                 output_path, sub_file_name
+        #             ).replace(os.sep, "/")
+        #             if old_driver_file_path != new_driver_file_path:
+        #                 # If there is a driver already in the output dir, remove the driver file
+        #                 if os.path.isfile(new_driver_file_path):
+        #                     os.remove(new_driver_file_path)
+        #
+        #                 # Move the driver to the output dir
+        #                 shutil.move(
+        #                     old_driver_file_path, new_driver_file_path
+        #                 )
+        #
+        #                 # Remove the old parent dir of the driver file
+        #                 shutil.rmtree(dir_path)
+        #
+        #             return
 
     def __check_if_url_is_valid(self, url: str) -> bool:
         """
