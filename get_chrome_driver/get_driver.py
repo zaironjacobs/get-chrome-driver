@@ -320,6 +320,7 @@ class GetChromeDriver:
         else:
             raise GetChromeDriverError("Could not determine OS")
 
+        # The correct driver file path inside output dir
         new_driver_file_path = os.path.join(
             f"{output_path}", f"{self.__chromedriver_str}{driver_file_ext}"
         )
@@ -345,38 +346,6 @@ class GetChromeDriver:
             shutil.rmtree(old_driver_file_parent_dir_32, ignore_errors=True)
         if old_driver_file_path_64:
             shutil.rmtree(old_driver_file_parent_dir_64, ignore_errors=True)
-
-        # for dir_path, sub_dir_names, sub_file_names in os.walk(output_path):
-        #     for sub_file_name in sub_file_names:
-        #         # Find the executable driver file
-        #         if (
-        #             sub_file_name == self.__chromedriver_str
-        #             or sub_file_name == f"{self.__chromedriver_str}.exe"
-        #         ):
-        #             # Use '/'
-        #             dir_path = dir_path.replace(os.sep, "/")
-        #
-        #             # If the driver file is not inside the output dir, move it to the output dir
-        #             old_driver_file_path = os.path.join(
-        #                 dir_path, sub_file_name
-        #             ).replace(os.sep, "/")
-        #             new_driver_file_path = os.path.join(
-        #                 output_path, sub_file_name
-        #             ).replace(os.sep, "/")
-        #             if old_driver_file_path != new_driver_file_path:
-        #                 # If there is a driver already in the output dir, remove the driver file
-        #                 if os.path.isfile(new_driver_file_path):
-        #                     os.remove(new_driver_file_path)
-        #
-        #                 # Move the driver to the output dir
-        #                 shutil.move(
-        #                     old_driver_file_path, new_driver_file_path
-        #                 )
-        #
-        #                 # Remove the old parent dir of the driver file
-        #                 shutil.rmtree(dir_path)
-        #
-        #             return
 
     def __check_if_url_is_valid(self, url: str) -> bool:
         """
