@@ -257,7 +257,7 @@ class GetChromeDriver:
 
                 # Move driver to output dir
                 self.__move_driver_file_output_dir(
-                    os_platform=OsPlatform.win, output_path=output_path
+                    os_platform=self.__os_platform, output_path=output_path
                 )
 
                 if (
