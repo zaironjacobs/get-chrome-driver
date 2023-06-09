@@ -256,7 +256,7 @@ class GetChromeDriver:
                 os.remove(file_path)
 
                 # Move driver to output dir
-                self.__move_driver_file_output_dir(
+                self.__move_driver_file_to_output_dir(
                     os_platform=self.__os_platform, output_path=output_path
                 )
 
@@ -273,7 +273,9 @@ class GetChromeDriver:
 
         return output_path
 
-    def __move_driver_file_output_dir(self, os_platform: OsPlatform, output_path: str):
+    def __move_driver_file_to_output_dir(
+        self, os_platform: OsPlatform, output_path: str
+    ):
         """Move driver file to output dir if extracted driver file is contained inside a dir"""
 
         old_driver_file_path_32 = None
