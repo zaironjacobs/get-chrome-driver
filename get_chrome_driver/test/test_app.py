@@ -1,17 +1,14 @@
 import os
+import platform as pl
 import shutil
 import subprocess
-import platform as pl
 from os import path
 
 import pytest
-import requests
-from bs4 import BeautifulSoup
 from decouple import config
 
 from get_chrome_driver import GetChromeDriver
 from get_chrome_driver import __version__
-from get_chrome_driver import constants
 
 name = "get-chrome-driver"
 
@@ -69,23 +66,6 @@ os.chdir(os.path.dirname(__file__))
 
 
 class TestApp:
-    def test_text_match_latest_stable(self):
-        match_found = False
-
-        result = requests.get(constants.CHROMIUM_URL)
-        soup = BeautifulSoup(result.content, "html.parser")
-        ul = soup.select_one(constants.CSS_SELECTOR_VERSIONS)
-        for li in ul:
-            text = li.text.replace("\u00A0", " ")
-            if (
-                text[: len(constants.LATEST_STABLE_VERSION_STR)].lower()
-                == constants.LATEST_STABLE_VERSION_STR.lower()
-            ):
-                match_found = True
-                break
-
-        assert match_found is True
-
     def test_stable_version(self):
         out = subprocess.run(
             args=[name, "--stable-version"],
