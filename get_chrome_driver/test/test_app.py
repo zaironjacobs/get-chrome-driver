@@ -10,6 +10,7 @@ from decouple import config
 
 from get_chrome_driver import GetChromeDriver
 from get_chrome_driver import __version__
+from get_chrome_driver.enums import Platform
 
 name = "get-chrome-driver"
 
@@ -46,8 +47,7 @@ def get_filenames_zipped(version: str) -> tuple:
             filename_zipped_32 = "chromedriver-mac32.zip"
             filename_zipped_64 = "chromedriver-mac64.zip"
         else:
-            filename_zipped_32 = "chromedriver-32.zip"
-            filename_zipped_64 = "chromedriver-64.zip"
+            raise Exception("Could not identify platform.")
     else:
         if pl.system() == "Windows":
             filename_zipped_32 = "chromedriver_win32.zip"
@@ -59,8 +59,7 @@ def get_filenames_zipped(version: str) -> tuple:
             filename_zipped_32 = "chromedriver_mac32.zip"
             filename_zipped_64 = "chromedriver_mac64.zip"
         else:
-            filename_zipped_32 = "chromedriver_32.zip"
-            filename_zipped_64 = "chromedriver_64.zip"
+            raise Exception("Could not identify platform.")
 
     return filename_zipped_32, filename_zipped_64
 
@@ -70,6 +69,19 @@ if pl.system() == "Windows":
     filename = "chromedriver.exe"
 else:
     filename = "chromedriver"
+
+# Platform name
+if pl.system() == "Windows":
+    platform_name_32 = Platform.win32.value
+    platform_name_64 = Platform.win64.value
+elif pl.system() == "Linux":
+    platform_name_32 = Platform.linux32.value
+    platform_name_64 = Platform.linux64.value
+elif pl.system() == "Darwin":
+    platform_name_32 = Platform.mac32.value
+    platform_name_64 = Platform.mac_x64.value
+else:
+    raise Exception("Could not identify platform.")
 
 # Filenames zipped
 stable_filename_zipped_32, stable_filename_zipped_64 = get_filenames_zipped(
@@ -82,8 +94,8 @@ random_filename_zipped_32, random_filename_zipped_64 = get_filenames_zipped(
 # Generate stable version url
 if is_version_in_new_api(stable_version):
     # New storage
-    stable_version_url_32 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{stable_version}/win32/{stable_filename_zipped_32}"
-    stable_version_url_64 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{stable_version}/win64/{stable_filename_zipped_64}"
+    stable_version_url_32 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{stable_version}/{platform_name_32}/{stable_filename_zipped_32}"
+    stable_version_url_64 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{stable_version}/{platform_name_64}/{stable_filename_zipped_64}"
 else:
     # Old storage
     stable_version_url_32 = f"https://chromedriver.storage.googleapis.com/{stable_version}/{stable_filename_zipped_32}"
@@ -92,8 +104,8 @@ else:
 # Generate random version url
 if is_version_in_new_api(random_version):
     # New storage
-    random_version_url_32 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{random_version}/win32/{random_filename_zipped_32}"
-    random_version_url_64 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{random_version}/win64/{random_filename_zipped_64}"
+    random_version_url_32 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{random_version}/{platform_name_32}/{random_filename_zipped_32}"
+    random_version_url_64 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{random_version}/{platform_name_64}/{random_filename_zipped_64}"
 else:
     # Old storage
     random_version_url_32 = f"https://chromedriver.storage.googleapis.com/{random_version}/{random_filename_zipped_32}"
