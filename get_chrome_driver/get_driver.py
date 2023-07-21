@@ -424,8 +424,9 @@ class GetChromeDriver:
     def __get_all_chromedriver_versions(self) -> list:
         """Return a list with all ChromeDriver versions"""
 
+        # Get versions from old storage
         key_texts = []
-        versions = []
+        old_storage_versions = []
 
         with urlopen(constants.CHROMEDRIVER_STORAGE_URL) as xml_file:
             tree = ElTree.parse(xml_file)
@@ -453,9 +454,25 @@ class GetChromeDriver:
             if len(version) < 1:
                 continue
 
-            versions.append(version)
+            old_storage_versions.append(version)
 
-        return list(dict.fromkeys(versions))
+        old_storage_versions = list(dict.fromkeys(old_storage_versions))
+
+        # Get versions from new storage
+        new_storage_versions = []
+        response = requests.get(constants.KNOWN_GOOD_VERSIONS_WITH_DOWNLOADS_URL)
+        if response.ok:
+            for version in response.json()["versions"]:
+                new_storage_versions.append(version["version"])
+
+        new_storage_versions = list(dict.fromkeys(new_storage_versions))
+
+        unique_versions = list(
+            dict.fromkeys(old_storage_versions + new_storage_versions)
+        )
+        sorted_versions = sorted(unique_versions, key=lambda x: int(x.split(".")[0]))
+
+        return sorted_versions
 
     def __get_installed_chrome_version(self) -> str:
         """Return the installed Chrome version on the machine"""
@@ -473,8 +490,9 @@ class GetChromeDriver:
                 stderr=subprocess.DEVNULL,
                 stdin=subprocess.DEVNULL,
             )
+            version = process.communicate()[0].decode("UTF-8").split()[-1]
 
-            return process.communicate()[0].decode("UTF-8").split()[-1]
+            return version
 
         elif self.__os_platform == OsPlatform.linux:
             process = subprocess.Popen(
