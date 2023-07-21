@@ -42,9 +42,7 @@ class GetChromeDriver:
                     f"Unknown platform, choose a platform from: {str(self.__os_platforms_list)}"
                 )
 
-        self.__arch_current = struct.calcsize("P") * 8
-        self.__arch_64 = 64
-
+        self.__arch = struct.calcsize("P") * 8
         self.__chromedriver_str = "chromedriver"
         self.__zip_ext = ".zip"
 
@@ -116,14 +114,15 @@ class GetChromeDriver:
                 drivers = driver_version.get("downloads").get("chromedriver")
 
                 # 64
-                for driver in drivers or []:
-                    if is_mac:
-                        _platform_64 = Platform.mac_x64.value
-                    else:
-                        _platform_64 = platform_64
+                if self.__arch == 64:
+                    for driver in drivers or []:
+                        if is_mac:
+                            _platform_64 = Platform.mac_x64.value
+                        else:
+                            _platform_64 = platform_64
 
-                    if driver.get("platform") == _platform_64:
-                        url = driver.get("url")
+                        if driver.get("platform") == _platform_64:
+                            url = driver.get("url")
 
                 # 32
                 if url is None and platform_32 and not is_mac:
@@ -137,9 +136,10 @@ class GetChromeDriver:
 
         # Old chromedriver storage
         # 64
-        url = f"{constants.CHROMEDRIVER_STORAGE_URL}/{version}/{self.__chromedriver_str}_{platform_64}{self.__zip_ext}"
-        if self.__check_if_url_is_valid(url):
-            return url
+        if self.__arch == 64:
+            url = f"{constants.CHROMEDRIVER_STORAGE_URL}/{version}/{self.__chromedriver_str}_{platform_64}{self.__zip_ext}"
+            if self.__check_if_url_is_valid(url):
+                return url
 
         # 32
         if platform_32:
