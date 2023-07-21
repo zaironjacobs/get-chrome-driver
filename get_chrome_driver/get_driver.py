@@ -420,6 +420,7 @@ class GetChromeDriver:
         output_path = self.auto_download(extract=True)
         path = os.path.join(os.path.abspath(os.getcwd()), output_path)
         os.environ["PATH"] += os.pathsep + path
+        return output_path
 
     def __get_all_chromedriver_versions(self) -> list:
         """Return a list with all ChromeDriver versions"""
