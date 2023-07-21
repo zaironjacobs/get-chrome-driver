@@ -1,6 +1,7 @@
 import os
 import platform as pl
 import shutil
+import struct
 import subprocess
 from os import path
 
@@ -12,54 +13,91 @@ from get_chrome_driver import __version__
 
 name = "get-chrome-driver"
 
-stable_version = config("STABLE_VERSION")
-random_version = config("RANDOM_VERSION")
+stable_version: str = config("STABLE_VERSION")
+random_version: str = config("RANDOM_VERSION")
 
+arch = struct.calcsize("P") * 8
+
+
+def is_version_in_new_api(version: str) -> bool:
+    """Is version in new API"""
+
+    if (
+        int(version.split(".")[0]) < 113
+        or version == "113.0.5672.24"
+        or version == "113.0.5672.63"
+    ):
+        return False
+    else:
+        return True
+
+
+def get_filenames_zipped(version: str) -> tuple:
+    """Get filenames zipped"""
+
+    if is_version_in_new_api(version):
+        if pl.system() == "Windows":
+            filename_zipped_32 = "chromedriver-win32.zip"
+            filename_zipped_64 = "chromedriver-win64.zip"
+        elif pl.system() == "Linux":
+            filename_zipped_32 = "chromedriver-linux32.zip"
+            filename_zipped_64 = "chromedriver-linux64.zip"
+        elif pl.system() == "Darwin":
+            filename_zipped_32 = "chromedriver-mac32.zip"
+            filename_zipped_64 = "chromedriver-mac64.zip"
+        else:
+            filename_zipped_32 = "chromedriver-32.zip"
+            filename_zipped_64 = "chromedriver-64.zip"
+    else:
+        if pl.system() == "Windows":
+            filename_zipped_32 = "chromedriver_win32.zip"
+            filename_zipped_64 = "chromedriver_win64.zip"
+        elif pl.system() == "Linux":
+            filename_zipped_32 = "chromedriver_linux32.zip"
+            filename_zipped_64 = "chromedriver_linux64.zip"
+        elif pl.system() == "Darwin":
+            filename_zipped_32 = "chromedriver_mac32.zip"
+            filename_zipped_64 = "chromedriver_mac64.zip"
+        else:
+            filename_zipped_32 = "chromedriver_32.zip"
+            filename_zipped_64 = "chromedriver_64.zip"
+
+    return filename_zipped_32, filename_zipped_64
+
+
+# Filename
 if pl.system() == "Windows":
-    file_name_zipped = "chromedriver_win32.zip"
-    file_name = "chromedriver.exe"
-    stable_version_url = (
-        "https://chromedriver.storage.googleapis.com/"
-        + stable_version
-        + "/"
-        + file_name_zipped
-    )
-    random_version_url = (
-        "https://chromedriver.storage.googleapis.com/"
-        + random_version
-        + "/"
-        + file_name_zipped
-    )
-elif pl.system() == "Linux":
-    file_name_zipped = "chromedriver_linux64.zip"
-    file_name = "chromedriver"
-    stable_version_url = (
-        "https://chromedriver.storage.googleapis.com/"
-        + stable_version
-        + "/"
-        + file_name_zipped
-    )
-    random_version_url = (
-        "https://chromedriver.storage.googleapis.com/"
-        + random_version
-        + "/"
-        + file_name_zipped
-    )
-elif pl.system() == "Darwin":
-    file_name_zipped = "chromedriver_mac64.zip"
-    file_name = "chromedriver"
-    stable_version_url = (
-        "https://chromedriver.storage.googleapis.com/"
-        + stable_version
-        + "/"
-        + file_name_zipped
-    )
-    random_version_url = (
-        "https://chromedriver.storage.googleapis.com/"
-        + random_version
-        + "/"
-        + file_name_zipped
-    )
+    filename = "chromedriver.exe"
+else:
+    filename = "chromedriver"
+
+# Filenames zipped
+stable_filename_zipped_32, stable_filename_zipped_64 = get_filenames_zipped(
+    stable_version
+)
+random_filename_zipped_32, random_filename_zipped_64 = get_filenames_zipped(
+    random_version
+)
+
+# Generate stable version url
+if is_version_in_new_api(stable_version):
+    # New storage
+    stable_version_url_32 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{stable_version}/win32/{stable_filename_zipped_32}"
+    stable_version_url_64 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{stable_version}/win64/{stable_filename_zipped_64}"
+else:
+    # Old storage
+    stable_version_url_32 = f"https://chromedriver.storage.googleapis.com/{stable_version}/{stable_filename_zipped_32}"
+    stable_version_url_64 = f"https://chromedriver.storage.googleapis.com/{stable_version}/{stable_filename_zipped_64}"
+
+# Generate random version url
+if is_version_in_new_api(random_version):
+    # New storage
+    random_version_url_32 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{random_version}/win32/{random_filename_zipped_32}"
+    random_version_url_64 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{random_version}/win64/{random_filename_zipped_64}"
+else:
+    # Old storage
+    random_version_url_32 = f"https://chromedriver.storage.googleapis.com/{random_version}/{random_filename_zipped_32}"
+    random_version_url_64 = f"https://chromedriver.storage.googleapis.com/{random_version}/{random_filename_zipped_64}"
 
 # Change to the current test directory
 os.chdir(os.path.dirname(__file__))
@@ -73,33 +111,45 @@ class TestApp:
             stdout=subprocess.PIPE,
         )
         actual = out.stdout.split()[0]
-        assert stable_version == str(actual)
+
+        assert stable_version == actual
 
     def test_random_version_url(self):
-        url = random_version_url
         out = subprocess.run(
             args=[name, "--version-url", random_version],
             universal_newlines=True,
             stdout=subprocess.PIPE,
         )
         actual = out.stdout.split()[0]
-        assert url, str(actual)
+        match = actual == random_version_url_32 or actual == random_version_url_64
+
+        assert match
 
     def test_stable_version_url(self):
-        url = stable_version_url
         out = subprocess.run(
             args=[name, "--stable-url"], universal_newlines=True, stdout=subprocess.PIPE
         )
         actual = out.stdout.split()[0]
-        assert url == str(actual)
+        match = actual == stable_version_url_32 or actual == stable_version_url_64
+
+        assert match
 
     def test_auto_download_no_extract(self):
         get_driver = GetChromeDriver()
         version = get_driver.matching_version()
         subprocess.run(args=[name, "--auto-download"], stdout=subprocess.PIPE)
-        file_path = get_driver._output_path(version) + "/" + file_name_zipped
-        result = path.exists(file_path)
-        assert result
+        _stable_filename_zipped_32, _stable_filename_zipped_64 = get_filenames_zipped(
+            version
+        )
+        file_path_32 = (
+            f"{get_driver._output_path(version)}/{_stable_filename_zipped_32}"
+        )
+        file_path_64 = (
+            f"{get_driver._output_path(version)}/{_stable_filename_zipped_64}"
+        )
+        match = path.exists(file_path_32) or path.exists(file_path_64)
+
+        assert match
 
     def test_auto_download_extract(self):
         get_driver = GetChromeDriver()
@@ -107,23 +157,27 @@ class TestApp:
         subprocess.run(
             args=[name, "--auto-download", "--extract"], stdout=subprocess.PIPE
         )
-        file_path_extracted = get_driver._output_path(version) + "/" + file_name
+        file_path_extracted = f"{get_driver._output_path(version)}/{filename}"
         result = path.exists(file_path_extracted)
+
         assert result
 
     def test_auto_download_extract_custom_path(self):
         get_driver = GetChromeDriver()
         get_driver.auto_download(output_path="webdriver/bin/chromedriver", extract=True)
-        result = path.exists("webdriver/bin/chromedriver/" + file_name)
+        result = path.exists(f"webdriver/bin/chromedriver/{filename}")
+
         assert result
 
     def test_download_stable_version_no_extract(self):
         get_driver = GetChromeDriver()
         version = stable_version
         subprocess.run(args=[name, "--download-stable"], stdout=subprocess.PIPE)
-        file_path = get_driver._output_path(version) + "/" + file_name_zipped
-        result = path.exists(file_path)
-        assert result
+        file_path_32 = f"{get_driver._output_path(version)}/{stable_filename_zipped_32}"
+        file_path_64 = f"{get_driver._output_path(version)}/{stable_filename_zipped_64}"
+        match = path.exists(file_path_32) or path.exists(file_path_64)
+
+        assert match
 
     def test_download_stable_version_extract(self):
         get_driver = GetChromeDriver()
@@ -131,8 +185,9 @@ class TestApp:
         subprocess.run(
             args=[name, "--download-stable", "--extract"], stdout=subprocess.PIPE
         )
-        file_path_extracted = get_driver._output_path(version) + "/" + file_name
+        file_path_extracted = f"{get_driver._output_path(version)}/{filename}"
         result = path.exists(file_path_extracted)
+
         assert result
 
     def test_download_stable_version_extract_custom_path(self):
@@ -140,7 +195,8 @@ class TestApp:
         get_driver.download_stable_version(
             output_path="webdriver/bin/chromedriver", extract=True
         )
-        result = path.exists("webdriver/bin/chromedriver/" + file_name)
+        result = path.exists(f"webdriver/bin/chromedriver/{filename}")
+
         assert result
 
     def test_download_random_version_no_extract(self):
@@ -149,8 +205,10 @@ class TestApp:
         subprocess.run(
             args=[name, "--download-version", version], stdout=subprocess.PIPE
         )
-        file_path = get_driver._output_path(version) + "/" + file_name_zipped
-        result = path.exists(file_path)
+        file_path_32 = f"{get_driver._output_path(version)}/{random_filename_zipped_32}"
+        file_path_64 = f"{get_driver._output_path(version)}/{random_filename_zipped_64}"
+        result = path.exists(file_path_32) or path.exists(file_path_64)
+
         assert result
 
     def test_download_random_version_extract(self):
@@ -160,8 +218,9 @@ class TestApp:
             args=[name, "--download-version", version, "--extract"],
             stdout=subprocess.PIPE,
         )
-        file_path_extracted = get_driver._output_path(version) + "/" + file_name
+        file_path_extracted = f"{get_driver._output_path(version)}/{filename}"
         result = path.exists(file_path_extracted)
+
         assert result
 
     def test_download_random_version_extract_custom_path(self):
@@ -170,7 +229,8 @@ class TestApp:
         get_driver.download_version(
             version, output_path="webdriver/bin/chromedriver", extract=True
         )
-        result = path.exists("webdriver/bin/chromedriver/" + file_name)
+        result = path.exists(f"webdriver/bin/chromedriver/{filename}")
+
         assert result
 
     def test_version(self):
@@ -178,7 +238,8 @@ class TestApp:
             args=[name, "--version"], universal_newlines=True, stdout=subprocess.PIPE
         )
         actual = out.stdout.split()[0]
-        assert "v" + __version__ == str(actual)
+
+        assert f"v{__version__}" == str(actual)
 
     @pytest.fixture(scope="function", autouse=True)
     def cleanup(self):
