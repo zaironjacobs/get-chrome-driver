@@ -27,6 +27,8 @@ def is_version_in_new_api(version: str) -> bool:
         int(version.split(".")[0]) < 113
         or version == "113.0.5672.24"
         or version == "113.0.5672.63"
+        or version == "114.0.5735.16"
+        or version == "114.0.5735.90"
     ):
         return False
     else:
@@ -150,15 +152,9 @@ class TestApp:
         get_driver = GetChromeDriver()
         version = get_driver.matching_version()
         subprocess.run(args=[name, "--auto-download"], stdout=subprocess.PIPE)
-        _stable_filename_zipped_32, _stable_filename_zipped_64 = get_filenames_zipped(
-            version
-        )
-        file_path_32 = (
-            f"{get_driver._output_path(version)}/{_stable_filename_zipped_32}"
-        )
-        file_path_64 = (
-            f"{get_driver._output_path(version)}/{_stable_filename_zipped_64}"
-        )
+        filename_zipped_32, filename_zipped_64 = get_filenames_zipped(version)
+        file_path_32 = f"{get_driver._output_path(version)}/{filename_zipped_32}"
+        file_path_64 = f"{get_driver._output_path(version)}/{filename_zipped_64}"
         match = path.exists(file_path_32) or path.exists(file_path_64)
 
         assert match
