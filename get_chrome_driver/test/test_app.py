@@ -241,6 +241,26 @@ class TestApp:
 
         assert result
 
+    def test_install(self):
+        get_driver = GetChromeDriver()
+        output_path = get_driver.install()
+
+        found = False
+        if os.path.isfile(f"{output_path}/chromedriver.exe"):
+            found = True
+
+        assert found
+
+    def test_install_custom_path(self):
+        get_driver = GetChromeDriver()
+        output_path = get_driver.install("my_dir_1/my_dir_2")
+
+        found = False
+        if os.path.isfile(f"{output_path}/chromedriver.exe"):
+            found = True
+
+        assert found
+
     def test_version(self):
         out = subprocess.run(
             args=[name, "--version"], universal_newlines=True, stdout=subprocess.PIPE
@@ -258,5 +278,9 @@ class TestApp:
             pass
         try:
             shutil.rmtree("chromedriver")
+        except (FileNotFoundError, PermissionError):
+            pass
+        try:
+            shutil.rmtree("my_dir_1")
         except (FileNotFoundError, PermissionError):
             pass

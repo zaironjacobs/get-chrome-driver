@@ -426,13 +426,16 @@ class GetChromeDriver:
         """Install ChromeDriver for the installed Chrome version on machine"""
 
         if output_path:
-            if not os.path.isabs(output_path):
-                output_path = os.path.join(os.path.abspath(os.getcwd()), output_path)
             self.auto_download(output_path=output_path, extract=True)
         else:
             output_path = self.auto_download(extract=True)
 
         os.environ["PATH"] += os.pathsep + output_path
+
+        if not os.path.isabs(output_path):
+            output_path = os.path.join(os.path.abspath(os.getcwd()), output_path)
+
+        output_path = output_path.replace(os.sep, "/")
 
         return output_path
 
