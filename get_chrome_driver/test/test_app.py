@@ -244,6 +244,7 @@ class TestApp:
     def test_install(self):
         get_driver = GetChromeDriver()
         output_path = get_driver.install()
+        os.chmod(output_path, 0o755)
 
         found = False
         if os.path.isfile(f"{output_path}/chromedriver.exe"):
@@ -254,6 +255,7 @@ class TestApp:
     def test_install_custom_path(self):
         get_driver = GetChromeDriver()
         output_path = get_driver.install("my_dir_1/my_dir_2")
+        os.chmod(output_path, 0o755)
 
         found = False
         if os.path.isfile(f"{output_path}/chromedriver.exe"):

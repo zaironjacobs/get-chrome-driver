@@ -119,15 +119,15 @@ class GetChromeDriver:
 
                         if driver.get("platform") == _platform_64:
                             url = driver.get("url")
-
-                            return url
+                            if url and self.__check_if_url_is_valid(url):
+                                return url
 
                 # 32
                 if platform_32 and not is_mac:
                     for driver in drivers or []:
                         if driver.get("platform") == platform_32:
                             url = driver.get("url")
-                            if self.__check_if_url_is_valid(url):
+                            if url and self.__check_if_url_is_valid(url):
                                 return url
 
         # Old chromedriver storage
@@ -142,6 +142,8 @@ class GetChromeDriver:
             url = f"{constants.CHROMEDRIVER_STORAGE_URL}/{version}/{self.__chromedriver_str}_{platform_32}{self.__zip_ext}"
             if self.__check_if_url_is_valid(url):
                 return url
+
+        raise VersionUrlError(f"Could not find download url for version {version}")
 
     def version_url(self, version: str) -> str:
         """
@@ -190,8 +192,6 @@ class GetChromeDriver:
             )
 
             return url
-
-        raise VersionUrlError(f"Could not find download url for version {version}")
 
     def download_stable_version(
         self, output_path: str = None, extract: bool = False
