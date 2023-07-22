@@ -35,7 +35,7 @@ def download(url: str, output_path: str = None, file_name: str = None):
         if output_path == "" or output_path is None:
             file_path = file_name
         else:
-            __create_dir(output_path)
+            __makedirs(output_path)
             file_path = output_path + "/" + file_name
 
         with open(file_path, "wb") as file:
@@ -76,10 +76,11 @@ def __get_file_name_from_url(url: str):
     return path.split("/")[-1]
 
 
-def __create_dir(directory: str):
-    """Create a directory"""
+def __makedirs(path: str):
+    """Make dirs"""
 
     try:
-        os.makedirs(directory, exist_ok=True)
+        if not os.path.exists(path):
+            os.makedirs(path, exist_ok=True)
     except OSError as err:
         raise OSError(err)

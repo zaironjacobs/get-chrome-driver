@@ -193,7 +193,9 @@ class GetChromeDriver:
 
         raise VersionUrlError(f"Could not find download url for version {version}")
 
-    def download_stable_version(self, output_path: str = None, extract: bool = False):
+    def download_stable_version(
+        self, output_path: str = None, extract: bool = False
+    ) -> str:
         """
         Download the latest stable chromedriver version
 
@@ -202,9 +204,15 @@ class GetChromeDriver:
         """
 
         version = self.__latest_version_by_phase(Phase.stable)
-        self.download_version(version=version, output_path=output_path, extract=extract)
+        output_path = self.download_version(
+            version=version, output_path=output_path, extract=extract
+        )
 
-    def download_beta_version(self, output_path: str = None, extract: bool = False):
+        return output_path
+
+    def download_beta_version(
+        self, output_path: str = None, extract: bool = False
+    ) -> str:
         """
         Download the latest beta chromedriver version
 
@@ -213,9 +221,15 @@ class GetChromeDriver:
         """
 
         version = self.__latest_version_by_phase(Phase.beta)
-        self.download_version(version=version, output_path=output_path, extract=extract)
+        output_path = self.download_version(
+            version=version, output_path=output_path, extract=extract
+        )
 
-    def download_version(self, version, output_path: str = None, extract: bool = False):
+        return output_path
+
+    def download_version(
+        self, version, output_path: str = None, extract: bool = False
+    ) -> str:
         """
         Download a chromedriver version
 
@@ -262,6 +276,8 @@ class GetChromeDriver:
 
         url = self.version_url(version)
         download(download_url=url)
+
+        return output_path
 
     def __move_driver_file_to_output_dir(
         self, os_platform: OsPlatform, output_path: str
@@ -402,14 +418,21 @@ class GetChromeDriver:
                 "Unable to find a ChromeDriver version for the installed Chrome version"
             )
 
-        return self.download_version(version, output_path, extract)
+        output_path = self.download_version(version, output_path, extract)
 
-    def install(self) -> str:
+        return output_path
+
+    def install(self, output_path: str = None) -> str:
         """Install ChromeDriver for the installed Chrome version on machine"""
 
-        output_path = self.auto_download(extract=True)
-        path = os.path.join(os.path.abspath(os.getcwd()), output_path)
-        os.environ["PATH"] += os.pathsep + path
+        if output_path:
+            if not os.path.isabs(output_path):
+                output_path = os.path.join(os.path.abspath(os.getcwd()), output_path)
+            self.auto_download(output_path=output_path, extract=True)
+        else:
+            output_path = self.auto_download(extract=True)
+
+        os.environ["PATH"] += os.pathsep + output_path
 
         return output_path
 
