@@ -35,8 +35,8 @@ def is_version_in_new_api(version: str) -> bool:
         return True
 
 
-def get_filenames_zipped(version: str) -> tuple:
-    """Get filenames zipped"""
+def get_filenames_zip(version: str) -> tuple:
+    """Get filenames zip"""
 
     if is_version_in_new_api(version):
         if pl.system() == "Windows":
@@ -86,18 +86,14 @@ else:
     raise Exception("Could not identify platform.")
 
 # Filenames zipped
-stable_filename_zipped_32, stable_filename_zipped_64 = get_filenames_zipped(
-    stable_version
-)
-random_filename_zipped_32, random_filename_zipped_64 = get_filenames_zipped(
-    random_version
-)
+stable_filename_zipped_32, stable_filename_zipped_64 = get_filenames_zip(stable_version)
+random_filename_zipped_32, random_filename_zipped_64 = get_filenames_zip(random_version)
 
 # Generate stable version url
 if is_version_in_new_api(stable_version):
     # New storage
-    stable_version_url_32 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{stable_version}/{platform_name_32}/{stable_filename_zipped_32}"
-    stable_version_url_64 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{stable_version}/{platform_name_64}/{stable_filename_zipped_64}"
+    stable_version_url_32 = f"https://storage.googleapis.com/chrome-for-testing-public/{stable_version}/{platform_name_32}/{stable_filename_zipped_32}"
+    stable_version_url_64 = f"https://storage.googleapis.com/chrome-for-testing-public/{stable_version}/{platform_name_64}/{stable_filename_zipped_64}"
 else:
     # Old storage
     stable_version_url_32 = f"https://chromedriver.storage.googleapis.com/{stable_version}/{stable_filename_zipped_32}"
@@ -106,8 +102,8 @@ else:
 # Generate random version url
 if is_version_in_new_api(random_version):
     # New storage
-    random_version_url_32 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{random_version}/{platform_name_32}/{random_filename_zipped_32}"
-    random_version_url_64 = f"https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/{random_version}/{platform_name_64}/{random_filename_zipped_64}"
+    random_version_url_32 = f"https://storage.googleapis.com/chrome-for-testing-public/{random_version}/{platform_name_32}/{random_filename_zipped_32}"
+    random_version_url_64 = f"https://storage.googleapis.com/chrome-for-testing-public/{random_version}/{platform_name_64}/{random_filename_zipped_64}"
 else:
     # Old storage
     random_version_url_32 = f"https://chromedriver.storage.googleapis.com/{random_version}/{random_filename_zipped_32}"
@@ -152,7 +148,7 @@ class TestApp:
         get_driver = GetChromeDriver()
         version = get_driver.matching_version()
         subprocess.run(args=[name, "--auto-download"], stdout=subprocess.PIPE)
-        filename_zipped_32, filename_zipped_64 = get_filenames_zipped(version)
+        filename_zipped_32, filename_zipped_64 = get_filenames_zip(version)
         file_path_32 = f"{get_driver._output_path(version)}/{filename_zipped_32}"
         file_path_64 = f"{get_driver._output_path(version)}/{filename_zipped_64}"
         match = path.exists(file_path_32) or path.exists(file_path_64)
