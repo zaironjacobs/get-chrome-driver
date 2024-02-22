@@ -113,7 +113,10 @@ class GetChromeDriver:
                 if self.__arch == 64:
                     for driver in drivers or []:
                         if is_mac:
-                            _platform_64 = Platform.mac_x64.value
+                            if pl.processor() == "arm":
+                                _platform_64 = Platform.mac_arm64.value
+                            else:
+                                _platform_64 = Platform.mac_x64.value
                         else:
                             _platform_64 = platform_64
 
