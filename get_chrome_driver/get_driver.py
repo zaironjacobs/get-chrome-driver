@@ -320,13 +320,18 @@ class GetChromeDriver:
             )
         elif os_platform == OsPlatform.mac:
             driver_file_ext = ""
+            if pl.processor() == "arm":
+                filename = f"{self.__chromedriver_str}-mac-arm64"
+            else:
+                filename = f"{self.__chromedriver_str}-mac-x64"
             old_driver_file_path_64 = os.path.join(
                 output_path,
-                f"{self.__chromedriver_str}-mac-x64",
+                filename,
                 f"{self.__chromedriver_str}{driver_file_ext}",
             )
             old_driver_file_parent_dir_64 = os.path.join(
-                output_path, f"{self.__chromedriver_str}-mac-x64"
+                output_path, 
+                filename
             )
         else:
             raise GetChromeDriverError("Could not determine OS")
