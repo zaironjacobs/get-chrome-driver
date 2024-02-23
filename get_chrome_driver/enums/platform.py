@@ -8,4 +8,5 @@ class Platform(Enum):
     linux64 = "linux64"
     mac32 = "mac32"
     mac64 = "mac64"
+    mac_arm64 = "mac-arm64"
     mac_x64 = "mac-x64"
