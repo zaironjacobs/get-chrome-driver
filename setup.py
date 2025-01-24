@@ -7,7 +7,12 @@ version = "1.4"
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-requires = ["beautifulsoup4==4.12.3", "requests==2.32.3", "urllib3==2.2.3", "typer==0.15.1"]
+requires = [
+    "beautifulsoup4==4.12.3",
+    "requests==2.32.3",
+    "urllib3==2.2.3",
+    "typer==0.15.1",
+]
 
 setup(
     name=name,

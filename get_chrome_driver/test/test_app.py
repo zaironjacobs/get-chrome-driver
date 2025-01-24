@@ -5,17 +5,31 @@ import struct
 import subprocess
 from os import path
 
+import requests
 import pytest
-from decouple import config
+from dotenv import load_dotenv
 
 from get_chrome_driver import GetChromeDriver
 from get_chrome_driver import __version__
 from get_chrome_driver.enums import Platform
 
+load_dotenv()
+
 name = "get-chrome-driver"
 
-stable_version: str = config("STABLE_VERSION")
-random_version: str = config("RANDOM_VERSION")
+STABLE_VERSION: str | None = os.getenv("STABLE_VERSION")
+RANDOM_VERSION: str | None = os.getenv("RANDOM_VERSION")
+
+# If STABLE_VERSION is not defined in .env, then find it using the JSON API endpoint
+if not STABLE_VERSION:
+    res_last_known_good_versions = requests.get(
+        "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json"
+    )
+    STABLE_VERSION: str = res_last_known_good_versions.json()["channels"]["Stable"][
+        "version"
+    ]
+if not RANDOM_VERSION:
+    RANDOM_VERSION = "116.0.5797.0"
 
 arch = struct.calcsize("P") * 8
 
@@ -86,28 +100,28 @@ else:
     raise Exception("Could not identify platform.")
 
 # Filenames zipped
-stable_filename_zipped_32, stable_filename_zipped_64 = get_filenames_zip(stable_version)
-random_filename_zipped_32, random_filename_zipped_64 = get_filenames_zip(random_version)
+stable_filename_zipped_32, stable_filename_zipped_64 = get_filenames_zip(STABLE_VERSION)
+random_filename_zipped_32, random_filename_zipped_64 = get_filenames_zip(RANDOM_VERSION)
 
 # Generate stable version url
-if is_version_in_new_api(stable_version):
+if is_version_in_new_api(STABLE_VERSION):
     # New storage
-    stable_version_url_32 = f"https://storage.googleapis.com/chrome-for-testing-public/{stable_version}/{platform_name_32}/{stable_filename_zipped_32}"
-    stable_version_url_64 = f"https://storage.googleapis.com/chrome-for-testing-public/{stable_version}/{platform_name_64}/{stable_filename_zipped_64}"
+    stable_version_url_32 = f"https://storage.googleapis.com/chrome-for-testing-public/{STABLE_VERSION}/{platform_name_32}/{stable_filename_zipped_32}"
+    stable_version_url_64 = f"https://storage.googleapis.com/chrome-for-testing-public/{STABLE_VERSION}/{platform_name_64}/{stable_filename_zipped_64}"
 else:
     # Old storage
-    stable_version_url_32 = f"https://chromedriver.storage.googleapis.com/{stable_version}/{stable_filename_zipped_32}"
-    stable_version_url_64 = f"https://chromedriver.storage.googleapis.com/{stable_version}/{stable_filename_zipped_64}"
+    stable_version_url_32 = f"https://chromedriver.storage.googleapis.com/{STABLE_VERSION}/{stable_filename_zipped_32}"
+    stable_version_url_64 = f"https://chromedriver.storage.googleapis.com/{STABLE_VERSION}/{stable_filename_zipped_64}"
 
 # Generate random version url
-if is_version_in_new_api(random_version):
+if is_version_in_new_api(RANDOM_VERSION):
     # New storage
-    random_version_url_32 = f"https://storage.googleapis.com/chrome-for-testing-public/{random_version}/{platform_name_32}/{random_filename_zipped_32}"
-    random_version_url_64 = f"https://storage.googleapis.com/chrome-for-testing-public/{random_version}/{platform_name_64}/{random_filename_zipped_64}"
+    random_version_url_32 = f"https://storage.googleapis.com/chrome-for-testing-public/{RANDOM_VERSION}/{platform_name_32}/{random_filename_zipped_32}"
+    random_version_url_64 = f"https://storage.googleapis.com/chrome-for-testing-public/{RANDOM_VERSION}/{platform_name_64}/{random_filename_zipped_64}"
 else:
     # Old storage
-    random_version_url_32 = f"https://chromedriver.storage.googleapis.com/{random_version}/{random_filename_zipped_32}"
-    random_version_url_64 = f"https://chromedriver.storage.googleapis.com/{random_version}/{random_filename_zipped_64}"
+    random_version_url_32 = f"https://chromedriver.storage.googleapis.com/{RANDOM_VERSION}/{random_filename_zipped_32}"
+    random_version_url_64 = f"https://chromedriver.storage.googleapis.com/{RANDOM_VERSION}/{random_filename_zipped_64}"
 
 # Change to the current test directory
 os.chdir(os.path.dirname(__file__))
@@ -122,11 +136,11 @@ class TestApp:
         )
         actual = out.stdout.split()[0]
 
-        assert stable_version == actual
+        assert STABLE_VERSION == actual
 
     def test_random_version_url(self):
         out = subprocess.run(
-            args=[name, "--version-url", random_version],
+            args=[name, "--version-url", RANDOM_VERSION],
             universal_newlines=True,
             stdout=subprocess.PIPE,
         )
@@ -175,7 +189,7 @@ class TestApp:
 
     def test_download_stable_version_no_extract(self):
         get_driver = GetChromeDriver()
-        version = stable_version
+        version = STABLE_VERSION
         subprocess.run(args=[name, "--download-stable"], stdout=subprocess.PIPE)
         file_path_32 = f"{get_driver._output_path(version)}/{stable_filename_zipped_32}"
         file_path_64 = f"{get_driver._output_path(version)}/{stable_filename_zipped_64}"
@@ -185,7 +199,7 @@ class TestApp:
 
     def test_download_stable_version_extract(self):
         get_driver = GetChromeDriver()
-        version = stable_version
+        version = STABLE_VERSION
         subprocess.run(
             args=[name, "--download-stable", "--extract"], stdout=subprocess.PIPE
         )
@@ -205,7 +219,7 @@ class TestApp:
 
     def test_download_random_version_no_extract(self):
         get_driver = GetChromeDriver()
-        version = random_version
+        version = RANDOM_VERSION
         subprocess.run(
             args=[name, "--download-version", version], stdout=subprocess.PIPE
         )
@@ -217,7 +231,7 @@ class TestApp:
 
     def test_download_random_version_extract(self):
         get_driver = GetChromeDriver()
-        version = random_version
+        version = RANDOM_VERSION
         subprocess.run(
             args=[name, "--download-version", version, "--extract"],
             stdout=subprocess.PIPE,
@@ -229,7 +243,7 @@ class TestApp:
 
     def test_download_random_version_extract_custom_path(self):
         get_driver = GetChromeDriver()
-        version = random_version
+        version = RANDOM_VERSION
         get_driver.download_version(
             version, output_path="webdriver/bin/chromedriver", extract=True
         )

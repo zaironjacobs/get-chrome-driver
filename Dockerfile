@@ -34,7 +34,7 @@ RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd6
 RUN apt install -y ./google-chrome-stable_current_amd64.deb
 
 # Copy test requirements
-Copy requirements-test.txt .
+COPY requirements-test.txt .
 
 # Install test requirements
 RUN pip install --no-cache-dir --upgrade -r requirements-test.txt

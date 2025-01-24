@@ -45,20 +45,24 @@ class GetChromeDriver:
         self.__zip_ext = ".zip"
 
     def stable_version(self) -> str:
-        """Return the latest stable version"""
+        """
+        Return the latest stable version.
+        """
 
         return self.__latest_version_by_phase(Phase.stable)
 
     def beta_version(self) -> str:
-        """Return the latest beta version"""
+        """
+        Return the latest beta version.
+        """
 
         return self.__latest_version_by_phase(Phase.beta)
 
     def __latest_version_by_phase(self, phase: Phase) -> str:
         """
-        Return the latest stable or latest beta version
+        Return the latest stable or latest beta version.
 
-        :param phase: Stable or beta
+        :param phase: Stable or beta.
         """
 
         response = requests.get(constants.LAST_KNOWN_GOOD_VERSIONS_URL)
@@ -78,12 +82,16 @@ class GetChromeDriver:
         raise UnknownVersionError("Could not find version")
 
     def stable_version_url(self) -> str:
-        """Return the latest stable version url"""
+        """
+        Return the latest stable version url.
+        """
 
         return self.version_url(self.__latest_version_by_phase(Phase.stable))
 
     def beta_version_url(self) -> str:
-        """Return the latest beta version url"""
+        """
+        Return the latest beta version url.
+        """
 
         return self.version_url(self.__latest_version_by_phase(Phase.beta))
 
@@ -96,12 +104,12 @@ class GetChromeDriver:
         is_mac: bool = False,
     ) -> str:
         """
-        Return the version download url for a platform
+        Return the version download url for a platform.
 
-        :param new_api_known_good_versions: The latest known good driver versions from the new api
-        :param version: Chromedriver version
-        :param platform_64: 64bit platform
-        :param platform_32: 32bit platform
+        :param new_api_known_good_versions: The latest known good driver versions from the new api.
+        :param version: Chromedriver version.
+        :param platform_64: 64bit platform.
+        :param platform_32: 32bit platform.
         """
 
         # New api
@@ -150,9 +158,9 @@ class GetChromeDriver:
 
     def version_url(self, version: str) -> str:
         """
-        Return the version download url
+        Return the version download url.
 
-        :param version: Chromedriver version
+        :param version: Chromedriver version.
         """
 
         if not self.__check_if_version_format_is_valid(version):
@@ -200,10 +208,10 @@ class GetChromeDriver:
         self, output_path: str = None, extract: bool = False
     ) -> str:
         """
-        Download the latest stable chromedriver version
+        Download the latest stable chromedriver version.
 
-        :param output_path: Path to download the driver to
-        :param extract: Extract the downloaded driver or not
+        :param output_path: Path to download the driver to.
+        :param extract: Extract the downloaded driver or not.
         """
 
         version = self.__latest_version_by_phase(Phase.stable)
@@ -217,10 +225,10 @@ class GetChromeDriver:
         self, output_path: str = None, extract: bool = False
     ) -> str:
         """
-        Download the latest beta chromedriver version
+        Download the latest beta chromedriver version.
 
-        :param output_path: Path to download the driver to
-        :param extract: Extract the downloaded driver or not
+        :param output_path: Path to download the driver to.
+        :param extract: Extract the downloaded driver or not.
         """
 
         version = self.__latest_version_by_phase(Phase.beta)
@@ -234,11 +242,11 @@ class GetChromeDriver:
         self, version, output_path: str = None, extract: bool = False
     ) -> str:
         """
-        Download a chromedriver version
+        Download a chromedriver version.
 
-        :param version: Chromedriver version
-        :param output_path: Path to download the driver to
-        :param extract: Extract the downloaded driver or not
+        :param version: Chromedriver version.
+        :param output_path: Path to download the driver to.
+        :param extract: Extract the downloaded driver or not.
         """
 
         if not self.__check_if_version_format_is_valid(version):
@@ -329,10 +337,7 @@ class GetChromeDriver:
                 filename,
                 f"{self.__chromedriver_str}{driver_file_ext}",
             )
-            old_driver_file_parent_dir_64 = os.path.join(
-                output_path, 
-                filename
-            )
+            old_driver_file_parent_dir_64 = os.path.join(output_path, filename)
         else:
             raise GetChromeDriverError("Could not determine OS")
 
@@ -365,9 +370,9 @@ class GetChromeDriver:
 
     def __check_if_url_is_valid(self, url: str) -> bool:
         """
-        Check if url is valid
+        Check if url is valid.
 
-        :param url: The driver download url
+        :param url: The driver download url.
         """
 
         if requests.head(url).status_code != 200:
@@ -377,9 +382,9 @@ class GetChromeDriver:
 
     def __check_if_version_format_is_valid(self, version: str) -> bool:
         """
-        Check if version format is valid
+        Check if version format is valid.
 
-        :param version: Chromedriver version
+        :param version: Chromedriver version.
         """
 
         split_version = version.split(".")
@@ -391,9 +396,9 @@ class GetChromeDriver:
 
     def __check_if_os_platform_is_valid(self, os_platform: OsPlatform) -> bool:
         """
-        Check if platform is valid
+        Check if platform is valid.
 
-        :param os_platform: OS
+        :param os_platform: OS.
         """
 
         if os_platform not in self.__os_platforms_list:
@@ -414,10 +419,10 @@ class GetChromeDriver:
 
     def auto_download(self, output_path: str = None, extract: bool = False) -> str:
         """
-        Download ChromeDriver for the installed Chrome version on machine
+        Download ChromeDriver for the installed Chrome version on machine.
 
-        :param output_path: Path to download the driver to
-        :param extract: Extract the downloaded driver or not
+        :param output_path: Path to download the driver to.
+        :param extract: Extract the downloaded driver or not.
         """
 
         version = self.matching_version()
@@ -501,7 +506,9 @@ class GetChromeDriver:
         return sorted_versions
 
     def __get_installed_chrome_version(self) -> str:
-        """Return the installed Chrome version on the machine"""
+        """
+        Return the installed Chrome version on the machine.
+        """
 
         if self.__os_platform == OsPlatform.win:
             process = subprocess.Popen(
@@ -527,6 +534,7 @@ class GetChromeDriver:
                 stderr=subprocess.DEVNULL,
                 stdin=subprocess.DEVNULL,
             )
+
             return process.communicate()[0].decode("UTF-8").split()[-1]
 
         elif self.__os_platform == OsPlatform.mac:
@@ -544,9 +552,9 @@ class GetChromeDriver:
 
     def _output_path(self, version: str) -> str:
         """
-        Get the output path
+        Get the output path.
 
-        :param version: Chromedriver version
+        :param version: Chromedriver version.
         """
 
         return f"chromedriver/{version}/bin"

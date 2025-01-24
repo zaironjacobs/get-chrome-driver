@@ -51,7 +51,9 @@ def main(
         default=False, help="Application version", show_default=False
     ),
 ):
-    """Main"""
+    """
+    Main.
+    """
 
     if beta_version:
         __print_latest_version(phase=Phase.beta)
@@ -89,9 +91,9 @@ def main(
 
 def __print_latest_version(phase: Phase):
     """
-    Print latest stable version or latest beta version
+    Print latest stable version or latest beta version.
 
-    :param phase: Stable or beta
+    :param phase: Stable or beta.
     """
 
     get_driver = GetChromeDriver()
@@ -111,7 +113,9 @@ def __print_latest_version(phase: Phase):
 
 
 def __print_latest_urls():
-    """Print the stable and beta url version for all platforms"""
+    """
+    Print the stable and beta url version for all platforms.
+    """
 
     get_driver_win = GetChromeDriver(OsPlatform.win)
     get_driver_linux = GetChromeDriver(OsPlatform.linux)
@@ -138,9 +142,9 @@ def __print_latest_urls():
 
 def __print_version_url(version: str):
     """
-    Print the url of a version
+    Print the url of a version.
 
-    :param version: Chromedriver version
+    :param version: Chromedriver version.
     """
 
     get_driver = GetChromeDriver()
@@ -155,9 +159,9 @@ def __print_version_url(version: str):
 
 def __print_latest_url(phase: Phase):
     """
-    Print latest stable url or latest beta url
+    Print latest stable url or latest beta url.
 
-    :param phase: Stable or beta
+    :param phase: Stable or beta.
     """
 
     get_driver = GetChromeDriver()
@@ -178,9 +182,9 @@ def __print_latest_url(phase: Phase):
 
 def __auto_download(extract: bool):
     """
-    Auto download driver
+    Auto download driver.
 
-    :param extract: Extract the downloaded driver or not
+    :param extract: Extract the downloaded driver or not.
     """
 
     get_driver = GetChromeDriver()
@@ -194,10 +198,10 @@ def __auto_download(extract: bool):
 
 def __download_latest_version(phase: Phase, extract: bool):
     """
-    Download the driver for the stable version or beta version
+    Download the driver for the stable version or beta version.
 
-    :param phase: Stable or beta
-    :param extract: Extract the downloaded driver or not
+    :param phase: Stable or beta.
+    :param extract: Extract the downloaded driver or not.
     """
 
     get_driver = GetChromeDriver()
@@ -222,10 +226,10 @@ def __download_latest_version(phase: Phase, extract: bool):
 
 def __download_version(version: str, extract: bool):
     """
-    Download driver version
+    Download driver version.
 
-    :param version: Chromedriver version
-    :param extract: Extract the downloaded driver or not
+    :param version: Chromedriver version.
+    :param extract: Extract the downloaded driver or not.
     """
 
     get_driver = GetChromeDriver()
