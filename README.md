@@ -1,15 +1,14 @@
-Get ChromeDriver
-=================
+# Get ChromeDriver
+
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/get-chrome-driver?color=blue)](https://pypi.python.org/pypi/get-chrome-driver)
 [![PyPI](https://img.shields.io/pypi/v/get-chrome-driver?color=blue)](https://pypi.python.org/pypi/get-chrome-driver)
-[![PyPI - Status](https://img.shields.io/pypi/status/get-chrome-driver)](https://pypi.python.org/pypi/get-chrome-driver)
 [![PyPI - License](https://img.shields.io/pypi/l/get-chrome-driver)](https://pypi.python.org/pypi/get-chrome-driver)
+
+[![tests](https://github.com/zaironjacobs/get-chrome-driver/actions/workflows/test.yml/badge.svg)](https://github.com/zaironjacobs/get-chrome-driver/actions/workflows/test.yml)
 
 A tool to download and install ChromeDriver. Automatically download a ChromeDriver version for the current installed
 Chrome version. Or you can choose to download the beta version (if one is currently available), the stable version or
 another specific version. You can use this tool as a package import or as a command-line application.
-
-This Python package runs through a Jenkins test pipeline every hour to ensure proper functionality.
 
 ## Install
 
