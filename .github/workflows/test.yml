@@ -1,0 +1,33 @@
+name: Run tests
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install get-chrome-driver
+        run: |
+          pip install .
+
+      - name: Install test dependencies
+        run: |
+          pip install requirements.txt
+
+      - name: Run tests
+        run: |
+          pytest get_chrome_driver/test
