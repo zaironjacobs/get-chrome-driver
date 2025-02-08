@@ -1,4 +1,4 @@
 services:
   test:
     build: .
-    command: pytest get_chrome_driver/test
+    command: pytest

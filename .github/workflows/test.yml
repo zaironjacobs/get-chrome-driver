@@ -30,4 +30,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest get_chrome_driver/test
+          pytest tests
