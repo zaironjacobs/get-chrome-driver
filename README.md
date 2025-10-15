@@ -149,5 +149,7 @@ get-chrome-driver --download-version 84.0.4147.30 --extract
 
 --extract                   Extract the compressed driver file.
 
+--driver-filename           Print the driver filename.
+
 --version                   App version.
 ```

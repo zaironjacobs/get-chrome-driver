@@ -6,6 +6,7 @@ from get_chrome_driver.exceptions import GetChromeDriverError
 from get_chrome_driver.get_driver import GetChromeDriver
 
 app = typer.Typer(name="Get ChromeDriver", add_completion=False)
+get_driver = GetChromeDriver()
 
 
 @app.command()
@@ -47,6 +48,9 @@ def main(
     extract: bool = typer.Option(
         default=False, help="Extract the compressed driver file", show_default=False
     ),
+    driver_filename: bool = typer.Option(
+        default=False, help="Driver filename", show_default=False
+    ),
     version: bool = typer.Option(
         default=False, help="Application version", show_default=False
     ),
@@ -85,6 +89,9 @@ def main(
     elif download_version:
         __download_version(version=download_version, extract=extract)
 
+    elif driver_filename:
+        print(get_driver.driver_filename())
+
     elif version:
         print(f"v{__version__}")
 
@@ -96,7 +103,6 @@ def __print_latest_version(phase: Phase):
     :param phase: Stable or beta.
     """
 
-    get_driver = GetChromeDriver()
     error = "No latest version found"
     if phase == Phase.beta:
         try:
@@ -147,8 +153,6 @@ def __print_version_url(version: str):
     :param version: Chromedriver version.
     """
 
-    get_driver = GetChromeDriver()
-
     error = "Could not find version url"
 
     try:
@@ -163,8 +167,6 @@ def __print_latest_url(phase: Phase):
 
     :param phase: Stable or beta.
     """
-
-    get_driver = GetChromeDriver()
 
     error = "Could not find version url"
 
@@ -187,8 +189,6 @@ def __auto_download(extract: bool):
     :param extract: Extract the downloaded driver or not.
     """
 
-    get_driver = GetChromeDriver()
-
     try:
         get_driver.auto_download(extract=extract)
         print("Download finished")
@@ -203,8 +203,6 @@ def __download_latest_version(phase: Phase, extract: bool):
     :param phase: Stable or beta.
     :param extract: Extract the downloaded driver or not.
     """
-
-    get_driver = GetChromeDriver()
 
     download_complete = "Download complete"
     beta_error = "Could not download beta version"
@@ -231,8 +229,6 @@ def __download_version(version: str, extract: bool):
     :param version: Chromedriver version.
     :param extract: Extract the downloaded driver or not.
     """
-
-    get_driver = GetChromeDriver()
 
     try:
         get_driver.download_version(version=version, extract=extract)

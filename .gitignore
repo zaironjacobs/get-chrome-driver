@@ -150,4 +150,5 @@ cython_debug/
 # Downloads
 chromedriver/
 
-
+# pyenv
+.python-version
