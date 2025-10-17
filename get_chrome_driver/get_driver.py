@@ -110,12 +110,12 @@ class GetChromeDriver:
         return self.version_url(self.__latest_version_by_phase(Phase.beta))
 
     def __version_url_for_platform(
-            self,
-            new_api_known_good_versions: list,
-            version: str,
-            platform_64: str,
-            platform_32: str = None,
-            is_mac: bool = False,
+        self,
+        new_api_known_good_versions: list,
+        version: str,
+        platform_64: str,
+        platform_32: str = None,
+        is_mac: bool = False,
     ) -> str:
         """
         Return the version download URL for a platform.
@@ -221,7 +221,7 @@ class GetChromeDriver:
         raise VersionUrlError("Could not find version URL.")
 
     def download_stable_version(
-            self, output_path: str = None, extract: bool = False
+        self, output_path: str = None, extract: bool = False
     ) -> str:
         """
         Download the latest stable chromedriver version.
@@ -238,7 +238,7 @@ class GetChromeDriver:
         return output_path
 
     def download_beta_version(
-            self, output_path: str = None, extract: bool = False
+        self, output_path: str = None, extract: bool = False
     ) -> str:
         """
         Download the latest beta chromedriver version.
@@ -255,7 +255,7 @@ class GetChromeDriver:
         return output_path
 
     def download_version(
-            self, version, output_path: str = None, extract: bool = False
+        self, version, output_path: str = None, extract: bool = False
     ) -> str:
         """
         Download a chromedriver version.
@@ -296,8 +296,8 @@ class GetChromeDriver:
                 )
 
                 if (
-                        self.__os_platform == OsPlatform.linux
-                        or self.__os_platform == OsPlatform.mac
+                    self.__os_platform == OsPlatform.linux
+                    or self.__os_platform == OsPlatform.mac
                 ):
                     os.chmod(f"{output_path}/chromedriver", 0o755)
 
@@ -307,7 +307,7 @@ class GetChromeDriver:
         return output_path
 
     def __move_driver_file_to_output_dir(
-            self, os_platform: OsPlatform, output_path: str
+        self, os_platform: OsPlatform, output_path: str
     ):
         """Move driver file to output dir if extracted driver file is contained inside a dir"""
 
@@ -364,7 +364,7 @@ class GetChromeDriver:
 
         # If driver file was not found directly inside output dir
         if not os.path.isfile(
-                os.path.join(output_path, f"{self.__chromedriver_str}{driver_file_ext}")
+            os.path.join(output_path, f"{self.__chromedriver_str}{driver_file_ext}")
         ):
             # If driver file was found inside <output dir>/chromedriver-<platform-arch>
             if os.path.isfile(old_driver_file_path_64):
@@ -422,31 +422,40 @@ class GetChromeDriver:
 
         return True
 
-    def matching_version(self) -> str:
-        """Return a matching ChromeDriver version"""
+    def matching_version(self, chromium: bool = False) -> str:
+        """
+        Return a matching ChromeDriver version.
+        """
 
         all_chromedriver_versions = self.__get_all_chromedriver_versions()
-        installed_chrome_version = self.__get_installed_chrome_version()
+        installed_chrome_version = self.__get_installed_chrome_version(
+            chromium=chromium
+        )
+
         for chromedriver_version in reversed(all_chromedriver_versions):
             if ".".join(installed_chrome_version.split(".")[:-1]) == ".".join(
-                    chromedriver_version.split(".")[:-1]
+                chromedriver_version.split(".")[:-1]
             ):
                 return chromedriver_version
 
         raise UnknownVersionError("Could not find matching version.")
 
-    def auto_download(self, output_path: str = None, extract: bool = False) -> str:
+    def auto_download(
+        self, output_path: str = None, extract: bool = False, chromium: bool = False
+    ) -> str:
         """
         Download ChromeDriver for the installed Chrome version on machine.
 
         :param output_path: Path to download the driver to.
         :param extract: Extract the downloaded driver or not.
+        :param chromium: Look for the installed Chromium version instead of Chrome.
         """
 
-        version = self.matching_version()
-        if version == "" or version is None:
+        version = self.matching_version(chromium=chromium)
+        if not version:
+            name = "Chrome" if not chromium else "Chromium"
             raise VersionError(
-                "Unable to find a ChromeDriver version for the installed Chrome version."
+                f"Unable to find a ChromeDriver version for the installed {name} version."
             )
 
         output_path = self.download_version(version, output_path, extract)
@@ -524,20 +533,32 @@ class GetChromeDriver:
 
         return sorted_versions
 
-    def __get_installed_chrome_version(self) -> str:
+    def __get_installed_chrome_version(self, chromium: bool = False) -> str:
         """
         Return the installed Chrome version on the machine.
+
+        :param chromium: Return the installed Chromium version instead.
         """
 
         if self.__os_platform == OsPlatform.win:
-            process = subprocess.Popen(
-                [
+            if chromium:
+                args = [
+                    "reg",
+                    "query",
+                    "HKEY_CURRENT_USER\\SOFTWARE\\Chromium\\BLBeacon",
+                    "/v",
+                    "version",
+                ]
+            else:
+                args = [
                     "reg",
                     "query",
                     "HKEY_CURRENT_USER\\SOFTWARE\\Google\\Chrome\\BLBeacon",
                     "/v",
                     "version",
-                ],
+                ]
+            process = subprocess.Popen(
+                args,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,
                 stdin=subprocess.DEVNULL,
@@ -547,21 +568,38 @@ class GetChromeDriver:
             return version
 
         elif self.__os_platform == OsPlatform.linux:
-            process = subprocess.Popen(
-                ["google-chrome", "--version"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                stdin=subprocess.DEVNULL,
-            )
+            if chromium:
+                process = subprocess.Popen(
+                    ["chromium-browser", "--version"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL,
+                    stdin=subprocess.DEVNULL,
+                )
 
-            return process.communicate()[0].decode("UTF-8").split()[-1]
+                return process.communicate()[0].decode("UTF-8").split()[1]
+            else:
+                process = subprocess.Popen(
+                    args=["google-chrome", "--version"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL,
+                    stdin=subprocess.DEVNULL,
+                )
+
+                return process.communicate()[0].decode("UTF-8").split()[-1]
 
         elif self.__os_platform == OsPlatform.mac:
-            process = subprocess.Popen(
-                [
+            if chromium:
+                args = [
+                    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+                    "--version",
+                ]
+            else:
+                args = [
                     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
                     "--version",
-                ],
+                ]
+            process = subprocess.Popen(
+                args,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,
                 stdin=subprocess.DEVNULL,

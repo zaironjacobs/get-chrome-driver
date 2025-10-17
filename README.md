@@ -141,6 +141,8 @@ get-chrome-driver --download-version 84.0.4147.30 --extract
 
 --auto-download             Download a ChromeDriver version for the installed Chrome Version.
 
+--chromium                  Auto download will look for the installed Chromium version instead of Chrome.
+
 --download-beta             Download the beta version.
 
 --download-stable           Download the stable version.

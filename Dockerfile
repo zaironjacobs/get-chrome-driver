@@ -3,7 +3,7 @@ FROM python:3.11
 # Set workdir
 WORKDIR /app
 
-# Install Chrom dependencies
+# Install Chrome dependencies
 RUN apt update && apt install -y \
     fonts-liberation \
     libasound2 \

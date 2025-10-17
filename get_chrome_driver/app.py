@@ -51,6 +51,11 @@ def main(
     driver_filename: bool = typer.Option(
         default=False, help="Driver filename", show_default=False
     ),
+    chromium: bool = typer.Option(
+        default=False,
+        help="Auto download will look for the installed Chromium version instead of Chrome.",
+        show_default=False,
+    ),
     version: bool = typer.Option(
         default=False, help="Application version", show_default=False
     ),
@@ -78,7 +83,7 @@ def main(
         __print_latest_url(phase=Phase.stable)
 
     elif auto_download:
-        __auto_download(extract=extract)
+        __auto_download(extract=extract, chromium=chromium)
 
     elif download_beta:
         __download_latest_version(phase=Phase.beta, extract=extract)
@@ -182,15 +187,16 @@ def __print_latest_url(phase: Phase):
             print(error)
 
 
-def __auto_download(extract: bool):
+def __auto_download(extract: bool, chromium: bool):
     """
     Auto download driver.
 
     :param extract: Extract the downloaded driver or not.
+    :param chromium: Look for the installed Chromium version instead of Chrome.
     """
 
     try:
-        get_driver.auto_download(extract=extract)
+        get_driver.auto_download(extract=extract, chromium=chromium)
         print("Download finished")
     except GetChromeDriverError:
         print("An error occurred at downloading")
