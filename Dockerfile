@@ -33,11 +33,11 @@ RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd6
 # Install Chrome
 RUN apt install -y ./google-chrome-stable_current_amd64.deb
 
-# Copy test requirements
+# Copy pyproject.toml
 COPY pyproject.toml .
 
-# Install dev requirements
-RUN pip install --group dev
+# Install test dependencies
+RUN pip install --group test
 
 # Copy app
 COPY . .
