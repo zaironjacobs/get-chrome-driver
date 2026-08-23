@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "get-chrome-driver"
+version = "1.5.4"
+description = "A tool to download and install ChromeDriver."
+readme = "README.md"
+keywords = ["chrome", "chromedriver", "download", "install", "web", "driver", "tool"]
+license = "MIT"
+license-files = [
+    "LICENSE"
+]
+requires-python = ">=3.11"
+authors = [
+    { name = "Zairon Jacobs", email = "zaironjacobs@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Natural Language :: English",
+]
+dependencies = [
+    "beautifulsoup4>=4.13.5",
+    "requests>=2.33.0",
+    "urllib3>=2.7.0",
+    "typer>=0.17.4",
+]
+
+[dependency-groups]
+test = [
+    "pytest>=9.0.3",
+    "python-dotenv>=1.2.2"
+]
+
+[project.urls]
+homepage = "https://github.com/zaironjacobs/get-chrome-driver"
+download = "https://github.com/zaironjacobs/get-chrome-driver/archive/v1.5.4.tar.gz"
+
+[project.scripts]
+get-chrome-driver = "get_chrome_driver.app:app"
+
+[tool.setuptools.packages.find]
+where = [""]
+namespaces = false

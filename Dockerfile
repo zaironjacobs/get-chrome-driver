@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.14
 
 # Set workdir
 WORKDIR /app
@@ -34,13 +34,13 @@ RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd6
 RUN apt install -y ./google-chrome-stable_current_amd64.deb
 
 # Copy test requirements
-COPY requirements-test.txt .
+COPY pyproject.toml .
 
-# Install test requirements
-RUN pip install --no-cache-dir --upgrade -r requirements-test.txt
+# Install dev requirements
+RUN pip install --group dev
 
 # Copy app
 COPY . .
 
 # Install app
-RUN pip install --no-cache-dir --upgrade .
+RUN pip install .
